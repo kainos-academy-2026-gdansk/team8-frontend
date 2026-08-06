@@ -15,7 +15,7 @@ nunjucks.configure('src/views', {
     noCache: true,
 });
 
-app.get('/', function(req, res) {
+app.get('/', (_req, res) => {
     res.render('pages/index.njk', {message: 'Hello world!'});
 });
 
