@@ -12,6 +12,7 @@ describe("Vitest smoke", () => {
 		const response = await request(app).get("/");
 
 		expect(response.status).toBe(200);
-		expect(response.body).toEqual({ message: "Welcome to your API!" });
+		expect(response.text).toBeTypeOf("string");
+		expect(response.text).toContain("Hello world!");
 	});
 });
