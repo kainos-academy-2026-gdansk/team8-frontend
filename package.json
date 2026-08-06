@@ -4,7 +4,9 @@
   "description": "Team8 Frontend",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch" : "vitest",
+    "test:coverage" : "vitest run --coverage",
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node ./dist/index.js",
@@ -31,7 +33,15 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.2",
     "@types/nunjucks": "^3.2.6",
+    "@types/supertest": "^7.2.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "supertest": "^7.2.2",
     "tsx": "^4.23.7",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "vitest": {
+    "environment": "node"
   }
+
 }
