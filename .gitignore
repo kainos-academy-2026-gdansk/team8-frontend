@@ -1,5 +1,6 @@
-node_modules
+node_modules/
 .env
 todo.txt
-dist
-coverage
+dist/
+coverage/
+logs/
