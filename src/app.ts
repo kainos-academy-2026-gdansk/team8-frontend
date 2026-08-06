@@ -9,13 +9,14 @@ app.get("/health", (_req, res) => {
 	res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-nunjucks.configure('./src/views/pages', {
+nunjucks.configure('src/views', {
     autoescape: true,
-    express: app
+    express: app,
+    noCache: true,
 });
 
 app.get('/', function(req, res) {
-    res.render('./index.njk', {message: 'Hello world!'});
+    res.render('pages/index.njk', {message: 'Hello world!'});
 });
 
 export default app;
