@@ -1,8 +1,5 @@
 # team8-frontend
 Team8 Frontend
-# team8-backend
-
-Team8 Backend API service.
 
 ## Prerequisites
 
@@ -22,7 +19,7 @@ npm install
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB_NAME"
-PORT=3000
+PORT=3001
 ```
 
 ## Run The API
