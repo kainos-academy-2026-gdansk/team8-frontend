@@ -5,7 +5,6 @@ Team8 Frontend
 
 - Node.js (LTS recommended)
 - npm
-- PostgreSQL database
 
 ## Setup
 
@@ -18,11 +17,10 @@ npm install
 2. Create a `.env` file in this folder:
 
 ```env
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB_NAME"
 PORT=3001
 ```
 
-## Run The API
+## Run the app
 
 - Development (watch mode):
 
@@ -42,7 +40,7 @@ npm run build
 npm start
 ```
 
-## Test The API
+## Test the app
 
 - Run tests once:
 
@@ -56,7 +54,7 @@ npm test
 npm run test:coverage
 ```
 
-## Lint The API
+## Lint the app
 
 - Lint:
 
@@ -72,7 +70,7 @@ npm run lint:fix
 
 ## Logger Usage
 
-This API uses a centralized Winston logger and HTTP request logging via Morgan.
+This app uses a centralized Winston logger and HTTP request logging via Morgan.
 
 - Logger file: `src/lib/logger.ts`
 - Request logging middleware: `src/config/morganMiddleware.ts`
