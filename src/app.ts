@@ -1,27 +1,84 @@
 import express from "express";
 import nunjucks from "nunjucks";
 import morganMiddleware from "./config/morganMiddleware";
-import Logger from "./lib/logger";
+import path from "node:path";
+import router from "./router/jobRoleRouter";
 
 export const app = express();
+
+const projectRoot = process.cwd();
+
+nunjucks.configure(
+	[
+		path.join(projectRoot, "src", "views"),
+		path.join(projectRoot, "node_modules", "govuk-frontend", "dist"),
+	],
+	{
+		autoescape: true,
+		express: app,
+		noCache: true,
+	},
+);
+
+app.use("/assets", express.static(path.join(projectRoot, "src", "assets")));
+
+app.use(
+	"/assets",
+	express.static(
+		path.join(
+			__dirname,
+			"..",
+			"node_modules",
+			"govuk-frontend",
+			"dist",
+			"govuk",
+			"assets",
+		),
+	),
+);
+
+app.use(
+	"/styles.css",
+	express.static(path.join(projectRoot, "src", "styles.css")),
+);
+
+app.use("/styles", express.static(path.join(projectRoot, "src", "styles")));
+
+app.use(
+	"/govuk-frontend.min.css",
+	express.static(
+		path.join(
+			__dirname,
+			"..",
+			"node_modules",
+			"govuk-frontend",
+			"dist",
+			"govuk",
+			"govuk-frontend.min.css",
+		),
+	),
+);
+
+app.use(
+	"/govuk-frontend.min",
+	express.static(
+		path.join(
+			__dirname,
+			"..",
+			"node_modules",
+			"govuk-frontend",
+			"dist",
+			"govuk",
+			"govuk-frontend.min",
+		),
+	),
+);
 
 app.use(express.json());
 app.use(morganMiddleware);
 
-app.get("/health", (_req, res) => {
-	Logger.info("Health check called");
-	res.json({ status: "OK", timestamp: new Date().toISOString() });
-});
+app.use(express.urlencoded({ extended: true }));
 
-nunjucks.configure("src/views", {
-	autoescape: true,
-	express: app,
-	noCache: true,
-});
-
-app.get("/", (_req, res) => {
-	Logger.info("Index page rendered");
-	res.render("pages/index.njk", { message: "Hello world!" });
-});
+app.use(router);
 
 export default app;

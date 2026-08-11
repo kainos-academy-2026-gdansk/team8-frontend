@@ -1,0 +1,36 @@
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
+
+{% set contactHtml %}
+  <section class="kainos-footer__contact" aria-label="Gdansk contact">
+    <div class="kainos-footer__brand" aria-hidden="true">
+      <img class="kainos-footer__logo" src="/assets/logos/kainos-logo-primary-transparent.png" alt="" />
+    </div>
+
+    <div class="kainos-footer__details">
+      <h2 class="govuk-heading-l kainos-footer__city">Gdansk</h2>
+      <p class="govuk-body-s kainos-footer__label">Address</p>
+      <p class="govuk-body kainos-footer__address">
+        8th Floor,<br>
+        Tryton Business House,<br>
+        ul. Jana z Kolna 11,<br>
+        80-864 Gdansk,<br>
+        Poland
+      </p>
+      <p class="govuk-body-s kainos-footer__label">Phone</p>
+      <p class="govuk-body">
+        <a class="govuk-footer__link kainos-footer__phone" href="tel:+48588826680">+48 58 882 66 80</a>
+      </p>
+    </div>
+  </section>
+{% endset %}
+
+{{ govukFooter({
+  classes: "kainos-footer",
+  containerClasses: "kainos-footer__container",
+  meta: {
+    visuallyHiddenTitle: "Contact details",
+    html: contactHtml
+  },
+  contentLicence: null,
+  copyright: null
+}) }}

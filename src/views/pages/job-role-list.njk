@@ -1,0 +1,41 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}All Job Roles{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">All job roles</h1>
+  {% if error %}
+  <p class="govuk-body govuk-error-message">{{ error }}</p>
+  {% endif %}
+  
+  {% if jobRoles.length > 0 %}
+    <ul class="govuk-list job-role-list" aria-label="Job role listings">
+      {% for jobRole in jobRoles %}
+        <li class="job-role-list__item">
+          <article class="job-role-card">
+            <header class="job-role-card__header">
+              <h2 class="govuk-heading-m job-role-card__title">{{ jobRole.roleName }}</h2>
+              <strong class="govuk-tag job-role-card__status {% if jobRole.status == 'OPEN' %}job-role-card__status--open{% else %}job-role-card__status--closed{% endif %}">
+                {{ jobRole.statusLabel }}
+              </strong>
+            </header>
+
+            <p class="govuk-body-l job-role-card__location">{{ jobRole.location }}</p>
+
+            <p class="govuk-body job-role-card__meta">
+              <span class="job-role-card__meta-item">{{ jobRole.capability.name }}</span>
+              <span class="job-role-card__meta-divider" aria-hidden="true">&bull;</span>
+              <span class="job-role-card__meta-item">{{ jobRole.band.name }}</span>
+            </p>
+
+            <footer class="job-role-card__footer">
+              <span class="govuk-body-s">Closing date: {{ jobRole.closingDateLabel }}</span>
+            </footer>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="govuk-body">No job roles found.</p>
+  {% endif %}
+{% endblock %}
