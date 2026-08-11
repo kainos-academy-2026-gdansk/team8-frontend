@@ -1,0 +1,55 @@
+/* Error and not-found page styling */
+.kainos-error {
+	max-width: 760px;
+	margin: 20px auto;
+	padding: 28px;
+	border: 1px solid rgb(40 53 131 / 0.16);
+	border-radius: 16px;
+	background:
+		linear-gradient(150deg, rgb(97 168 63 / 0.08), rgb(65 103 159 / 0.05)),
+		var(--k-color-white);
+	box-shadow: 0 12px 28px rgb(40 53 131 / 0.08);
+}
+
+.kainos-error__code {
+	display: inline-block;
+	margin-bottom: 12px;
+	padding: 4px 10px;
+	background: rgb(40 53 131 / 0.1);
+	color: var(--k-color-blue);
+	font-weight: 700;
+	font-size: 0.95rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.kainos-error__title {
+	margin-bottom: 12px;
+	color: var(--k-color-blue);
+	font-family: var(--k-font-display);
+}
+
+.kainos-error__description {
+	margin-bottom: 18px;
+	color: var(--k-text-secondary);
+	max-width: 60ch;
+}
+
+.kainos-error__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+	margin-top: 22px;
+}
+
+.kainos-error__secondary-link {
+	font-weight: 700;
+}
+
+@media (min-width: 48rem) {
+	.kainos-error {
+		padding: 36px;
+		margin: 36px auto;
+	}
+}

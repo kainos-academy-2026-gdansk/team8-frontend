@@ -20,4 +20,9 @@ router.get("/job-roles", (req, res) => {
 	controller.getAll(req, res);
 });
 
+router.get("/job-roles/:id", (req, res) => {
+	Logger.info(`Job role details page rendered for ID: ${req.params.id}`);
+	controller.getById(req, res);
+});
+
 export default router;

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getAllJobRoles } from "../services/jobRoleApiService";
+import { getAllJobRoles, getJobById } from "../services/jobRoleApiService";
 
 export class JobRoleController {
 	async getAll(_req: Request, res: Response): Promise<void> {
@@ -22,10 +22,33 @@ export class JobRoleController {
 			res.render("pages/job-role-list.njk", { jobRoles: jobRolesForView });
 		} catch (error) {
 			console.error("Error fetching job roles:", error);
-			res.status(500).render("pages/job-role-list.njk", {
+			res.status(500).render("pages/error.njk", {
 				jobRoles: [],
 				error: "Failed to load job roles. Please try again later.",
 			});
 		}
+	}
+
+	async getById(req: Request, res: Response): Promise<void> {
+		const id = Number(req.params.id);
+		if (Number.isNaN(id)) {
+			res.status(400).render("pages/error.njk", {
+				status: 400,
+				message: "Invalid job role ID",
+			});
+			return;
+		}
+
+		const job = await getJobById(id);
+		
+		if (!job) {
+			res.status(404).render("pages/not-found.njk", {
+				status: 404,
+				message: "Job role not found",
+			});
+			return;
+		}
+
+		res.render("pages/job-role-information.njk", { job });
 	}
 }
