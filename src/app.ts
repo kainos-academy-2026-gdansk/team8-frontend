@@ -1,7 +1,6 @@
 import express from "express";
 import nunjucks from "nunjucks";
 import morganMiddleware from "./config/morganMiddleware.js";
-import Logger from "./lib/logger.js";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import router from "./router/jobRoleRouter.js";
@@ -15,7 +14,7 @@ const projectRoot = process.cwd();
 nunjucks.configure(
 	[
 		path.join(projectRoot, "src", "views"),
- 		path.join(projectRoot, "node_modules", "govuk-frontend", "dist"),
+		path.join(projectRoot, "node_modules", "govuk-frontend", "dist"),
 	],
 	{
 		autoescape: true,
