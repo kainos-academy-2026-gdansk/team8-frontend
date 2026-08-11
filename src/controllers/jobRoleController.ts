@@ -13,7 +13,7 @@ export class JobRoleController {
 
 			const jobRolesForView = jobRoles.map((jobRole) => ({
 				...jobRole,
-				statusLabel: jobRole.status === "OPEN" ? "Open" : "Closed",
+				statusLabel: jobRole.status.name === "OPEN" ? "Open" : "Closed",
 				closingDateLabel: closingDateFormatter.format(
 					new Date(jobRole.closingDate),
 				),
@@ -40,7 +40,7 @@ export class JobRoleController {
 		}
 
 		const job = await getJobById(id);
-		
+
 		if (!job) {
 			res.status(404).render("pages/not-found.njk", {
 				status: 404,
@@ -49,6 +49,22 @@ export class JobRoleController {
 			return;
 		}
 
-		res.render("pages/job-role-information.njk", { job });
+		const closingDateFormatter = new Intl.DateTimeFormat("en-GB", {
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		});
+
+		const jobForView = {
+			...job,
+			statusLabel: job.status.name === "OPEN" ? "Open" : "Closed",
+			closingDateLabel: closingDateFormatter.format(new Date(job.closingDate)),
+			responsibilities: job.responsibilities
+				.split(";")
+				.map((responsibility) => responsibility.trim())
+				.filter(Boolean),
+		};
+
+		res.render("pages/job-role-information.njk", { job: jobForView });
 	}
 }

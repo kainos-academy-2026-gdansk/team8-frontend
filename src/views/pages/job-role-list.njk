@@ -17,7 +17,7 @@
               <h2 class="govuk-heading-m job-role-card__title">
                 <a class="job-role-card__link" href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a>
               </h2>
-              <strong class="govuk-tag job-role-card__status {% if jobRole.status == 'OPEN' %}job-role-card__status--open{% else %}job-role-card__status--closed{% endif %}">
+              <strong class="govuk-tag job-role-card__status {% if jobRole.status.name == 'OPEN' %}job-role-card__status--open{% else %}job-role-card__status--closed{% endif %}">
                 {{ jobRole.statusLabel }}
               </strong>
             </header>
