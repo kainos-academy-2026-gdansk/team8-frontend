@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { JobRoleController } from "../controllers/jobRoleController.js";
-import Logger from "../lib/logger.js";
-import { app } from "../app";
+import { JobRoleController } from "../controllers/jobRoleController";
+import Logger from "../lib/logger";
 
 const router = Router();
 const controller = new JobRoleController();

@@ -1,6 +1,6 @@
-import app from "./app.js";
-import "dotenv/config.js";
-import Logger from "./lib/logger.js";
+import app from "./app";
+import "dotenv/config";
+import Logger from "./lib/logger";
 
 const portFromEnv = process.env.PORT
 	? Number.parseInt(process.env.PORT, 10)

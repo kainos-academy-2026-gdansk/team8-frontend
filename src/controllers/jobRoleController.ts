@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
-import { getAllJobRoles } from "../services/jobRoleApiService.js";
+import { getAllJobRoles } from "../services/jobRoleApiService";
 
 export class JobRoleController {
-	async getAll(req: Request, res: Response): Promise<void> {
+	async getAll(_req: Request, res: Response): Promise<void> {
 		try {
 			const jobRoles = await getAllJobRoles();
 			const closingDateFormatter = new Intl.DateTimeFormat("en-GB", {

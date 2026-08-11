@@ -1,14 +1,11 @@
 import express from "express";
 import nunjucks from "nunjucks";
-import morganMiddleware from "./config/morganMiddleware.js";
-import path, { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import router from "./router/jobRoleRouter.js";
+import morganMiddleware from "./config/morganMiddleware";
+import path from "node:path";
+import router from "./router/jobRoleRouter";
 
 export const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const projectRoot = process.cwd();
 
 nunjucks.configure(
@@ -63,7 +60,7 @@ app.use(
 );
 
 app.use(
-	"/govuk-frontend.min.js",
+	"/govuk-frontend.min",
 	express.static(
 		path.join(
 			__dirname,
@@ -72,7 +69,7 @@ app.use(
 			"govuk-frontend",
 			"dist",
 			"govuk",
-			"govuk-frontend.min.js",
+			"govuk-frontend.min",
 		),
 	),
 );

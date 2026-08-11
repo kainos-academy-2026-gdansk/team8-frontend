@@ -1,6 +1,6 @@
 import axios from "axios";
-import apiClient from "../config/apiClient.js";
-import type { JobRole } from "../models/jobRole.js";
+import apiClient from "../config/apiClient";
+import type { JobRole } from "../models/jobRole";
 
 export async function getAllJobRoles(): Promise<JobRole[]> {
 	try {
@@ -9,7 +9,7 @@ export async function getAllJobRoles(): Promise<JobRole[]> {
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
-			if (status === 404) throw new Error("No job roles found");
+			if (status === 404) return [];
 			if (status === 500) throw new Error("Backend server error");
 		}
 		throw error;
