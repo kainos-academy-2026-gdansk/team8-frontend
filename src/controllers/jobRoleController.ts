@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getAllJobRoles } from "../services/jobRoleApiService";
+import { getAllJobRoles } from "../services/jobRoleApiService.js";
 
 export class JobRoleController {
 	async getAll(req: Request, res: Response): Promise<void> {

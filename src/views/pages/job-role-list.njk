@@ -4,7 +4,10 @@
 
 {% block content %}
   <h1 class="govuk-heading-l">All job roles</h1>
-
+  {% if error %}
+  <p class="govuk-body govuk-error-message">{{ error }}</p>
+  {% endif %}
+  
   {% if jobRoles.length > 0 %}
     <ul class="govuk-list job-role-list" aria-label="Job role listings">
       {% for jobRole in jobRoles %}
