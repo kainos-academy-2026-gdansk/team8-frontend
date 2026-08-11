@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" class="govuk-template">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-</head>
-<body>
-  <nav> navbar </nav>
-  {% block content %}{% endblock %}
-  <footer> footer </footer>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}JobRoles{% endblock %} - Kainos</title>
+    <link rel="stylesheet" href="/govuk-frontend.min.css" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="govuk-template__body">
+    <script>
+      document.body.className += " js-enabled";
+    </script>
+
+    {% include "partials/header.njk" %}
+
+    <div class="govuk-width-container">
+      <main class="govuk-main-wrapper" id="main-content" role="main">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    {% include "partials/footer.njk" %}
+
+    <script src="/govuk-frontend.min.js"></script>
+    <script>
+      window.GOVUKFrontend.initAll();
+    </script>
+  </body>
 </html>

@@ -1,0 +1,41 @@
+/* Buttons (primary/secondary/warning) */
+.govuk-button {
+  border-radius: var(--k-radius-md);
+  box-shadow: none;
+  font-family: var(--k-font-body);
+  font-weight: 700;
+  transition: background-color 120ms ease-in-out, transform 120ms ease-in-out;
+}
+
+.govuk-button:hover {
+  transform: translateY(-1px);
+}
+
+.govuk-button.govuk-button--primary,
+.govuk-button:not(.govuk-button--secondary):not(.govuk-button--warning) {
+  background: var(--k-btn-primary-bg);
+  color: var(--k-btn-primary-text);
+}
+
+.govuk-button.govuk-button--primary:hover,
+.govuk-button:not(.govuk-button--secondary):not(.govuk-button--warning):hover {
+  background: var(--k-btn-primary-hover);
+}
+
+.govuk-button--secondary {
+  background: var(--k-btn-secondary-bg);
+  color: var(--k-btn-secondary-text);
+}
+
+.govuk-button--secondary:hover {
+  background: var(--k-btn-secondary-hover);
+}
+
+.govuk-button--warning {
+  background: var(--k-btn-warning-bg);
+  color: var(--k-btn-warning-text);
+}
+
+.govuk-button--warning:hover {
+  background: var(--k-btn-warning-hover);
+}

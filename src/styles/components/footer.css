@@ -1,0 +1,184 @@
+/* Footer */
+.govuk-footer.kainos-footer {
+  border-top: 0;
+  background: linear-gradient(135deg, #2b4f48 0%, #324f63 45%, #2a3568 100%);
+  color: var(--k-color-white);
+  padding-top: 44px;
+  padding-bottom: 24px;
+}
+
+.govuk-footer.kainos-footer .govuk-width-container {
+  max-width: 1280px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__crown {
+  display: none;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__link {
+  color: rgb(255 255 255 / 0.94);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__link:hover {
+  color: var(--k-color-white);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__heading {
+  color: var(--k-color-white);
+  font-family: var(--k-font-body);
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__navigation {
+  margin-bottom: 72px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__section {
+  margin-bottom: 28px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__list {
+  margin: 0;
+  padding: 0;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__list-item {
+  font-size: 1rem;
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__section-break {
+  display: none;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__meta {
+  border-top: 0;
+  color: var(--k-color-white);
+}
+
+.govuk-footer.kainos-footer .govuk-footer__meta-item--grow {
+  flex-grow: 1;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__contact {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__brand {
+  flex: 0 0 auto;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__logo {
+  display: block;
+  width: 180px;
+  max-width: 100%;
+  height: auto;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__details {
+  max-width: 420px;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__city {
+  color: var(--k-color-white);
+  margin-bottom: 16px;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__label {
+  color: rgb(255 255 255 / 0.75);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__address {
+  color: var(--k-color-white);
+  line-height: 1.55;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__phone {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__social {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__social-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--k-color-white);
+}
+
+.govuk-footer.kainos-footer .kainos-footer__social-list {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.govuk-footer.kainos-footer .kainos-footer__social-link {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.govuk-footer.kainos-footer .govuk-footer__copyright-logo {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .govuk-footer.kainos-footer .kainos-footer__contact {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .govuk-footer.kainos-footer .kainos-footer__logo {
+    width: 220px;
+  }
+
+  .govuk-footer.kainos-footer .govuk-footer__heading {
+    font-size: 1.6rem;
+  }
+
+  .govuk-footer.kainos-footer .govuk-footer__list-item {
+    font-size: 1rem;
+  }
+
+  .govuk-footer.kainos-footer .kainos-footer__social-title {
+    font-size: 2rem;
+  }
+
+  .govuk-footer.kainos-footer .kainos-footer__city {
+    font-size: 2.2rem;
+  }
+}

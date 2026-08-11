@@ -1,0 +1,85 @@
+/* Job role list cards */
+.job-role-list {
+  margin: 0;
+  padding: 0;
+}
+
+.job-role-list__item {
+  margin-bottom: 20px;
+}
+
+.job-role-card {
+  border: 1px solid rgb(40 53 131 / 0.14);
+  border-radius: 16px;
+  background: var(--k-color-white);
+  box-shadow: 0 10px 30px rgb(40 53 131 / 0.08);
+  overflow: hidden;
+}
+
+.job-role-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 8px;
+}
+
+.job-role-card__title {
+  margin: 0;
+  color: #4356c2;
+  font-weight: 700;
+}
+
+.job-role-card__status {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 700;
+  padding: 6px 12px;
+}
+
+.job-role-card__status.job-role-card__status--open {
+  background: #d9f1e8;
+  color: #1f7a57;
+}
+
+.job-role-card__status.job-role-card__status--closed {
+  background: #f3d9d9;
+  color: #8e2323;
+}
+
+.job-role-card__location {
+  margin: 0;
+  padding: 0 18px;
+  color: #232f6a;
+  font-weight: 500;
+}
+
+.job-role-card__meta {
+  margin: 0;
+  padding: 10px 18px 18px;
+  color: #5f6794;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.job-role-card__meta-item {
+  font-weight: 500;
+}
+
+.job-role-card__meta-divider {
+  color: rgb(95 103 148 / 0.7);
+}
+
+.job-role-card__footer {
+  border-top: 1px solid rgb(40 53 131 / 0.12);
+  padding: 14px 18px;
+  color: #5f6794;
+  background: #fcfcff;
+}

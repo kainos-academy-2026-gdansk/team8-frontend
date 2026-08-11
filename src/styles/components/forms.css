@@ -1,0 +1,37 @@
+/* Form fields, labels, hints, errors */
+.govuk-label {
+  font-family: var(--k-font-body);
+  color: var(--k-text-primary);
+}
+
+.govuk-hint {
+  color: var(--k-text-secondary);
+}
+
+.govuk-input,
+.govuk-select,
+.govuk-textarea {
+  background: var(--k-field-bg);
+  border: 2px solid var(--k-field-border);
+  border-radius: var(--k-radius-sm);
+  color: var(--k-text-primary);
+}
+
+.govuk-input:focus,
+.govuk-select:focus,
+.govuk-textarea:focus {
+  border-color: var(--k-field-border-focus);
+  box-shadow: 0 0 0 3px rgb(207 214 0 / 0.5);
+  outline: 2px solid transparent;
+}
+
+.govuk-form-group--error .govuk-input,
+.govuk-form-group--error .govuk-select,
+.govuk-form-group--error .govuk-textarea {
+  border-color: var(--k-error);
+}
+
+.govuk-error-message {
+  color: var(--k-error);
+  font-weight: 700;
+}

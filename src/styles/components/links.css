@@ -1,0 +1,19 @@
+/* Links */
+.govuk-link {
+  color: var(--k-link);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.govuk-link:hover {
+  color: var(--k-link-hover);
+  text-decoration-thickness: 3px;
+}
+
+.govuk-link:visited {
+  color: var(--k-link-visited);
+}
+
+.govuk-link:active {
+  color: var(--k-link-hover);
+}

@@ -1,0 +1,26 @@
+/* Notifications and panels */
+.govuk-notification-banner {
+  border-color: var(--k-color-mid-blue);
+  border-radius: var(--k-radius-md);
+  box-shadow: var(--k-shadow-1);
+}
+
+.govuk-notification-banner__header {
+  background: var(--k-color-mid-blue);
+  color: var(--k-color-white);
+}
+
+.govuk-notification-banner__title {
+  color: var(--k-color-white);
+}
+
+.govuk-panel {
+  border-radius: var(--k-radius-lg);
+  background: var(--k-gradient-brand);
+  box-shadow: var(--k-shadow-2);
+}
+
+.govuk-panel__title,
+.govuk-panel__body {
+  color: var(--k-color-white);
+}
