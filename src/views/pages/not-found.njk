@@ -5,8 +5,7 @@
 {% block title %}Page Not Found{% endblock %}
 
 {% block content %}
-  <section class="kainos-error" aria-labelledby="not-found-title">
-    <p class="govuk-body-s kainos-error__code">Error {{ status or 404 }}</p>
+  <section class="kainos-error" aria-labelledby="not-found-title">    <p class="govuk-body-s kainos-error__code">Error {{ status or 404 }}</p>
     <h1 class="govuk-heading-xl kainos-error__title" id="not-found-title">
       {{ title or "Page not found" }}
     </h1>

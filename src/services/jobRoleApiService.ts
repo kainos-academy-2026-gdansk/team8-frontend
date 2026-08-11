@@ -1,6 +1,6 @@
 import axios from "axios";
 import apiClient from "../config/apiClient";
-import type { JobRole } from "../models/jobRole";
+import type { JobRole, JobRoleDetailed } from "../models/jobRole";
 
 export async function getAllJobRoles(): Promise<JobRole[]> {
 	try {
@@ -16,9 +16,9 @@ export async function getAllJobRoles(): Promise<JobRole[]> {
 	}
 }
 
-export async function getJobById(id: number): Promise<JobRole | null> {
+export async function getJobById(id: number): Promise<JobRoleDetailed | null> {
 	try {
-		const response = await apiClient.get<JobRole>(`/job-roles/${id}`);
+		const response = await apiClient.get<JobRoleDetailed>(`/job-roles/${id}`);
 		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

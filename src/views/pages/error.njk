@@ -5,8 +5,7 @@
 {% block title %}{{ status or 500 }} Error{% endblock %}
 
 {% block content %}
-  <section class="kainos-error" aria-labelledby="error-title">
-    <p class="govuk-body-s kainos-error__code">Error {{ status or 500 }}</p>
+  <section class="kainos-error" aria-labelledby="error-title">    <p class="govuk-body-s kainos-error__code">Error {{ status or 500 }}</p>
     <h1 class="govuk-heading-xl kainos-error__title" id="error-title">
       {{ title or "Something went wrong" }}
     </h1>

@@ -12,9 +12,11 @@
     <ul class="govuk-list job-role-list" aria-label="Job role listings">
       {% for jobRole in jobRoles %}
         <li class="job-role-list__item">
-          <article class="job-role-card">
+          <article class="job-role-card job-role-card--clickable">
             <header class="job-role-card__header">
-              <h2 class="govuk-heading-m job-role-card__title">{{ jobRole.roleName }}</h2>
+              <h2 class="govuk-heading-m job-role-card__title">
+                <a class="job-role-card__link" href="/job-roles/{{ jobRole.id }}">{{ jobRole.roleName }}</a>
+              </h2>
               <strong class="govuk-tag job-role-card__status {% if jobRole.status == 'OPEN' %}job-role-card__status--open{% else %}job-role-card__status--closed{% endif %}">
                 {{ jobRole.statusLabel }}
               </strong>
