@@ -8,76 +8,88 @@
 @import url("./styles/pages/job-role-list.css");
 
 :root {
-  /* Brand colors */
-  --k-color-blue: #283583;
-  --k-color-mid-blue: #41679f;
-  --k-color-green: #61a83f;
-  --k-color-dark-green: #004631;
-  --k-color-grey: #575756;
-  --k-color-orange: #ec6608;
-  --k-color-bright-green: #cfd600;
-  --k-color-bright-blue: #009fda;
-  --k-color-white: #ffffff;
+	/* Brand colors */
+	--k-color-blue: #283583;
+	--k-color-mid-blue: #41679f;
+	--k-color-green: #61a83f;
+	--k-color-dark-green: #004631;
+	--k-color-grey: #575756;
+	--k-color-orange: #ec6608;
+	--k-color-bright-green: #cfd600;
+	--k-color-bright-blue: #009fda;
+	--k-color-white: #ffffff;
 
-  /* Semantic tokens */
-  --k-bg-page: #ffffff;
-  --k-bg-surface: #f7f9fc;
-  --k-text-primary: #0b0c0c;
-  --k-text-secondary: #2d2d2d;
-  --k-border-default: #575756;
-  --k-focus-ring: #cfd600;
-  --k-focus-contrast: #0b0c0c;
+	/* Semantic tokens */
+	--k-bg-page: #ffffff;
+	--k-bg-surface: #f7f9fc;
+	--k-text-primary: #0b0c0c;
+	--k-text-secondary: #2d2d2d;
+	--k-border-default: #575756;
+	--k-focus-ring: #cfd600;
+	--k-focus-contrast: #0b0c0c;
 
-  --k-link: #283583;
-  --k-link-hover: #1d275e;
-  --k-link-visited: #004631;
+	--k-link: #283583;
+	--k-link-hover: #1d275e;
+	--k-link-visited: #004631;
 
-  --k-btn-primary-bg: #283583;
-  --k-btn-primary-text: #ffffff;
-  --k-btn-primary-hover: #1d275e;
+	--k-btn-primary-bg: #283583;
+	--k-btn-primary-text: #ffffff;
+	--k-btn-primary-hover: #1d275e;
 
-  --k-btn-secondary-bg: #41679f;
-  --k-btn-secondary-text: #ffffff;
-  --k-btn-secondary-hover: #2f4f80;
+	--k-btn-secondary-bg: #41679f;
+	--k-btn-secondary-text: #ffffff;
+	--k-btn-secondary-hover: #2f4f80;
 
-  --k-btn-warning-bg: #ec6608;
-  --k-btn-warning-text: #0b0c0c;
-  --k-btn-warning-hover: #c55507;
+	--k-btn-warning-bg: #ec6608;
+	--k-btn-warning-text: #0b0c0c;
+	--k-btn-warning-hover: #c55507;
 
-  --k-field-bg: #ffffff;
-  --k-field-border: #575756;
-  --k-field-border-focus: #283583;
-  --k-error: #b10e1e;
+	--k-field-bg: #ffffff;
+	--k-field-border: #575756;
+	--k-field-border-focus: #283583;
+	--k-error: #b10e1e;
 
-  --k-radius-sm: 4px;
-  --k-radius-md: 8px;
-  --k-radius-lg: 14px;
+	--k-radius-sm: 4px;
+	--k-radius-md: 8px;
+	--k-radius-lg: 14px;
 
-  --k-space-1: 4px;
-  --k-space-2: 8px;
-  --k-space-3: 12px;
-  --k-space-4: 16px;
-  --k-space-5: 24px;
-  --k-space-6: 32px;
+	--k-space-1: 4px;
+	--k-space-2: 8px;
+	--k-space-3: 12px;
+	--k-space-4: 16px;
+	--k-space-5: 24px;
+	--k-space-6: 32px;
 
-  --k-shadow-1: 0 1px 2px rgb(0 0 0 / 0.12);
-  --k-shadow-2: 0 8px 24px rgb(40 53 131 / 0.16);
+	--k-shadow-1: 0 1px 2px rgb(0 0 0 / 0.12);
+	--k-shadow-2: 0 8px 24px rgb(40 53 131 / 0.16);
 
-  --k-gradient-brand: linear-gradient(45deg, #004631 0%, #61a83f 35%, #41679f 68%, #283583 100%);
+	--k-gradient-brand: linear-gradient(
+		45deg,
+		#004631 0%,
+		#61a83f 35%,
+		#41679f 68%,
+		#283583 100%
+	);
 
-  --k-font-body: "Galano Grotesque", "Century Gothic", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --k-font-display: "Foundry Gridnik", "Century Gothic", "Avenir Next Condensed", "Helvetica Neue", Arial, sans-serif;
+	--k-font-body:
+		"Galano Grotesque", "Century Gothic", "Avenir Next", "Helvetica Neue",
+		Arial, sans-serif;
+	--k-font-display:
+		"Foundry Gridnik", "Century Gothic", "Avenir Next Condensed",
+		"Helvetica Neue", Arial, sans-serif;
 }
 
 /* Global base (token usage only, no markup changes) */
 body.govuk-template__body {
-  background: radial-gradient(circle at 0% 0%, rgb(97 168 63 / 0.08), transparent 40%), var(--k-bg-page);
-  color: var(--k-text-primary);
-  font-family: var(--k-font-body);
+	background:
+		radial-gradient(circle at 0% 0%, rgb(97 168 63 / 0.08), transparent 40%),
+		var(--k-bg-page);
+	color: var(--k-text-primary);
+	font-family: var(--k-font-body);
 }
 
 .govuk-width-container {
-  max-width: 1120px;
+	max-width: 1120px;
 }
 
 /* Shared visible focus for all interactive controls */
@@ -88,7 +100,7 @@ select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible,
 [tabindex]:focus-visible {
-  outline: 3px solid var(--k-focus-ring);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 1px var(--k-focus-contrast);
+	outline: 3px solid var(--k-focus-ring);
+	outline-offset: 2px;
+	box-shadow: 0 0 0 1px var(--k-focus-contrast);
 }

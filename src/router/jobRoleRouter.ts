@@ -1,4 +1,4 @@
-import {Router} from "express";
+import { Router } from "express";
 import { JobRoleController } from "../controllers/jobRoleController";
 
 const router = Router();
@@ -9,6 +9,5 @@ router.get("/", (_req, res) => {
 });
 
 router.get("/job-roles", (req, res) => controller.getAll(req, res));
-
 
 export default router;

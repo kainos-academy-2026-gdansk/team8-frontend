@@ -99,7 +99,9 @@ export class JobRoleService {
 	}
 
 	private withRelations(role: JobRole): JobRoleWithRelations | undefined {
-		const capability = this.capabilities.find((item) => item.id === role.capabilityId);
+		const capability = this.capabilities.find(
+			(item) => item.id === role.capabilityId,
+		);
 		const band = this.bands.find((item) => item.id === role.bandId);
 
 		if (!capability || !band) return undefined;

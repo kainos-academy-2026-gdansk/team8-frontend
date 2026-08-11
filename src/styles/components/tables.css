@@ -1,35 +1,35 @@
 /* Tables */
 .govuk-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid rgb(40 53 131 / 0.2);
-  border-radius: var(--k-radius-md);
-  overflow: hidden;
-  box-shadow: var(--k-shadow-1);
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid rgb(40 53 131 / 0.2);
+	border-radius: var(--k-radius-md);
+	overflow: hidden;
+	box-shadow: var(--k-shadow-1);
 }
 
 .govuk-table__head {
-  background: var(--k-color-blue);
+	background: var(--k-color-blue);
 }
 
 .govuk-table__header {
-  color: var(--k-color-white);
-  border-bottom: 0;
+	color: var(--k-color-white);
+	border-bottom: 0;
 }
 
 .govuk-table__row:nth-child(even) .govuk-table__cell {
-  background: var(--k-bg-surface);
+	background: var(--k-bg-surface);
 }
 
 .govuk-table__cell {
-  border-bottom: 1px solid rgb(87 87 86 / 0.25);
-  color: var(--k-text-primary);
+	border-bottom: 1px solid rgb(87 87 86 / 0.25);
+	color: var(--k-text-primary);
 }
 
 @media (min-width: 48rem) {
-  .govuk-table__header,
-  .govuk-table__cell {
-    padding-top: 14px;
-    padding-bottom: 14px;
-  }
+	.govuk-table__header,
+	.govuk-table__cell {
+		padding-top: 14px;
+		padding-bottom: 14px;
+	}
 }

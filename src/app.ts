@@ -24,10 +24,7 @@ nunjucks.configure(
 	},
 );
 
-app.use(
-	"/assets",
-	express.static(path.join(projectRoot, "src", "assets")),
-);
+app.use("/assets", express.static(path.join(projectRoot, "src", "assets")));
 
 app.use(
 	"/assets",
@@ -49,10 +46,7 @@ app.use(
 	express.static(path.join(projectRoot, "src", "styles.css")),
 );
 
-app.use(
-	"/styles",
-	express.static(path.join(projectRoot, "src", "styles")),
-);
+app.use("/styles", express.static(path.join(projectRoot, "src", "styles")));
 
 app.use(
 	"/govuk-frontend.min.css",
