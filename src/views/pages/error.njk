@@ -1,0 +1,26 @@
+{% extends "layouts/base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block title %}{{ status or 500 }} Error{% endblock %}
+
+{% block content %}
+  <section class="kainos-error" aria-labelledby="error-title">    <p class="govuk-body-s kainos-error__code">Error {{ status or 500 }}</p>
+    <h1 class="govuk-heading-xl kainos-error__title" id="error-title">
+      {{ title or "Something went wrong" }}
+    </h1>
+    <p class="govuk-body-l kainos-error__description">
+      {{ message or "An unexpected error happened while loading this page. Please try again." }}
+    </p>
+
+    <div class="kainos-error__actions">
+      {{ govukButton({
+        text: "Return to homepage",
+        href: "/"
+      }) }}
+      <a class="govuk-link kainos-error__secondary-link" href="/job-roles">
+        Browse job roles
+      </a>
+    </div>
+  </section>
+{% endblock %}

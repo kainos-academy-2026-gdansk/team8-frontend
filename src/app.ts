@@ -1,6 +1,8 @@
 import express from "express";
 import nunjucks from "nunjucks";
 import morganMiddleware from "./config/morganMiddleware";
+import { errorMiddleware } from "./config/errorMiddleware";
+import { notFoundMiddleware } from "./config/notFoundMiddleware";
 import path from "node:path";
 import router from "./router/jobRoleRouter";
 
@@ -80,5 +82,8 @@ app.use(morganMiddleware);
 app.use(express.urlencoded({ extended: true }));
 
 app.use(router);
+
+app.use(notFoundMiddleware);
+app.use(errorMiddleware);
 
 export default app;

@@ -16,6 +16,43 @@
 	overflow: hidden;
 }
 
+.job-role-card--clickable {
+	position: relative;
+	transition:
+		box-shadow 0.15s ease,
+		transform 0.15s ease;
+}
+
+.job-role-card--clickable:hover {
+	box-shadow: 0 14px 34px rgb(40 53 131 / 0.14);
+	transform: translateY(-2px);
+}
+
+.job-role-card--clickable:focus-within {
+	outline: 3px solid var(--k-focus-ring);
+	outline-offset: 2px;
+}
+
+.job-role-card__link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.job-role-card__link:hover,
+.job-role-card__link:visited {
+	color: inherit;
+}
+
+.job-role-card__link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+.job-role-card__link:focus {
+	outline: none;
+}
+
 .job-role-card__header {
 	display: flex;
 	flex-wrap: wrap;

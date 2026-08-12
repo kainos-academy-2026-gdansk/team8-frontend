@@ -1,0 +1,61 @@
+{% extends "layouts/base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block title %}{{ job.roleName }}{% endblock %}
+
+{% block content %}
+  <a class="govuk-back-link" href="/job-roles">Back to job roles</a>
+
+  <article class="job-role-detail">
+    <header class="job-role-detail__header">
+      <h1 class="govuk-heading-l job-role-detail__title">{{ job.roleName }}</h1>
+      <strong class="govuk-tag job-role-detail__status {% if job.status.name == 'OPEN' %}job-role-detail__status--open{% else %}job-role-detail__status--closed{% endif %}">
+        {{ job.statusLabel }}
+      </strong>
+    </header>
+
+    <p class="govuk-body-l job-role-detail__location">{{ job.location }}</p>
+
+    <p class="govuk-body job-role-detail__meta">
+      <span class="job-role-detail__meta-item">{{ job.capability.name }}</span>
+      <span class="job-role-detail__meta-divider" aria-hidden="true">&bull;</span>
+      <span class="job-role-detail__meta-item">{{ job.band.name }}</span>
+    </p>
+
+    <dl class="govuk-body job-role-detail__facts">
+      <div class="job-role-detail__fact">
+        <dt>Closing date</dt>
+        <dd>{{ job.closingDateLabel }}</dd>
+      </div>
+      <div class="job-role-detail__fact">
+        <dt>Open positions</dt>
+        <dd>{{ job.numberOfOpenPositions }}</dd>
+      </div>
+    </dl>
+
+    <section class="job-role-detail__section" aria-labelledby="description-heading">
+      <h2 class="govuk-heading-m" id="description-heading">Description</h2>
+      <p class="govuk-body">{{ job.description }}</p>
+    </section>
+
+    {% if job.responsibilities.length > 0 %}
+    <section class="job-role-detail__section" aria-labelledby="responsibilities-heading">
+      <h2 class="govuk-heading-m" id="responsibilities-heading">Key responsibilities</h2>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for responsibility in job.responsibilities %}
+          <li>{{ responsibility }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <div class="job-role-detail__actions">
+      {{ govukButton({
+        text: "Apply for this role",
+        href: job.sharepointUrl,
+        disabled: job.status.name != 'OPEN'
+      }) }}
+    </div>
+  </article>
+{% endblock %}

@@ -1,0 +1,87 @@
+/* Error and not-found page styling */
+.kainos-error {
+	position: relative;
+	max-width: 640px;
+	margin: 20px auto;
+	padding: 32px 28px;
+	border: 1px solid rgb(40 53 131 / 0.14);
+	border-radius: var(--k-radius-lg);
+	background:
+		linear-gradient(150deg, rgb(97 168 63 / 0.08), rgb(65 103 159 / 0.05)),
+		var(--k-color-white);
+	box-shadow: 0 12px 28px rgb(40 53 131 / 0.08);
+	text-align: center;
+	overflow: hidden;
+}
+
+.kainos-error::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 6px;
+	background: var(--k-gradient-brand);
+}
+
+.kainos-error__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 16px;
+	border-radius: 50%;
+	background: var(--k-gradient-brand);
+	color: var(--k-color-white);
+	box-shadow: var(--k-shadow-2);
+}
+
+.kainos-error__code {
+	display: inline-block;
+	margin-bottom: 12px;
+	padding: 4px 10px;
+	border-radius: var(--k-radius-sm);
+	background: rgb(40 53 131 / 0.1);
+	color: var(--k-color-blue);
+	font-weight: 700;
+	font-size: 0.95rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.kainos-error__title {
+	margin-bottom: 12px;
+	color: var(--k-color-blue);
+	font-family: var(--k-font-display);
+}
+
+.kainos-error__description {
+	margin: 0 auto 18px;
+	max-width: 48ch;
+	color: var(--k-text-secondary);
+}
+
+.kainos-error__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-top: 22px;
+}
+
+.kainos-error__actions .govuk-button {
+	margin-bottom: 0;
+}
+
+.kainos-error__secondary-link {
+	font-weight: 700;
+}
+
+@media (min-width: 48rem) {
+	.kainos-error {
+		padding: 44px 48px;
+		margin: 48px auto;
+	}
+}

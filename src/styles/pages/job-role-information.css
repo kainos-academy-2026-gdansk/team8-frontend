@@ -1,0 +1,95 @@
+/* Job role detail page */
+.job-role-detail {
+	max-width: 780px;
+	margin: 0 auto;
+	padding: 24px 0;
+}
+
+.job-role-detail__header {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.job-role-detail__title {
+	margin: 0;
+	color: #4356c2;
+	font-weight: 700;
+}
+
+.job-role-detail__status {
+	border: 0;
+	border-radius: 8px;
+	box-shadow: none;
+	font-size: 0.95rem;
+	letter-spacing: 0;
+	text-transform: none;
+	font-weight: 700;
+	padding: 6px 12px;
+}
+
+.job-role-detail__status.job-role-detail__status--open {
+	background: #d9f1e8;
+	color: #1f7a57;
+}
+
+.job-role-detail__status.job-role-detail__status--closed {
+	background: #f3d9d9;
+	color: #8e2323;
+}
+
+.job-role-detail__location {
+	margin: 8px 0 0;
+	color: #232f6a;
+	font-weight: 500;
+}
+
+.job-role-detail__meta {
+	margin: 8px 0 0;
+	color: #5f6794;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.job-role-detail__meta-item {
+	font-weight: 500;
+}
+
+.job-role-detail__meta-divider {
+	color: rgb(95 103 148 / 0.7);
+}
+
+.job-role-detail__facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	margin: 24px 0 0;
+	padding: 16px 18px;
+	border: 1px solid rgb(40 53 131 / 0.14);
+	border-radius: 12px;
+	background: #fcfcff;
+}
+
+.job-role-detail__fact dt {
+	margin: 0;
+	color: #5f6794;
+	font-size: 0.9rem;
+}
+
+.job-role-detail__fact dd {
+	margin: 4px 0 0;
+	color: #232f6a;
+	font-weight: 700;
+}
+
+.job-role-detail__section {
+	margin-top: 32px;
+}
+
+.job-role-detail__actions {
+	margin-top: 32px;
+}
