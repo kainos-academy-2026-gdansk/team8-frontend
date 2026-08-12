@@ -19,7 +19,9 @@ export interface JobRole {
 	id: number;
 	roleName: string;
 	location: string;
+	capabilityId: number;
 	capability: Capability;
+	bandId: number;
 	band: Band;
 	closingDate: Date;
 	status: Status;

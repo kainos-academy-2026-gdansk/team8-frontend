@@ -1,13 +1,5 @@
-import express from "express";
+import type express from "express";
 import Logger from "../lib/logger";
-
-export const notFoundMiddleware = (_req: express.Request, res: express.Response) => {
-	res.status(404).render("pages/not-found.njk", {
-		status: 404,
-		title: "Page not found",
-		message: `We could not find ${_req.originalUrl}. Check the URL or continue from the homepage.`,
-	});
-};
 
 export const errorMiddleware = (
 	err: Error,
