@@ -89,6 +89,10 @@ export class RegisterController {
 				confirmPassword: validation.data.confirmPassword,
 			});
 
+			// TODO: For later:
+			// Redirect to login page
+			// res.redirect(303, "/login");
+
 			renderRegister(res, 201, {
 				values: { ...EMPTY_VALUES },
 				errors: {},
