@@ -9,6 +9,7 @@
 @import url("./styles/pages/register.css");
 @import url("./styles/pages/job-role-information.css");
 @import url("./styles/pages/error-pages.css");
+@import url("./styles/pages/login.css");
 
 :root {
 	/* Brand colors */

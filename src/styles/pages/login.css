@@ -1,0 +1,149 @@
+.login-page {
+	position: relative;
+	isolation: isolate;
+	padding: var(--k-space-6) 0;
+}
+
+.login-page::before,
+.login-page::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	pointer-events: none;
+}
+
+.login-page::before {
+	top: -32px;
+	left: -12px;
+	width: 240px;
+	height: 240px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgb(0 159 218 / 0.28) 0%, rgb(0 159 218 / 0) 70%);
+}
+
+.login-page::after {
+	right: -24px;
+	bottom: -24px;
+	width: 260px;
+	height: 260px;
+	border-radius: 24px;
+	transform: rotate(14deg);
+	background: linear-gradient(165deg, rgb(40 53 131 / 0.14), rgb(97 168 63 / 0.04));
+}
+
+.login-page__grid {
+	display: grid;
+	grid-template-columns: minmax(260px, 1fr) minmax(320px, 460px);
+	gap: var(--k-space-6);
+	align-items: stretch;
+}
+
+.login-page__intro {
+	background: linear-gradient(145deg, rgb(40 53 131 / 0.96), rgb(0 70 49 / 0.96));
+	border-radius: var(--k-radius-lg);
+	padding: clamp(24px, 4vw, 40px);
+	color: var(--k-color-white);
+	box-shadow: var(--k-shadow-2);
+}
+
+.login-page__kicker {
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	font-weight: 700;
+	opacity: 0.95;
+	margin-bottom: var(--k-space-4);
+}
+
+.login-page__title {
+	font-family: var(--k-font-display);
+	font-size: clamp(2rem, 3.4vw, 3rem);
+	line-height: 1.05;
+	color: var(--k-color-white);
+	margin-bottom: var(--k-space-4);
+}
+
+.login-page__lead {
+	color: rgb(255 255 255 / 0.95);
+	max-width: 36ch;
+	margin-bottom: var(--k-space-5);
+}
+
+.login-page__feature-list {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--k-space-3);
+}
+
+.login-page__feature-list li {
+	position: relative;
+	padding-left: 24px;
+	color: rgb(255 255 255 / 0.96);
+}
+
+.login-page__feature-list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.54em;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--k-color-bright-green);
+	box-shadow: 0 0 0 3px rgb(255 255 255 / 0.14);
+}
+
+.login-page__card {
+	background: var(--k-color-white);
+	border: 1px solid rgb(87 87 86 / 0.18);
+	border-radius: var(--k-radius-lg);
+	box-shadow: var(--k-shadow-2);
+	padding: clamp(22px, 3.3vw, 36px);
+	align-self: center;
+}
+
+.login-page__card-title {
+	font-family: var(--k-font-display);
+	font-size: clamp(1.4rem, 2.2vw, 2rem);
+	margin-bottom: var(--k-space-2);
+}
+
+.login-page__card-copy {
+	margin-bottom: var(--k-space-5);
+}
+
+.login-page__form {
+	display: grid;
+	gap: var(--k-space-2);
+}
+
+.login-page__form .govuk-input {
+	min-height: 48px;
+}
+
+.login-page__meta-links {
+	margin-top: var(--k-space-5);
+	display: grid;
+	gap: var(--k-space-2);
+}
+
+@media (max-width: 900px) {
+	.login-page {
+		padding-top: var(--k-space-5);
+	}
+
+	.login-page__grid {
+		grid-template-columns: 1fr;
+		gap: var(--k-space-5);
+	}
+
+	.login-page__intro {
+		padding: 24px;
+	}
+
+	.login-page__card {
+		max-width: 640px;
+		width: 100%;
+		margin: 0 auto;
+	}
+}

@@ -5,6 +5,7 @@ import { errorMiddleware } from "./config/errorMiddleware";
 import { notFoundMiddleware } from "./config/notFoundMiddleware";
 import path from "node:path";
 import jobRoleRouter from "./router/jobRoleRouter";
+import session from "express-session";
 import authRouter from "./router/authRouter";
 
 export const app = express();
@@ -77,10 +78,27 @@ app.use(
 	),
 );
 
-app.use(express.json());
-app.use(morganMiddleware);
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET ?? "dev-session-secret",
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 1000 * 60 * 60,
+		},
+	}),
+);
+
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	next();
+});
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(morganMiddleware);
 
 app.use(authRouter);
 app.use(jobRoleRouter);

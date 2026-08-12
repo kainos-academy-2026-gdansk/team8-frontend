@@ -1,26 +1,49 @@
 import type { Request, Response } from "express";
 import {
+	buildPagination,
+	formatJobRoleDetailedForView,
+	formatJobRoleForView,
 	getAllJobRoles,
 	getJobById,
-	formatJobRoleForView,
-	formatJobRoleDetailedForView,
-	buildPagination,
 } from "../services/jobRoleApiService";
 import { jobRolePaginationQuerySchema } from "../models/jobRole";
 import Logger from "../lib/logger";
 
 export class JobRoleController {
+	private getJwtToken(req: Request): string | undefined {
+		return req.session.jwtToken;
+	}
+
+	private handleUnauthorized(
+		req: Request,
+		res: Response,
+		error: unknown,
+	): boolean {
+		if (error instanceof Error && error.message === "Unauthorized") {
+			req.session.jwtToken = undefined;
+			res.redirect("/login");
+			return true;
+		}
+
+		return false;
+	}
+
 	async getAll(req: Request, res: Response): Promise<void> {
 		try {
 			const { limit, offset } = jobRolePaginationQuerySchema.parse(req.query);
-			let jobRolePage = await getAllJobRoles(limit, offset);
+			const jwtToken = this.getJwtToken(req);
+			let jobRolePage = jwtToken
+				? await getAllJobRoles(limit, offset, jwtToken)
+				: await getAllJobRoles(limit, offset);
 			let pageError: string | undefined;
 			let pagination = buildPagination(jobRolePage);
 
 			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
-				jobRolePage = await getAllJobRoles(limit, pagination.lastOffset);
+				jobRolePage = jwtToken
+					? await getAllJobRoles(limit, pagination.lastOffset, jwtToken)
+					: await getAllJobRoles(limit, pagination.lastOffset);
 				pagination = buildPagination(jobRolePage);
 			}
 
@@ -32,6 +55,10 @@ export class JobRoleController {
 				pageError,
 			});
 		} catch (error) {
+			if (this.handleUnauthorized(req, res, error)) {
+				return;
+			}
+
 			Logger.error("Error fetching job roles", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,
@@ -52,7 +79,10 @@ export class JobRoleController {
 				return;
 			}
 
-			const job = await getJobById(id);
+			const jwtToken = this.getJwtToken(req);
+			const job = jwtToken
+				? await getJobById(id, jwtToken)
+				: await getJobById(id);
 
 			if (!job) {
 				res.status(404).render("pages/not-found.njk", {
@@ -65,6 +95,10 @@ export class JobRoleController {
 			const jobForView = formatJobRoleDetailedForView(job);
 			res.render("pages/job-role-information.njk", { job: jobForView });
 		} catch (error) {
+			if (this.handleUnauthorized(req, res, error)) {
+				return;
+			}
+
 			Logger.error("Error fetching job role", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,

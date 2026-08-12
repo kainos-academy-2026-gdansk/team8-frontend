@@ -25,14 +25,22 @@ function emptyJobRolePage(limit: number, offset: number): JobRolePage {
 	};
 }
 
+function authHeaders(token: string): { Authorization: string } {
+	return { Authorization: `Bearer ${token}` };
+}
+
 export async function getAllJobRoles(
 	limit = JOB_ROLES_PAGE_SIZE,
 	offset = 0,
+	token?: string,
 ): Promise<JobRolePage> {
 	try {
+		const requestConfig = token
+			? { params: { limit, offset }, headers: authHeaders(token) }
+			: { params: { limit, offset } };
 		const response = await apiClient.get<PaginatedJobRolesResponse>(
 			"/job-roles",
-			{ params: { limit, offset } },
+			requestConfig,
 		);
 		return {
 			jobRoles: response.data.data,
@@ -44,6 +52,7 @@ export async function getAllJobRoles(
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
 			if (status === 404) return emptyJobRolePage(limit, offset);
+			if (status === 401) throw new Error("Unauthorized");
 			if (status === 500) throw new Error("Backend server error");
 		}
 		throw error;
@@ -140,14 +149,22 @@ export function buildPagination({
 	};
 }
 
-export async function getJobById(id: number): Promise<JobRoleDetailed | null> {
+export async function getJobById(
+	id: number,
+	token?: string,
+): Promise<JobRoleDetailed | null> {
 	try {
-		const response = await apiClient.get<JobRoleDetailed>(`/job-roles/${id}`);
+		const requestConfig = token ? { headers: authHeaders(token) } : undefined;
+		const response = await apiClient.get<JobRoleDetailed>(
+			`/job-roles/${id}`,
+			requestConfig,
+		);
 		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
 			if (status === 404) return null;
+			if (status === 401) throw new Error("Unauthorized");
 			if (status === 500) throw new Error("Backend server error");
 		}
 		throw error;

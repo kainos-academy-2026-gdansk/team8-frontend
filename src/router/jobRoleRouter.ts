@@ -2,6 +2,7 @@ import { Router } from "express";
 import { JobRoleController } from "../controllers/jobRoleController";
 import { RegisterController } from "../controllers/registerController";
 import Logger from "../lib/logger";
+import { requireAuth } from "../middleware/authMiddleware";
 
 const router = Router();
 const controller = new JobRoleController();
@@ -17,6 +18,8 @@ router.get("/", (_req, res) => {
 	res.render("pages/index.njk", { message: "Hello world!" });
 });
 
+// router.use("/job-roles");
+
 router.get("/job-roles", (req, res) => {
 	Logger.info("Job roles page rendered");
 	controller.getAll(req, res);
@@ -29,6 +32,11 @@ router.get("/job-roles/:id", async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+});
+
+router.get("/user-profile", requireAuth, (_req, res) => {
+	Logger.info("User profile page rendered");
+	res.render("pages/user-profile.njk");
 });
 
 export default router;

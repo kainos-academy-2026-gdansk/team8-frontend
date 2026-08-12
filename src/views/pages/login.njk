@@ -1,0 +1,100 @@
+{% extends "layouts/base.njk" %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block content %}
+	<section class="login-page" aria-labelledby="login-page-title">
+		<div class="login-page__grid">
+			<aside class="login-page__intro" aria-hidden="true">
+				<p class="govuk-body-s login-page__kicker">Kainos Talent Platform</p>
+				<h1 class="govuk-heading-l login-page__title" id="login-page-title">Sign in</h1>
+				<p class="govuk-body login-page__lead">
+					Access job role pipelines, track recruitment progress, and collaborate with your hiring team.
+				</p>
+				<ul class="govuk-list login-page__feature-list">
+					<li>Role and vacancy visibility</li>
+					<li>Structured hiring workflows</li>
+					<li>Unified updates for recruiters</li>
+				</ul>
+			</aside>
+
+			<div class="login-page__card">
+				<h2 class="govuk-heading-m login-page__card-title">Welcome back</h2>
+				<p class="govuk-body login-page__card-copy">Use your work account credentials to continue.</p>
+
+				{% if error %}
+					<div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="login-error-summary-title">
+						<h2 class="govuk-error-summary__title" id="login-error-summary-title">There is a problem</h2>
+						<div class="govuk-error-summary__body">
+							<ul class="govuk-list govuk-error-summary__list">
+								<li><a href="#email">{{ error }}</a></li>
+							</ul>
+						</div>
+					</div>
+				{% endif %}
+
+				<form class="login-page__form" action="/login" method="post" novalidate>
+					{% if csrfToken %}
+						<input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+					{% endif %}
+
+					<div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">
+						<label class="govuk-label govuk-label--m" for="email">Work email</label>
+						<div id="email-hint" class="govuk-hint">Use your company email address.</div>
+						{% if error %}
+							<p id="email-error" class="govuk-error-message">
+								<span class="govuk-visually-hidden">Error:</span> {{ error }}
+							</p>
+						{% endif %}
+						<input
+							class="govuk-input govuk-!-width-full"
+							id="email"
+							name="email"
+							type="email"
+							autocomplete="username"
+							spellcheck="false"
+							value="{{ email or '' }}"
+							aria-describedby="email-hint {% if error %}email-error{% endif %}"
+							{% if error %}aria-invalid="true"{% endif %}
+							required
+						/>
+					</div>
+
+					<div class="govuk-form-group {% if passwordError %}govuk-form-group--error{% endif %}">
+						<label class="govuk-label govuk-label--m" for="password">Password</label>
+						{% if passwordError %}
+							<p id="password-error" class="govuk-error-message">
+								<span class="govuk-visually-hidden">Error:</span> {{ passwordError }}
+							</p>
+						{% endif %}
+						<input
+							class="govuk-input govuk-!-width-full"
+							id="password"
+							name="password"
+							type="password"
+							autocomplete="current-password"
+							{% if passwordError %}aria-describedby="password-error" aria-invalid="true"{% endif %}
+							required
+						/>
+					</div>
+
+					<div class="govuk-checkboxes govuk-!-margin-bottom-5" data-module="govuk-checkboxes">
+						<div class="govuk-checkboxes__item">
+							<input class="govuk-checkboxes__input" id="remember-me" name="rememberMe" type="checkbox" value="true" {% if rememberMe %}checked{% endif %} />
+							<label class="govuk-label govuk-checkboxes__label" for="remember-me">Keep me signed in for 7 days</label>
+						</div>
+					</div>
+
+					<button class="govuk-button govuk-!-width-full" data-module="govuk-button" type="submit">
+						Sign in
+					</button>
+				</form>
+
+				<div class="login-page__meta-links">
+					<a class="govuk-link" href="#">Forgot your password?</a>
+					<a class="govuk-link" href="#">Need access? Contact IT support</a>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
