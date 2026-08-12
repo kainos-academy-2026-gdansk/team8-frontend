@@ -1,7 +1,8 @@
 import express from "express";
 import nunjucks from "nunjucks";
 import morganMiddleware from "./config/morganMiddleware";
-import { notFoundMiddleware, errorMiddleware } from "./config/errorMiddleware";
+import { errorMiddleware } from "./config/errorMiddleware";
+import { notFoundMiddleware } from "./config/notFoundMiddleware";
 import path from "node:path";
 import router from "./router/jobRoleRouter";
 
