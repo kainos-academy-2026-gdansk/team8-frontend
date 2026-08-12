@@ -1,0 +1,41 @@
+/* Register page */
+.register-page {
+	display: flex;
+	justify-content: center;
+}
+
+.register-page__panel {
+	width: 100%;
+	max-width: 760px;
+	padding: 32px;
+	border: 1px solid rgb(40 53 131 / 0.14);
+	border-radius: 16px;
+	background:
+		linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 1)),
+		radial-gradient(circle at 100% 0%, rgb(0 159 218 / 0.06), transparent 42%);
+	box-shadow: 0 10px 30px rgb(40 53 131 / 0.08);
+}
+
+.register-page__title {
+	margin-bottom: 8px;
+	color: #283583;
+}
+
+.register-page__intro {
+	margin-bottom: 24px;
+	max-width: 56ch;
+}
+
+.register-form {
+	margin-top: 4px;
+}
+
+.register-form .govuk-form-group {
+	margin-bottom: 24px;
+}
+
+@media (width <= 48rem) {
+	.register-page__panel {
+		padding: 20px;
+	}
+}

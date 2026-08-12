@@ -6,6 +6,7 @@
 @import url("./styles/components/tables.css");
 @import url("./styles/components/footer.css");
 @import url("./styles/pages/job-role-list.css");
+@import url("./styles/pages/register.css");
 
 :root {
 	/* Brand colors */

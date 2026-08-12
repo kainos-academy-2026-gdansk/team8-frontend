@@ -60,7 +60,7 @@ app.use(
 );
 
 app.use(
-	"/govuk-frontend.min",
+	"/govuk-frontend.min.js",
 	express.static(
 		path.join(
 			__dirname,
@@ -69,7 +69,7 @@ app.use(
 			"govuk-frontend",
 			"dist",
 			"govuk",
-			"govuk-frontend.min",
+			"govuk-frontend.min.js",
 		),
 	),
 );
