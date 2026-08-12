@@ -2,7 +2,7 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% block title %}Page Not Found{% endblock %}
+{% block title %}{{ title or "Page not found" }}{% endblock %}
 
 {% block content %}
   <section class="kainos-error" aria-labelledby="not-found-title">    <p class="govuk-body-s kainos-error__code">Error {{ status or 404 }}</p>
