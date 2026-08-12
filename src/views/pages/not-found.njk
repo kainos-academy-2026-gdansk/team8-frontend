@@ -1,0 +1,26 @@
+{% extends "layouts/base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block title %}{{ title or "Page not found" }}{% endblock %}
+
+{% block content %}
+  <section class="kainos-error" aria-labelledby="not-found-title">    <p class="govuk-body-s kainos-error__code">Error {{ status or 404 }}</p>
+    <h1 class="govuk-heading-xl kainos-error__title" id="not-found-title">
+      {{ title or "Page not found" }}
+    </h1>
+    <p class="govuk-body-l kainos-error__description">
+      {{ message or "The page you are looking for does not exist or may have moved." }}
+    </p>
+
+    <div class="kainos-error__actions">
+      {{ govukButton({
+        text: "Go to homepage",
+        href: "/"
+      }) }}
+      <a class="govuk-link kainos-error__secondary-link" href="/job-roles">
+        View open roles
+      </a>
+    </div>
+  </section>
+{% endblock %}
