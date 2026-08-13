@@ -22,12 +22,12 @@
 				<h2 class="govuk-heading-m login-page__card-title">Welcome back</h2>
 				<p class="govuk-body login-page__card-copy">Use your work account credentials to continue.</p>
 
-				{% if error %}
+				{% if errorMessage %}
 					<div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="login-error-summary-title">
 						<h2 class="govuk-error-summary__title" id="login-error-summary-title">There is a problem</h2>
 						<div class="govuk-error-summary__body">
 							<ul class="govuk-list govuk-error-summary__list">
-								<li><a href="#email">{{ error }}</a></li>
+								<li><a href="#email">{{ errorMessage }}</a></li>
 							</ul>
 						</div>
 					</div>
@@ -38,12 +38,12 @@
 						<input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 					{% endif %}
 
-					<div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">
+					<div class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
 						<label class="govuk-label govuk-label--m" for="email">Work email</label>
 						<div id="email-hint" class="govuk-hint">Use your company email address.</div>
-						{% if error %}
+						{% if errorMessage %}
 							<p id="email-error" class="govuk-error-message">
-								<span class="govuk-visually-hidden">Error:</span> {{ error }}
+								<span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
 							</p>
 						{% endif %}
 						<input
@@ -53,9 +53,9 @@
 							type="email"
 							autocomplete="username"
 							spellcheck="false"
-							value="{{ email or '' }}"
-							aria-describedby="email-hint {% if error %}email-error{% endif %}"
-							{% if error %}aria-invalid="true"{% endif %}
+							value="{{ formValues.email or '' }}"
+							aria-describedby="email-hint {% if errorMessage %}email-error{% endif %}"
+							{% if errorMessage %}aria-invalid="true"{% endif %}
 							required
 						/>
 					</div>

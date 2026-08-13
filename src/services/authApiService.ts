@@ -70,6 +70,7 @@ function extractToken(data: LoginResponse): string | null {
 
 export async function login(username: string, password: string): Promise<string> {
 	const loginPath = process.env.AUTH_LOGIN_PATH ?? "/api/login";
+	console.log("Login path:", loginPath);
 
 	try {
 		const response = await apiClient.post<LoginResponse>(loginPath, {
@@ -93,7 +94,7 @@ export async function login(username: string, password: string): Promise<string>
 				throw new Error("Login endpoint not found");
 			}
 			if (status === 500) {
-				throw new Error("Backend server error during login");
+				throw new Error("Invalid username or password");
 			}
 		}
 

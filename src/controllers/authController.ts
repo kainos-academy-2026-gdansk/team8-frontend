@@ -9,32 +9,35 @@ export class AuthController {
 		}
 
 		res.render("pages/login.njk", {
-			formValues: { username: "" },
+			formValues: { email: "" },
 		});
 	}
 
 	async login(req: Request, res: Response): Promise<void> {
-		const username = String(req.body.username ?? "").trim();
+		const email = String(req.body.email ?? "").trim();
 		const password = String(req.body.password ?? "").trim();
-
-		if (!username || !password) {
+		console.log("Login attempt with email:", email);
+		console.log("Login attempt with password:", password);
+		if (!email || !password) {
 			res.status(400).render("pages/login.njk", {
-				errorMessage: "Enter both username and password",
-				formValues: { username },
+				errorMessage: "Enter both email and password",
+				formValues: { email },
 			});
 			return;
 		}
 
 		try {
-			const jwtToken = await authApiService.login(username, password);
+			console.log("TRY: Attempting to log in with email:", email);
+			const jwtToken = await authApiService.login(email, password);
 			req.session.jwtToken = jwtToken;
 			res.redirect("/job-roles");
 		} catch (error) {
+			console.error("Login error:", error);
 			const message =
 				error instanceof Error ? error.message : "Unable to sign in";
 			res.status(401).render("pages/login.njk", {
 				errorMessage: message,
-				formValues: { username },
+				formValues: { email },
 			});
 		}
 	}
@@ -53,7 +56,7 @@ export class AuthController {
 		}
 
 		res.render("pages/login.njk", {
-			formValues: { username: "" },
+			formValues: { email: "" },
 		});
 	}
 
