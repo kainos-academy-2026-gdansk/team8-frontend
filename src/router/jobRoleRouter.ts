@@ -5,7 +5,6 @@ import Logger from "../lib/logger";
 
 const router = Router();
 const controller = new JobRoleController();
-const registerController = new RegisterController();
 
 router.get("/health", (_req, res) => {
 	Logger.info("Health check called");
@@ -23,12 +22,12 @@ router.get("/job-roles", (req, res) => {
 });
 
 router.get("/job-roles/:id", async (req, res, next) => {
- 	try {
- 		Logger.info(`Job role details page rendered for ID: ${req.params.id}`);
- 		await controller.getById(req, res);
- 	} catch (error) {
- 		next(error);
- 	}
+	try {
+		Logger.info(`Job role details page rendered for ID: ${req.params.id}`);
+		await controller.getById(req, res);
+	} catch (error) {
+		next(error);
+	}
 });
 
 export default router;

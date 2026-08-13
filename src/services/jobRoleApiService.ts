@@ -4,6 +4,7 @@ import {
 	JOB_ROLES_PAGE_SIZE,
 	type JobRole,
 	type JobRoleDetailed,
+	type JobRoleFilters,
 	type JobRolePage,
 	type PaginatedJobRolesResponse,
 } from "../models/jobRole";
@@ -28,11 +29,31 @@ function emptyJobRolePage(limit: number, offset: number): JobRolePage {
 export async function getAllJobRoles(
 	limit = JOB_ROLES_PAGE_SIZE,
 	offset = 0,
+	filters?: JobRoleFilters,
 ): Promise<JobRolePage> {
 	try {
+		const params = new URLSearchParams({
+			limit: String(limit),
+			offset: String(offset),
+		});
+		if (filters) {
+			if (filters.roleName) params.set("roleName", filters.roleName);
+			if (filters.location) params.set("location", filters.location);
+			if (filters.closingDateAfter) {
+				params.set("closingDateAfter", filters.closingDateAfter);
+			}
+			if (filters.closingDateBefore) {
+				params.set("closingDateBefore", filters.closingDateBefore);
+			}
+			for (const capability of filters.capability) {
+				params.append("capability", capability);
+			}
+			for (const band of filters.band) params.append("band", band);
+			for (const status of filters.status) params.append("status", status);
+		}
 		const response = await apiClient.get<PaginatedJobRolesResponse>(
 			"/job-roles",
-			{ params: { limit, offset } },
+			{ params },
 		);
 		return {
 			jobRoles: response.data.data,
@@ -78,7 +99,7 @@ export function buildPagination({
 	total,
 	limit,
 	offset,
- 	jobRoles = [],
+	jobRoles = [],
 }: Pick<JobRolePage, "total" | "limit" | "offset"> &
 	Partial<Pick<JobRolePage, "jobRoles">>): JobRolePagination {
 	const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
@@ -96,9 +117,8 @@ export function buildPagination({
 	const hasNext = currentPage > 0 && currentPage < totalPages;
 	const fromItem = total > 0 ? currentOffset + 1 : 0;
 	const returnedItemCount = jobRoles.length || limit;
-	const toItem = total > 0
-		? Math.min(currentOffset + returnedItemCount, total)
-		: 0;
+	const toItem =
+		total > 0 ? Math.min(currentOffset + returnedItemCount, total) : 0;
 	const hrefForOffset = (targetOffset: number) =>
 		`/job-roles?limit=${limit}&offset=${targetOffset}`;
 	const firstPage = Math.max(
@@ -112,12 +132,12 @@ export function buildPagination({
 	const pageLinks = Array.from(
 		{ length: Math.max(0, lastPage - firstPage + 1) },
 		(_, index) => {
-		const page = firstPage + index;
-		return {
-			page,
-			href: hrefForOffset((page - 1) * limit),
-			isCurrent: page === currentPage,
-		};
+			const page = firstPage + index;
+			return {
+				page,
+				href: hrefForOffset((page - 1) * limit),
+				isCurrent: page === currentPage,
+			};
 		},
 	);
 

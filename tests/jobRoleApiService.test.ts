@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockedGet } = vi.hoisted(() => ({
 	mockedGet: vi.fn(),
@@ -14,7 +14,13 @@ import {
 	buildPagination,
 	getAllJobRoles,
 } from "../src/services/jobRoleApiService";
-import type { JobRole } from "../src/models/jobRole";
+import type { JobRole, JobRoleFilters } from "../src/models/jobRole";
+
+const emptyFilters: JobRoleFilters = {
+	capability: [],
+	band: [],
+	status: [],
+};
 
 const backendPage = {
 	data: [],
@@ -30,20 +36,69 @@ const backendPage = {
 };
 
 describe("job role API service", () => {
+	beforeEach(() => {
+		mockedGet.mockReset();
+	});
+
 	it("passes pagination parameters and maps the backend envelope", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
 		const result = await getAllJobRoles(10, 10);
 
-		expect(mockedGet).toHaveBeenCalledWith("/job-roles", {
-			params: { limit: 10, offset: 10 },
-		});
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(mockedGet.mock.calls[0][0]).toBe("/job-roles");
+		expect(params.toString()).toBe("limit=10&offset=10");
 		expect(result).toEqual({
 			jobRoles: [],
 			total: 14,
 			limit: 10,
 			offset: 10,
 		});
+	});
+
+	it("sends text and date filters using the backend query names", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, {
+			...emptyFilters,
+			roleName: "Engineer",
+			location: "Gdansk",
+			closingDateAfter: "2026-08-01",
+			closingDateBefore: "2026-08-31",
+		});
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.toString()).toBe(
+			"limit=10&offset=0&roleName=Engineer&location=Gdansk&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
+		);
+	});
+
+	it("serializes checkbox filters as repeated query parameters", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, {
+			...emptyFilters,
+			capability: ["Software Engineering", "Cloud"],
+			band: ["Consultant", "Manager"],
+			status: ["OPEN", "CLOSED"],
+		});
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.getAll("capability")).toEqual([
+			"Software Engineering",
+			"Cloud",
+		]);
+		expect(params.getAll("band")).toEqual(["Consultant", "Manager"]);
+		expect(params.getAll("status")).toEqual(["OPEN", "CLOSED"]);
+	});
+
+	it("omits empty filter values", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, emptyFilters);
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.toString()).toBe("limit=10&offset=0");
 	});
 
 	it("returns an empty page when the backend returns 404", async () => {

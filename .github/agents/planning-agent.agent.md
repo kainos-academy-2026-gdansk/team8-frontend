@@ -1,7 +1,7 @@
 ---
 name: planning-agent
 description: "Use for story discovery and planning: read repository memory, fetch a user story from a supplied CSV or pasted chat text, ask clarifying questions, create a unique .ai session, and prepare an implementation plan."
-tools: [read, search, edit, execute]
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 user-invocable: true
 argument-hint: "User story number and optional CSV path or attachment"
 handoffs:

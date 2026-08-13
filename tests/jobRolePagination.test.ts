@@ -101,9 +101,7 @@ describe("GET /job-roles pagination", () => {
 	it("summarizes the returned item for a non-page-aligned offset", async () => {
 		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(13, 14));
 
-		const response = await request(app).get(
-			"/job-roles?limit=10&offset=13",
-		);
+		const response = await request(app).get("/job-roles?limit=10&offset=13");
 
 		expect(response.status).toBe(200);
 		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 13);
@@ -161,6 +159,65 @@ describe("GET /job-roles pagination", () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("No job roles found.");
+		expect(response.text).not.toContain('aria-label="Pagination"');
+	});
+
+	it("renders filter controls with the approved static options", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0));
+
+		const response = await request(app).get("/job-roles");
+
+		expect(response.text).toContain('name="roleName"');
+		expect(response.text).toContain('name="location"');
+		expect(response.text).toContain('value="Software Engineering"');
+		expect(response.text).toContain('value="Director"');
+		expect(response.text).toContain('value="OPEN"');
+		expect(response.text).toContain('name="closingDateAfter"');
+		expect(response.text).toContain('name="closingDateBefore"');
+	});
+
+	it("forwards filters from the query and retains their values", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 2));
+
+		const response = await request(app).get(
+			"/job-roles?roleName=Engineer&location=Gdansk&capability=Software%20Engineering&capability=Cloud&band=Consultant&status=OPEN&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
+		);
+
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0, {
+			roleName: "Engineer",
+			location: "Gdansk",
+			capability: ["Software Engineering", "Cloud"],
+			band: ["Consultant"],
+			status: ["OPEN"],
+			closingDateAfter: "2026-08-01",
+			closingDateBefore: "2026-08-31",
+		});
+		expect(response.text).toContain('value="Engineer"');
+		expect(response.text).toContain('value="Software Engineering" checked');
+		expect(response.text).toContain('value="OPEN" checked');
+		expect(response.text).toContain("2 job roles found");
+		expect(response.text).toContain('href="/job-roles">Clear filters</a>');
+		expect(response.text).not.toContain('aria-label="Pagination"');
+	});
+
+	it("ignores invalid filters and keeps unfiltered pagination", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0));
+
+		const response = await request(app).get(
+			"/job-roles?status=UNKNOWN&closingDateAfter=not-a-date",
+		);
+
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+		expect(response.text).toContain('aria-label="Pagination"');
+		expect(response.text).not.toContain("Clear filters");
+	});
+
+	it("shows a filter-aware empty state without pagination", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 0));
+
+		const response = await request(app).get("/job-roles?roleName=Missing");
+
+		expect(response.text).toContain("No job roles match your filters.");
 		expect(response.text).not.toContain('aria-label="Pagination"');
 	});
 });

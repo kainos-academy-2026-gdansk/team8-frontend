@@ -3,7 +3,7 @@ import { z } from "zod";
 export const registerFormSchema = z
 	.object({
 		email: z
-            .email("Enter an email address in the correct format")
+			.email("Enter an email address in the correct format")
 			.trim()
 			.min(1, "Enter an email address"),
 		password: z

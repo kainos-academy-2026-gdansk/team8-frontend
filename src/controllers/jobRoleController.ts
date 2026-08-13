@@ -6,18 +6,30 @@ import {
 	formatJobRoleDetailedForView,
 	buildPagination,
 } from "../services/jobRoleApiService";
-import { jobRolePaginationQuerySchema } from "../models/jobRole";
+import {
+	JOB_ROLE_BAND_OPTIONS,
+	JOB_ROLE_CAPABILITY_OPTIONS,
+	JOB_ROLE_STATUS_OPTIONS,
+	jobRoleListQuerySchema,
+} from "../models/jobRole";
 import Logger from "../lib/logger";
 
 export class JobRoleController {
 	async getAll(req: Request, res: Response): Promise<void> {
 		try {
-			const { limit, offset } = jobRolePaginationQuerySchema.parse(req.query);
-			let jobRolePage = await getAllJobRoles(limit, offset);
+			const { limit, offset, filters, isFiltered } =
+				jobRoleListQuerySchema.parse(req.query);
+			let jobRolePage = isFiltered
+				? await getAllJobRoles(limit, 0, filters)
+				: await getAllJobRoles(limit, offset);
 			let pageError: string | undefined;
 			let pagination = buildPagination(jobRolePage);
 
-			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
+			if (
+				!isFiltered &&
+				jobRolePage.total > 0 &&
+				jobRolePage.jobRoles.length === 0
+			) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
 				jobRolePage = await getAllJobRoles(limit, pagination.lastOffset);
@@ -30,6 +42,11 @@ export class JobRoleController {
 				total: jobRolePage.total,
 				pagination,
 				pageError,
+				filters,
+				isFiltered,
+				capabilityOptions: JOB_ROLE_CAPABILITY_OPTIONS,
+				bandOptions: JOB_ROLE_BAND_OPTIONS,
+				statusOptions: JOB_ROLE_STATUS_OPTIONS,
 			});
 		} catch (error) {
 			Logger.error("Error fetching job roles", { error });
