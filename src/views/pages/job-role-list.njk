@@ -4,11 +4,21 @@
 
 {% block content %}
   <h1 class="govuk-heading-l">All job roles</h1>
-  {% if error %}
-  <p class="govuk-body govuk-error-message">{{ error }}</p>
+
+  {% if pageError %}
+    <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1">
+      <h2 class="govuk-error-summary__title">There is a problem</h2>
+      <div class="govuk-error-summary__body">
+        <p class="govuk-body">{{ pageError }}</p>
+      </div>
+    </div>
   {% endif %}
-  
+
   {% if jobRoles.length > 0 %}
+    <p class="govuk-body job-role-results-summary">
+      Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
+    </p>
+
     <ul class="govuk-list job-role-list" aria-label="Job role listings">
       {% for jobRole in jobRoles %}
         <li class="job-role-list__item">
@@ -37,6 +47,68 @@
         </li>
       {% endfor %}
     </ul>
+
+    <nav class="govuk-pagination job-role-pagination" aria-label="Pagination">
+      <div class="job-role-pagination__first">
+        {% if pagination.hasPrevious %}
+          <a class="govuk-button job-role-pagination__button" href="{{ pagination.firstHref }}" rel="first">First</a>
+        {% else %}
+          <span class="govuk-button job-role-pagination__button job-role-pagination__button--disabled" aria-disabled="true">First</span>
+        {% endif %}
+      </div>
+
+      <div class="govuk-pagination__prev job-role-pagination__direction">
+        {% if pagination.hasPrevious %}
+          <a class="govuk-link govuk-pagination__link" href="{{ pagination.previousHref }}" rel="prev">
+            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+              <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+            </svg>
+            <span class="govuk-pagination__link-title">Previous<span class="govuk-visually-hidden"> page</span></span>
+          </a>
+        {% else %}
+          <span class="govuk-pagination__link job-role-pagination__direction-link--disabled" aria-disabled="true">
+            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+              <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+            </svg>
+            <span class="govuk-pagination__link-title">Previous<span class="govuk-visually-hidden"> page</span></span>
+          </span>
+        {% endif %}
+      </div>
+
+      <ul class="govuk-pagination__list job-role-pagination__list">
+        {% for pageLink in pagination.pageLinks %}
+          <li class="govuk-pagination__item {% if pageLink.isCurrent %}govuk-pagination__item--current{% endif %}">
+            <a class="govuk-link govuk-pagination__link" href="{{ pageLink.href }}" aria-label="Page {{ pageLink.page }}"{% if pageLink.isCurrent %} aria-current="page"{% endif %}>{{ pageLink.page }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="govuk-pagination__next job-role-pagination__direction">
+        {% if pagination.hasNext %}
+          <a class="govuk-link govuk-pagination__link" href="{{ pagination.nextHref }}" rel="next">
+            <span class="govuk-pagination__link-title">Next<span class="govuk-visually-hidden"> page</span></span>
+            <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+              <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+            </svg>
+          </a>
+        {% else %}
+          <span class="govuk-pagination__link job-role-pagination__direction-link--disabled" aria-disabled="true">
+            <span class="govuk-pagination__link-title">Next<span class="govuk-visually-hidden"> page</span></span>
+            <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+              <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+            </svg>
+          </span>
+        {% endif %}
+      </div>
+
+      <div class="job-role-pagination__last">
+        {% if pagination.hasNext %}
+          <a class="govuk-button job-role-pagination__button" href="{{ pagination.lastHref }}" rel="last">Last</a>
+        {% else %}
+          <span class="govuk-button job-role-pagination__button job-role-pagination__button--disabled" aria-disabled="true">Last</span>
+        {% endif %}
+      </div>
+    </nav>
   {% else %}
     <p class="govuk-body">No job roles found.</p>
   {% endif %}
