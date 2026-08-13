@@ -16,8 +16,6 @@ export class AuthController {
 	async login(req: Request, res: Response): Promise<void> {
 		const email = String(req.body.email ?? "").trim();
 		const password = String(req.body.password ?? "").trim();
-		console.log("Login attempt with email:", email);
-		console.log("Login attempt with password:", password);
 		if (!email || !password) {
 			res.status(400).render("pages/login.njk", {
 				errorMessage: "Enter both email and password",
@@ -27,12 +25,10 @@ export class AuthController {
 		}
 
 		try {
-			console.log("TRY: Attempting to log in with email:", email);
 			const jwtToken = await authApiService.login(email, password);
 			req.session.jwtToken = jwtToken;
 			res.redirect("/job-roles");
 		} catch (error) {
-			console.error("Login error:", error);
 			const message =
 				error instanceof Error ? error.message : "Unable to sign in";
 			res.status(401).render("pages/login.njk", {

@@ -70,7 +70,6 @@ function extractToken(data: LoginResponse): string | null {
 
 export async function login(username: string, password: string): Promise<string> {
 	const loginPath = process.env.AUTH_LOGIN_PATH ?? "/api/login";
-	console.log("Login path:", loginPath);
 
 	try {
 		const response = await apiClient.post<LoginResponse>(loginPath, {
