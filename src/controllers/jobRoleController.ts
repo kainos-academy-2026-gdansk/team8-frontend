@@ -4,16 +4,35 @@ import {
 	getJobById,
 	formatJobRoleForView,
 	formatJobRoleDetailedForView,
+	buildPagination,
 } from "../services/jobRoleApiService";
+import { jobRolePaginationQuerySchema } from "../models/jobRole";
+import Logger from "../lib/logger";
 
 export class JobRoleController {
-	async getAll(_req: Request, res: Response): Promise<void> {
+	async getAll(req: Request, res: Response): Promise<void> {
 		try {
-			const jobRoles = await getAllJobRoles();
-			const jobRolesForView = jobRoles.map(formatJobRoleForView);
-			res.render("pages/job-role-list.njk", { jobRoles: jobRolesForView });
+			const { limit, offset } = jobRolePaginationQuerySchema.parse(req.query);
+			let jobRolePage = await getAllJobRoles(limit, offset);
+			let pageError: string | undefined;
+			let pagination = buildPagination(jobRolePage);
+
+			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
+				pageError =
+					"The page you requested does not exist. Showing the nearest available results.";
+				jobRolePage = await getAllJobRoles(limit, pagination.lastOffset);
+				pagination = buildPagination(jobRolePage);
+			}
+
+			const jobRolesForView = jobRolePage.jobRoles.map(formatJobRoleForView);
+			res.render("pages/job-role-list.njk", {
+				jobRoles: jobRolesForView,
+				total: jobRolePage.total,
+				pagination,
+				pageError,
+			});
 		} catch (error) {
-			console.error("Error fetching job roles:", error);
+			Logger.error("Error fetching job roles", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,
 				title: "Something went wrong",
@@ -46,7 +65,7 @@ export class JobRoleController {
 			const jobForView = formatJobRoleDetailedForView(job);
 			res.render("pages/job-role-information.njk", { job: jobForView });
 		} catch (error) {
-			console.error("Error fetching job role:", error);
+			Logger.error("Error fetching job role", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,
 				title: "Something went wrong",

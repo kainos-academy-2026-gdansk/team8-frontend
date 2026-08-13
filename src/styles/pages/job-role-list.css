@@ -120,3 +120,184 @@
 	color: #5f6794;
 	background: #fcfcff;
 }
+
+.job-role-results-summary {
+	margin-bottom: var(--k-space-5);
+	color: var(--k-text-secondary);
+	font-weight: 700;
+}
+
+.job-role-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--k-space-3) var(--k-space-4);
+	margin-top: var(--k-space-6);
+	padding-top: var(--k-space-4);
+	border-top: 1px solid var(--k-border-default);
+}
+
+.job-role-pagination__first,
+.job-role-pagination__last {
+	flex: 0 0 auto;
+}
+
+.job-role-pagination__first {
+	order: 1;
+}
+
+.job-role-pagination__last {
+	order: 5;
+}
+
+.job-role-pagination__direction {
+	display: block;
+	flex: 0 0 auto;
+	float: none;
+}
+
+.job-role-pagination__direction.govuk-pagination__prev {
+	order: 2;
+}
+
+.job-role-pagination__direction.govuk-pagination__next {
+	order: 4;
+}
+
+.job-role-pagination__list {
+	display: flex;
+	flex-wrap: wrap;
+	flex: 1 1 auto;
+	justify-content: center;
+	gap: var(--k-space-1);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	order: 3;
+}
+
+.job-role-pagination .govuk-pagination__item {
+	display: block;
+	margin: 0;
+}
+
+.job-role-pagination .govuk-pagination__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: var(--k-space-2) var(--k-space-3);
+	border-radius: var(--k-radius-sm);
+	font-size: 1rem;
+	font-weight: 700;
+}
+
+.job-role-pagination .govuk-pagination__item--current {
+	background: none;
+}
+
+.job-role-pagination .govuk-pagination__item--current .govuk-pagination__link {
+	background: var(--k-color-blue);
+	color: var(--k-color-white);
+	text-decoration: none;
+}
+
+.job-role-pagination__direction .govuk-pagination__link,
+.job-role-pagination__direction-link--disabled {
+	gap: var(--k-space-2);
+	min-width: 112px;
+	text-decoration: none;
+}
+
+.job-role-pagination__direction-link--disabled {
+	color: var(--k-color-grey);
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+
+.job-role-pagination__direction-link--disabled:hover,
+.job-role-pagination__direction-link--disabled:visited,
+.job-role-pagination__direction-link--disabled:active {
+	color: var(--k-color-grey);
+	text-decoration: none;
+}
+
+.job-role-pagination__button.govuk-button {
+	min-width: 76px;
+	margin-bottom: 0;
+	padding: var(--k-space-2) var(--k-space-3);
+	text-align: center;
+	text-decoration: none;
+}
+
+.job-role-pagination__button.govuk-button:visited {
+	color: var(--k-btn-primary-text);
+}
+
+.job-role-pagination__button--disabled.govuk-button {
+	background: var(--k-bg-surface);
+	color: var(--k-color-grey);
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+
+.job-role-pagination__button--disabled.govuk-button:hover {
+	background: var(--k-bg-surface);
+	color: var(--k-color-grey);
+	transform: none;
+}
+
+@media (max-width: 40.0525em) {
+	.job-role-pagination {
+		display: grid;
+		grid-template-areas:
+			"first last"
+			"previous next"
+			"pages pages";
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--k-space-3);
+	}
+
+	.job-role-pagination__first {
+		grid-area: first;
+	}
+
+	.job-role-pagination__last {
+		grid-area: last;
+	}
+
+	.job-role-pagination__direction.govuk-pagination__prev {
+		grid-area: previous;
+	}
+
+	.job-role-pagination__direction.govuk-pagination__next {
+		grid-area: next;
+	}
+
+	.job-role-pagination__list {
+		grid-area: pages;
+	}
+
+	.job-role-pagination__first,
+	.job-role-pagination__last,
+	.job-role-pagination__direction {
+		width: 100%;
+	}
+
+	.job-role-pagination__button.govuk-button,
+	.job-role-pagination__direction .govuk-pagination__link,
+	.job-role-pagination__direction-link--disabled {
+		width: 100%;
+	}
+
+	.job-role-pagination__direction .govuk-pagination__link,
+	.job-role-pagination__direction-link--disabled {
+		box-sizing: border-box;
+		min-width: 0;
+	}
+
+	.job-role-pagination .govuk-pagination__link {
+		min-height: 40px;
+		padding: var(--k-space-2);
+	}
+}

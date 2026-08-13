@@ -1,0 +1,166 @@
+import request from "supertest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { JobRolePage } from "../src/models/jobRole";
+import { buildPagination } from "../src/services/jobRoleApiService";
+
+const { mockedGetAllJobRoles } = vi.hoisted(() => ({
+	mockedGetAllJobRoles: vi.fn(),
+}));
+
+vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
+	const actual =
+		await importOriginal<typeof import("../src/services/jobRoleApiService")>();
+	return {
+		...actual,
+		getAllJobRoles: mockedGetAllJobRoles,
+	};
+});
+
+import app from "../src/app";
+
+function createJobRole(id: number) {
+	return {
+		id,
+		roleName: `Role ${id}`,
+		location: "Remote",
+		capability: { id: 1, name: "Engineering" },
+		band: { id: 1, name: "Consultant" },
+		closingDate: new Date("2026-08-28T22:00:00.000Z"),
+		status: { id: 1, name: "OPEN" as const },
+	};
+}
+
+function createPage(offset: number, total = 14): JobRolePage {
+	const pageSize = Math.min(10, Math.max(0, total - offset));
+	return {
+		jobRoles: Array.from({ length: pageSize }, (_, index) =>
+			createJobRole(offset + index + 1),
+		),
+		total,
+		limit: 10,
+		offset,
+	};
+}
+
+describe("GET /job-roles pagination", () => {
+	beforeEach(() => {
+		mockedGetAllJobRoles.mockReset();
+	});
+
+	it("loads the first ten roles and disables backward controls", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0));
+
+		const response = await request(app).get("/job-roles");
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+		expect(response.text).toContain("Showing 1 to 10 of 14 job roles");
+		expect(response.text).toContain(
+			'job-role-pagination__button--disabled" aria-disabled="true">First',
+		);
+		expect(response.text).toContain(
+			'job-role-pagination__direction-link--disabled" aria-disabled="true"',
+		);
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=10" rel="next"',
+		);
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=10" rel="last"',
+		);
+		expect(response.text).toContain(
+			'aria-label="Page 1" aria-current="page">1',
+		);
+		expect(response.text).toContain('aria-label="Page 2">2');
+	});
+
+	it("loads the next page and disables forward controls on the last page", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(10));
+
+		const response = await request(app).get("/job-roles?limit=10&offset=10");
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 10);
+		expect(response.text).toContain("Showing 11 to 14 of 14 job roles");
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0" rel="first">First',
+		);
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0" rel="prev"',
+		);
+		expect(response.text).toContain(
+			'job-role-pagination__direction-link--disabled" aria-disabled="true"',
+		);
+		expect(response.text).toContain(
+			'job-role-pagination__button--disabled" aria-disabled="true">Last',
+		);
+		expect(response.text).toContain(
+			'aria-label="Page 2" aria-current="page">2',
+		);
+	});
+
+	it("summarizes the returned item for a non-page-aligned offset", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(13, 14));
+
+		const response = await request(app).get(
+			"/job-roles?limit=10&offset=13",
+		);
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 13);
+		expect(response.text).toContain("Showing 14 to 14 of 14 job roles");
+	});
+
+	it("keeps directional links aligned with numbered pages", () => {
+		const pagination = buildPagination({
+			total: 35,
+			limit: 10,
+			offset: 13,
+		});
+
+		expect(pagination.currentPage).toBe(2);
+		expect(pagination.previousOffset).toBe(0);
+		expect(pagination.nextOffset).toBe(20);
+		expect(pagination.previousHref).toBe("/job-roles?limit=10&offset=0");
+		expect(pagination.nextHref).toBe("/job-roles?limit=10&offset=20");
+		expect(pagination.hasPrevious).toBe(true);
+		expect(pagination.hasNext).toBe(true);
+	});
+
+	it("clamps an out-of-range offset and shows an error summary", async () => {
+		mockedGetAllJobRoles
+			.mockResolvedValueOnce(createPage(20, 14))
+			.mockResolvedValueOnce(createPage(10, 14));
+
+		const response = await request(app).get("/job-roles?limit=10&offset=20");
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(1, 10, 20);
+		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(2, 10, 10);
+		expect(response.text).toContain("There is a problem");
+		expect(response.text).toContain(
+			"The page you requested does not exist. Showing the nearest available results.",
+		);
+		expect(response.text).toContain("Showing 11 to 14 of 14 job roles");
+	});
+
+	it("falls back to the fixed page size and first offset for invalid values", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0));
+
+		const response = await request(app).get(
+			"/job-roles?limit=25&offset=not-a-number",
+		);
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+	});
+
+	it("does not render pagination for an empty result set", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 0));
+
+		const response = await request(app).get("/job-roles");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("No job roles found.");
+		expect(response.text).not.toContain('aria-label="Pagination"');
+	});
+});
