@@ -1,9 +1,11 @@
 import { Router } from "express";
 import { JobRoleController } from "../controllers/jobRoleController";
+import { RegisterController } from "../controllers/registerController";
 import Logger from "../lib/logger";
 
 const router = Router();
 const controller = new JobRoleController();
+const registerController = new RegisterController();
 
 router.get("/health", (_req, res) => {
 	Logger.info("Health check called");
