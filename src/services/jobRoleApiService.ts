@@ -89,10 +89,11 @@ export function buildPagination({
 			? Math.min(Math.floor(currentOffset / limit) + 1, totalPages)
 			: 0;
 	const firstOffset = 0;
-	const previousOffset = Math.max(firstOffset, currentOffset - limit);
-	const nextOffset = Math.min(lastOffset, currentOffset + limit);
-	const hasPrevious = currentOffset > firstOffset;
-	const hasNext = currentOffset + limit < total;
+	const currentPageOffset = Math.max(firstOffset, (currentPage - 1) * limit);
+	const previousOffset = Math.max(firstOffset, currentPageOffset - limit);
+	const nextOffset = Math.min(lastOffset, currentPageOffset + limit);
+	const hasPrevious = currentPage > 1;
+	const hasNext = currentPage > 0 && currentPage < totalPages;
 	const fromItem = total > 0 ? currentOffset + 1 : 0;
 	const returnedItemCount = jobRoles.length || limit;
 	const toItem = total > 0

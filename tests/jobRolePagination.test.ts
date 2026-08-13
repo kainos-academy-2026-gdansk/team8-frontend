@@ -1,6 +1,7 @@
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JobRolePage } from "../src/models/jobRole";
+import { buildPagination } from "../src/services/jobRoleApiService";
 
 const { mockedGetAllJobRoles } = vi.hoisted(() => ({
 	mockedGetAllJobRoles: vi.fn(),
@@ -107,6 +108,22 @@ describe("GET /job-roles pagination", () => {
 		expect(response.status).toBe(200);
 		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 13);
 		expect(response.text).toContain("Showing 14 to 14 of 14 job roles");
+	});
+
+	it("keeps directional links aligned with numbered pages", () => {
+		const pagination = buildPagination({
+			total: 35,
+			limit: 10,
+			offset: 13,
+		});
+
+		expect(pagination.currentPage).toBe(2);
+		expect(pagination.previousOffset).toBe(0);
+		expect(pagination.nextOffset).toBe(20);
+		expect(pagination.previousHref).toBe("/job-roles?limit=10&offset=0");
+		expect(pagination.nextHref).toBe("/job-roles?limit=10&offset=20");
+		expect(pagination.hasPrevious).toBe(true);
+		expect(pagination.hasNext).toBe(true);
 	});
 
 	it("clamps an out-of-range offset and shows an error summary", async () => {

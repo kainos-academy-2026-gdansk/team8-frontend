@@ -6,8 +6,8 @@
   <h1 class="govuk-heading-l">All job roles</h1>
 
   {% if pageError %}
-    <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1">
-      <h2 class="govuk-error-summary__title">There is a problem</h2>
+    <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="job-role-list-error-title">
+      <h2 id="job-role-list-error-title" class="govuk-error-summary__title">There is a problem</h2>
       <div class="govuk-error-summary__body">
         <p class="govuk-body">{{ pageError }}</p>
       </div>

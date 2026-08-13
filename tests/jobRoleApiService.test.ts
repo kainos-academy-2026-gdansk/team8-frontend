@@ -144,7 +144,7 @@ describe("buildPagination", () => {
 			fromItem: 14,
 			toItem: 14,
 			hasNext: false,
-			previousOffset: 3,
+			previousOffset: 0,
 		});
 	});
 
