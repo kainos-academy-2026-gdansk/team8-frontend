@@ -35,10 +35,10 @@ export async function registerAccount(
 
 			if (typeof status === "number" && status >= 500) {
 				const message =
- 					status >= 500
- 						? "Registration request failed"
- 						: backendMessage ?? "Registration request failed";
- 				throw new RegisterApiError(status, message)
+					status >= 500
+						? "Registration request failed"
+						: (backendMessage ?? "Registration request failed");
+				throw new RegisterApiError(status, message);
 			}
 
 			if (typeof status === "number") {
