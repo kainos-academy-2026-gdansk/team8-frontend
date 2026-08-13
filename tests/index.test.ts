@@ -1,7 +1,12 @@
 import request from "supertest";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockedRegisterAccount, MockRegisterApiError } = vi.hoisted(() => {
+const {
+	mockedLogin,
+	mockedRegisterAccount,
+	MockLoginApiError,
+	MockRegisterApiError,
+} = vi.hoisted(() => {
 	class RegisterApiError extends Error {
 		statusCode: number;
 
@@ -11,13 +16,26 @@ const { mockedRegisterAccount, MockRegisterApiError } = vi.hoisted(() => {
 		}
 	}
 
+	class LoginApiError extends Error {
+		statusCode: number;
+
+		constructor(statusCode: number, message: string) {
+			super(message);
+			this.statusCode = statusCode;
+		}
+	}
+
 	return {
+		mockedLogin: vi.fn(),
 		mockedRegisterAccount: vi.fn(async () => undefined),
+		MockLoginApiError: LoginApiError,
 		MockRegisterApiError: RegisterApiError,
 	};
 });
 
 vi.mock("../src/services/authApiService", () => ({
+	login: mockedLogin,
+	LoginApiError: MockLoginApiError,
 	registerAccount: mockedRegisterAccount,
 	RegisterApiError: MockRegisterApiError,
 }));
@@ -25,16 +43,88 @@ vi.mock("../src/services/authApiService", () => ({
 import app from "../src/app";
 
 describe("Vitest smoke", () => {
+	beforeEach(() => {
+		mockedLogin.mockReset();
+		mockedRegisterAccount.mockReset();
+		mockedRegisterAccount.mockResolvedValue(undefined);
+	});
+
 	it("runs basic assertions", () => {
 		expect(1 + 1).toBe(2);
 	});
 
-	it("responds on GET /", async () => {
+	it("redirects unauthenticated users from GET /", async () => {
 		const response = await request(app).get("/");
 
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe("/login");
+	});
+
+	it.each(["/health", "/logout"])(
+		"redirects unauthenticated users from GET %s",
+		async (path) => {
+			const response = await request(app).get(path);
+
+			expect(response.status).toBe(302);
+			expect(response.headers.location).toBe("/login");
+		},
+	);
+
+	it("renders the public login page", async () => {
+		const response = await request(app).get("/login");
+
 		expect(response.status).toBe(200);
-		expect(response.text).toBeTypeOf("string");
-		expect(response.text).toContain("Hello world!");
+		expect(response.text).toContain("Sign in");
+		expect(response.text).toContain('name="email"');
+		expect(response.text).toContain('name="password"');
+		expect(response.text).toContain('href="/register"');
+		expect(response.text).not.toContain("kainos-topnav");
+		expect(response.text).not.toContain("govuk-footer");
+	});
+
+	it("validates required login fields", async () => {
+		const response = await request(app).post("/login").type("form").send({});
+
+		expect(response.status).toBe(400);
+		expect(response.text).toContain("Enter both email and password");
+		expect(mockedLogin).not.toHaveBeenCalled();
+	});
+
+	it("stores the token and grants access after login", async () => {
+		const agent = request.agent(app);
+		mockedLogin.mockResolvedValueOnce("jwt-token");
+
+		const loginResponse = await agent.post("/login").type("form").send({
+			email: "person@example.com",
+			password: "Verysecure@pass",
+		});
+		const protectedResponse = await agent.get("/");
+
+		expect(loginResponse.status).toBe(302);
+		expect(loginResponse.headers.location).toBe("/job-roles");
+		expect(mockedLogin).toHaveBeenCalledWith(
+			"person@example.com",
+			"Verysecure@pass",
+		);
+		expect(protectedResponse.status).toBe(200);
+		expect(protectedResponse.text).toContain("Hello world!");
+		expect(protectedResponse.text).toContain('href="/logout"');
+		expect(protectedResponse.text).toContain("Log out");
+	});
+
+	it("renders invalid credential errors and preserves the email", async () => {
+		mockedLogin.mockRejectedValueOnce(
+			new MockLoginApiError(401, "Invalid email or password"),
+		);
+
+		const response = await request(app).post("/login").type("form").send({
+			email: "person@example.com",
+			password: "WrongPassword!",
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.text).toContain("Invalid email or password");
+		expect(response.text).toContain('value="person@example.com"');
 	});
 
 	it("responds on GET /register", async () => {

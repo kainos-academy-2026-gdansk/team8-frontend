@@ -7,12 +7,20 @@
   </a>
 {% endset %}
 
-{% set contactButtonHtml %}
-  {{ govukButton({
-    text: "Get in touch",
-    href: "#",
-    classes: "kainos-topnav__cta"
-  }) }}
+{% set accountButtonHtml %}
+  {% if isAuthenticated %}
+    {{ govukButton({
+      text: "Log out",
+      href: "/logout",
+      classes: "kainos-topnav__cta"
+    }) }}
+  {% else %}
+    {{ govukButton({
+      text: "Get in touch",
+      href: "#",
+      classes: "kainos-topnav__cta"
+    }) }}
+  {% endif %}
 {% endset %}
 
 {% set navActionsHtml %}
@@ -22,7 +30,7 @@
         <path fill="currentColor" d="M18 16a3 3 0 0 0-2.39 1.2l-6.84-3.42a3.06 3.06 0 0 0 0-1.56l6.84-3.42A3 3 0 1 0 15 7a3.11 3.11 0 0 0 .08.67L8.24 11.1a3 3 0 1 0 0 1.8l6.84 3.43A3 3 0 1 0 18 16Z" />
       </svg>
     </a>
-    {{ contactButtonHtml | safe }}
+    {{ accountButtonHtml | safe }}
     <a href="#" class="govuk-service-navigation__link kainos-topnav__icon-link" aria-label="Search">
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L20 22l2-2-6.5-6ZM10 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" />

@@ -7,6 +7,7 @@
 @import url("./styles/components/footer.css");
 @import url("./styles/pages/job-role-list.css");
 @import url("./styles/pages/register.css");
+@import url("./styles/pages/login.css");
 @import url("./styles/pages/job-role-information.css");
 @import url("./styles/pages/error-pages.css");
 
@@ -96,9 +97,15 @@ body {
 
 .app-page__content {
 	flex: 1 0 auto;
-	width: 100%;
+	width: calc(100% - 30px);
 	display: flex;
 	flex-direction: column;
+}
+
+@media (min-width: 40.0625rem) {
+	.app-page__content {
+		width: calc(100% - 60px);
+	}
 }
 
 .app-page__main {

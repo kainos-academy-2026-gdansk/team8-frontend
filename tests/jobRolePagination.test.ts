@@ -1,7 +1,10 @@
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { NextFunction, Request, Response } from "express";
 import type { JobRolePage } from "../src/models/jobRole";
 import { buildPagination } from "../src/services/jobRoleApiService";
+
+const jwtToken = "test-jwt-token";
 
 const { mockedGetAllJobRoles, mockedGetJobById } = vi.hoisted(() => ({
 	mockedGetAllJobRoles: vi.fn(),
@@ -17,6 +20,13 @@ vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
 		getJobById: mockedGetJobById,
 	};
 });
+
+vi.mock("../src/config/authMiddleware", () => ({
+	requireAuth: (req: Request, _res: Response, next: NextFunction) => {
+		req.session.jwtToken = jwtToken;
+		next();
+	},
+}));
 
 import app from "../src/app";
 
@@ -56,7 +66,7 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
 		expect(response.text).toContain("Showing 1 to 10 of 14 job roles");
 		expect(response.text).toContain(
 			'job-role-pagination__button--disabled" aria-disabled="true">First',
@@ -82,7 +92,7 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=10");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 10);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 10);
 		expect(response.text).toContain("Showing 11 to 14 of 14 job roles");
 		expect(response.text).toContain(
 			'href="/job-roles?limit=10&amp;offset=0" rel="first">First',
@@ -107,7 +117,7 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=13");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 13);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 13);
 		expect(response.text).toContain("Showing 14 to 14 of 14 job roles");
 	});
 
@@ -135,8 +145,8 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=20");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(1, 10, 20);
-		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(2, 10, 10);
+		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(1, jwtToken, 10, 20);
+		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(2, jwtToken, 10, 10);
 		expect(response.text).toContain("There is a problem");
 		expect(response.text).toContain(
 			"The page you requested does not exist. Showing the nearest available results.",
@@ -152,7 +162,7 @@ describe("GET /job-roles pagination", () => {
 		);
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
 	});
 
 	it("does not render pagination for an empty result set", async () => {
@@ -186,7 +196,7 @@ describe("GET /job-roles pagination", () => {
 			"/job-roles?offset=10&roleName=Engineer&location=Gdansk&capability=Software%20Engineering&capability=Cloud&band=Consultant&status=OPEN&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
 		);
 
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 10, {
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 10, {
 			roleName: "Engineer",
 			location: "Gdansk",
 			capability: ["Software Engineering", "Cloud"],
@@ -213,7 +223,7 @@ describe("GET /job-roles pagination", () => {
 			"/job-roles?status=UNKNOWN&closingDateAfter=not-a-date",
 		);
 
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
 		expect(response.text).toContain('aria-label="Pagination"');
 		expect(response.text).not.toContain("Clear filters");
 	});
@@ -228,12 +238,25 @@ describe("GET /job-roles pagination", () => {
 	});
 
 	it("renders an error page when loading job roles fails", async () => {
-		mockedGetAllJobRoles.mockRejectedValueOnce(new Error("Backend unavailable"));
+		mockedGetAllJobRoles.mockRejectedValueOnce(
+			new Error("Backend unavailable"),
+		);
 
 		const response = await request(app).get("/job-roles");
 
 		expect(response.status).toBe(500);
-		expect(response.text).toContain("Failed to load job roles. Please try again later.");
+		expect(response.text).toContain(
+			"Failed to load job roles. Please try again later.",
+		);
+	});
+
+	it("redirects to login when the API rejects the token", async () => {
+		mockedGetAllJobRoles.mockRejectedValueOnce(new Error("Unauthorized"));
+
+		const response = await request(app).get("/job-roles");
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe("/login");
 	});
 });
 
@@ -254,7 +277,7 @@ describe("GET /job-roles/:id", () => {
 		const response = await request(app).get("/job-roles/7");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetJobById).toHaveBeenCalledWith(7);
+		expect(mockedGetJobById).toHaveBeenCalledWith(7, jwtToken);
 		expect(response.text).toContain("Role 7");
 		expect(response.text).toContain("Open");
 		expect(response.text).toContain("Design APIs");
@@ -275,7 +298,7 @@ describe("GET /job-roles/:id", () => {
 		const response = await request(app).get("/job-roles/999");
 
 		expect(response.status).toBe(404);
-		expect(mockedGetJobById).toHaveBeenCalledWith(999);
+		expect(mockedGetJobById).toHaveBeenCalledWith(999, jwtToken);
 		expect(response.text).toContain("Job role not found");
 	});
 
@@ -288,5 +311,14 @@ describe("GET /job-roles/:id", () => {
 		expect(response.text).toContain(
 			"Failed to load job role details. Please try again later.",
 		);
+	});
+
+	it("redirects to login when the API rejects the token", async () => {
+		mockedGetJobById.mockRejectedValueOnce(new Error("Unauthorized"));
+
+		const response = await request(app).get("/job-roles/7");
+
+		expect(response.status).toBe(302);
+		expect(response.headers.location).toBe("/login");
 	});
 });

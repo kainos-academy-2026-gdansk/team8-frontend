@@ -60,6 +60,8 @@
 }
 
 .govuk-footer.kainos-footer .govuk-footer__meta {
+	margin-right: 0;
+	margin-left: 0;
 	border-top: 0;
 	color: var(--k-color-white);
 }

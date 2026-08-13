@@ -12,7 +12,9 @@
       document.body.className += " js-enabled";
     </script>
 
-    {% include "partials/header.njk" %}
+    {% block header %}
+      {% include "partials/header.njk" %}
+    {% endblock %}
 
     <div class="govuk-width-container app-page__content">
       <main class="govuk-main-wrapper app-page__main" id="main-content" role="main">
@@ -20,11 +22,13 @@
       </main>
     </div>
 
-    {% include "partials/footer.njk" %}
+    {% block footer %}
+      {% include "partials/footer.njk" %}
+    {% endblock %}
 
-    <script src="/govuk-frontend.min.js"></script>
-    <script>
-      window.GOVUKFrontend.initAll();
+    <script type="module">
+      import { initAll } from "/govuk-frontend.min.js";
+      initAll();
     </script>
   </body>
 </html>

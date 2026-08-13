@@ -9,6 +9,10 @@ import {
 	type PaginatedJobRolesResponse,
 } from "../models/jobRole";
 
+function authHeaders(token: string): { Authorization: string } {
+	return { Authorization: `Bearer ${token}` };
+}
+
 const closingDateFormatter = new Intl.DateTimeFormat("en-GB", {
 	day: "2-digit",
 	month: "long",
@@ -45,6 +49,7 @@ function emptyJobRolePage(limit: number, offset: number): JobRolePage {
 }
 
 export async function getAllJobRoles(
+	token: string,
 	limit = JOB_ROLES_PAGE_SIZE,
 	offset = 0,
 	filters?: JobRoleFilters,
@@ -57,7 +62,7 @@ export async function getAllJobRoles(
 		appendJobRoleFilters(params, filters);
 		const response = await apiClient.get<PaginatedJobRolesResponse>(
 			"/job-roles",
-			{ params },
+			{ params, headers: authHeaders(token) },
 		);
 		const jobRoles =
 			response.data.data.length > limit
@@ -72,6 +77,7 @@ export async function getAllJobRoles(
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
+			if (status === 401) throw new Error("Unauthorized");
 			if (status === 404) return emptyJobRolePage(limit, offset);
 			if (status === 500) throw new Error("Backend server error");
 		}
@@ -103,13 +109,16 @@ export interface JobRolePageLink {
 	isCurrent: boolean;
 }
 
-export function buildPagination({
-	total,
-	limit,
-	offset,
-	jobRoles = [],
-}: Pick<JobRolePage, "total" | "limit" | "offset"> &
-	Partial<Pick<JobRolePage, "jobRoles">>, filters?: JobRoleFilters): JobRolePagination {
+export function buildPagination(
+	{
+		total,
+		limit,
+		offset,
+		jobRoles = [],
+	}: Pick<JobRolePage, "total" | "limit" | "offset"> &
+		Partial<Pick<JobRolePage, "jobRoles">>,
+	filters?: JobRoleFilters,
+): JobRolePagination {
 	const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
 	const lastOffset = totalPages > 0 ? (totalPages - 1) * limit : 0;
 	const currentOffset = Math.min(Math.max(offset, 0), Math.max(total - 1, 0));
@@ -168,13 +177,19 @@ export function buildPagination({
 	};
 }
 
-export async function getJobById(id: number): Promise<JobRoleDetailed | null> {
+export async function getJobById(
+	id: number,
+	token: string,
+): Promise<JobRoleDetailed | null> {
 	try {
-		const response = await apiClient.get<JobRoleDetailed>(`/job-roles/${id}`);
+		const response = await apiClient.get<JobRoleDetailed>(`/job-roles/${id}`, {
+			headers: authHeaders(token),
+		});
 		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
+			if (status === 401) throw new Error("Unauthorized");
 			if (status === 404) return null;
 			if (status === 500) throw new Error("Backend server error");
 		}

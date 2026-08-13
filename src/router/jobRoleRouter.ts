@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { JobRoleController } from "../controllers/jobRoleController";
-import { RegisterController } from "../controllers/registerController";
 import Logger from "../lib/logger";
 
 const router = Router();
