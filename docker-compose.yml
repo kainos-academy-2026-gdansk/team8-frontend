@@ -1,0 +1,13 @@
+services:
+  frontend:
+    container_name: team8-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      API_BASE_URL: http://host.docker.internal:3000/api
+    restart: unless-stopped
