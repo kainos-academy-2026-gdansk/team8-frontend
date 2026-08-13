@@ -15,7 +15,25 @@ const closingDateFormatter = new Intl.DateTimeFormat("en-GB", {
 	year: "numeric",
 });
 
-const MAX_PAGE_LINKS = 5;
+function appendJobRoleFilters(
+	params: URLSearchParams,
+	filters?: JobRoleFilters,
+): void {
+	if (!filters) return;
+	if (filters.roleName) params.set("roleName", filters.roleName);
+	if (filters.location) params.set("location", filters.location);
+	if (filters.closingDateAfter) {
+		params.set("closingDateAfter", filters.closingDateAfter);
+	}
+	if (filters.closingDateBefore) {
+		params.set("closingDateBefore", filters.closingDateBefore);
+	}
+	for (const capability of filters.capability) {
+		params.append("capability", capability);
+	}
+	for (const band of filters.band) params.append("band", band);
+	for (const status of filters.status) params.append("status", status);
+}
 
 function emptyJobRolePage(limit: number, offset: number): JobRolePage {
 	return {
@@ -36,30 +54,20 @@ export async function getAllJobRoles(
 			limit: String(limit),
 			offset: String(offset),
 		});
-		if (filters) {
-			if (filters.roleName) params.set("roleName", filters.roleName);
-			if (filters.location) params.set("location", filters.location);
-			if (filters.closingDateAfter) {
-				params.set("closingDateAfter", filters.closingDateAfter);
-			}
-			if (filters.closingDateBefore) {
-				params.set("closingDateBefore", filters.closingDateBefore);
-			}
-			for (const capability of filters.capability) {
-				params.append("capability", capability);
-			}
-			for (const band of filters.band) params.append("band", band);
-			for (const status of filters.status) params.append("status", status);
-		}
+		appendJobRoleFilters(params, filters);
 		const response = await apiClient.get<PaginatedJobRolesResponse>(
 			"/job-roles",
 			{ params },
 		);
+		const jobRoles =
+			response.data.data.length > limit
+				? response.data.data.slice(offset, offset + limit)
+				: response.data.data;
 		return {
-			jobRoles: response.data.data,
+			jobRoles,
 			total: response.data.total,
-			limit: response.data.limit,
-			offset: response.data.offset,
+			limit,
+			offset,
 		};
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -101,7 +109,7 @@ export function buildPagination({
 	offset,
 	jobRoles = [],
 }: Pick<JobRolePage, "total" | "limit" | "offset"> &
-	Partial<Pick<JobRolePage, "jobRoles">>): JobRolePagination {
+	Partial<Pick<JobRolePage, "jobRoles">>, filters?: JobRoleFilters): JobRolePagination {
 	const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
 	const lastOffset = totalPages > 0 ? (totalPages - 1) * limit : 0;
 	const currentOffset = Math.min(Math.max(offset, 0), Math.max(total - 1, 0));
@@ -119,16 +127,16 @@ export function buildPagination({
 	const returnedItemCount = jobRoles.length || limit;
 	const toItem =
 		total > 0 ? Math.min(currentOffset + returnedItemCount, total) : 0;
-	const hrefForOffset = (targetOffset: number) =>
-		`/job-roles?limit=${limit}&offset=${targetOffset}`;
-	const firstPage = Math.max(
-		1,
-		Math.min(
-			currentPage - Math.floor(MAX_PAGE_LINKS / 2),
-			totalPages - MAX_PAGE_LINKS + 1,
-		),
-	);
-	const lastPage = Math.min(totalPages, firstPage + MAX_PAGE_LINKS - 1);
+	const hrefForOffset = (targetOffset: number) => {
+		const params = new URLSearchParams({
+			limit: String(limit),
+			offset: String(targetOffset),
+		});
+		appendJobRoleFilters(params, filters);
+		return `/job-roles?${params.toString()}`;
+	};
+	const firstPage = Math.max(1, currentPage - 1);
+	const lastPage = Math.min(totalPages, currentPage + 1);
 	const pageLinks = Array.from(
 		{ length: Math.max(0, lastPage - firstPage + 1) },
 		(_, index) => {

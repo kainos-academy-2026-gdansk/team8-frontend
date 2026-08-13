@@ -19,21 +19,23 @@ export class JobRoleController {
 		try {
 			const { limit, offset, filters, isFiltered } =
 				jobRoleListQuerySchema.parse(req.query);
-			let jobRolePage = isFiltered
-				? await getAllJobRoles(limit, 0, filters)
-				: await getAllJobRoles(limit, offset);
+			const activeFilters = isFiltered ? filters : undefined;
+			const fetchPage = (targetOffset: number) =>
+				activeFilters
+					? getAllJobRoles(limit, targetOffset, activeFilters)
+					: getAllJobRoles(limit, targetOffset);
+			let jobRolePage = await fetchPage(offset);
 			let pageError: string | undefined;
-			let pagination = buildPagination(jobRolePage);
+			let pagination = buildPagination(jobRolePage, activeFilters);
 
 			if (
-				!isFiltered &&
 				jobRolePage.total > 0 &&
 				jobRolePage.jobRoles.length === 0
 			) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
-				jobRolePage = await getAllJobRoles(limit, pagination.lastOffset);
-				pagination = buildPagination(jobRolePage);
+				jobRolePage = await fetchPage(pagination.lastOffset);
+				pagination = buildPagination(jobRolePage, activeFilters);
 			}
 
 			const jobRolesForView = jobRolePage.jobRoles.map(formatJobRoleForView);

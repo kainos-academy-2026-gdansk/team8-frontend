@@ -127,7 +127,6 @@
       {% endfor %}
     </ul>
 
-    {% if not isFiltered %}
     <nav class="govuk-pagination job-role-pagination" aria-label="Pagination">
       <div class="job-role-pagination__first">
         {% if pagination.hasPrevious %}
@@ -189,7 +188,6 @@
         {% endif %}
       </div>
     </nav>
-    {% endif %}
   {% else %}
     <p class="govuk-body">{% if isFiltered %}No job roles match your filters.{% else %}No job roles found.{% endif %}</p>
   {% endif %}
