@@ -44,16 +44,4 @@ export class AuthController {
 			res.redirect("/login");
 		});
 	}
-
-    showUserProfile(req: Request, res: Response): void {
-		if (req.session.jwtToken) {
-			res.redirect("/user-profile");
-			return;
-		}
-
-		res.render("pages/login.njk", {
-			formValues: { email: "" },
-		});
-	}
-
 }

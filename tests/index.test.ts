@@ -1,7 +1,7 @@
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
 
-const { mockedRegisterAccount, MockRegisterApiError } = vi.hoisted(() => {
+const { mockedLogin, mockedRegisterAccount, MockRegisterApiError } = vi.hoisted(() => {
 	class RegisterApiError extends Error {
 		statusCode: number;
 
@@ -12,12 +12,14 @@ const { mockedRegisterAccount, MockRegisterApiError } = vi.hoisted(() => {
 	}
 
 	return {
+		mockedLogin: vi.fn(async () => "test-jwt-token"),
 		mockedRegisterAccount: vi.fn(async () => undefined),
 		MockRegisterApiError: RegisterApiError,
 	};
 });
 
 vi.mock("../src/services/authApiService", () => ({
+	login: mockedLogin,
 	registerAccount: mockedRegisterAccount,
 	RegisterApiError: MockRegisterApiError,
 }));
@@ -45,6 +47,46 @@ describe("Vitest smoke", () => {
 		expect(response.text).toContain('name="email"');
 		expect(response.text).toContain('name="password"');
 		expect(response.text).toContain('name="confirmPassword"');
+	});
+
+	it("responds on GET /login", async () => {
+		const response = await request(app).get("/login");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("Sign in");
+		expect(response.text).toContain('name="email"');
+	});
+
+	it("returns validation errors on invalid POST /login", async () => {
+		const response = await request(app).post("/login").type("form").send({
+			email: "person@example.com",
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.text).toContain("Enter both email and password");
+		expect(mockedLogin).not.toHaveBeenCalled();
+	});
+
+	it("protects the user profile with the login session", async () => {
+		const agent = request.agent(app);
+		const loginResponse = await agent.post("/login").type("form").send({
+			email: "person@example.com",
+			password: "Verysecure@pass",
+		});
+
+		expect(loginResponse.status).toBe(302);
+		expect(loginResponse.headers.location).toBe("/job-roles");
+		expect(mockedLogin).toHaveBeenCalledWith(
+			"person@example.com",
+			"Verysecure@pass",
+		);
+
+		const profileResponse = await agent.get("/user-profile");
+		expect(profileResponse.status).toBe(200);
+		expect(profileResponse.text).toContain("This is a user profile");
+
+		await agent.get("/logout").expect(302).expect("Location", "/login");
+		await agent.get("/user-profile").expect(302).expect("Location", "/login");
 	});
 
 	it("returns validation errors on invalid POST /register", async () => {
