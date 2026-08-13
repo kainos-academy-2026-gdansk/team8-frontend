@@ -68,8 +68,7 @@ export class RegisterController {
 	async post(req: Request, res: Response): Promise<void> {
 		const validation = validateRegisterForm(req.body);
 		const values = {
-			email:
-				typeof req.body?.email === "string" ? req.body.email.trim() : "",
+			email: typeof req.body?.email === "string" ? req.body.email.trim() : "",
 		};
 
 		if (!validation.success) {

@@ -40,7 +40,9 @@ export function formatJobRoleForView(jobRole: JobRole) {
 	return {
 		...jobRole,
 		statusLabel: jobRole.status.name === "OPEN" ? "Open" : "Closed",
-		closingDateLabel: closingDateFormatter.format(new Date(jobRole.closingDate)),
+		closingDateLabel: closingDateFormatter.format(
+			new Date(jobRole.closingDate),
+		),
 	};
 }
 
