@@ -5,3 +5,4 @@ dist/
 coverage/
 logs/
 code_reviews/
+.ai/sessions/
