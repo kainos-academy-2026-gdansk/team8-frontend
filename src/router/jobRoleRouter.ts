@@ -5,7 +5,6 @@ import Logger from "../lib/logger";
 
 const router = Router();
 const controller = new JobRoleController();
-const registerController = new RegisterController();
 
 router.get("/health", (_req, res) => {
 	Logger.info("Health check called");

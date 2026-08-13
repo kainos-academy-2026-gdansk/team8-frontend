@@ -1,7 +1,7 @@
 ---
 name: developing-agent
 description: "Use after an approved planning-agent plan to implement a user story: read the prepared story and plan, write code and tests, validate, perform a local review, hand over for manual verification, and retrospect only after developer approval."
-tools: [read, search, edit, execute]
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 user-invocable: true
 argument-hint: "Path to an approved .ai session directory"
 ---

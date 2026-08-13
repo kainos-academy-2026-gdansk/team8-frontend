@@ -5,6 +5,81 @@
 {% block content %}
   <h1 class="govuk-heading-l">All job roles</h1>
 
+  <div class="job-role-page-layout">
+  <form class="job-role-filters" action="/job-roles" method="get">
+    <h2 class="govuk-heading-m job-role-filters__heading">Filter job roles</h2>
+
+    <div class="job-role-filters__text-fields">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="role-name">Role name</label>
+        <input class="govuk-input" id="role-name" name="roleName" type="text" value="{{ filters.roleName or '' }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="location">Location</label>
+        <input class="govuk-input" id="location" name="location" type="text" value="{{ filters.location or '' }}">
+      </div>
+    </div>
+
+    <div class="job-role-filters__groups">
+      <fieldset class="govuk-fieldset job-role-filters__group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Capability</legend>
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          {% for option in capabilityOptions %}
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="capability-{{ loop.index }}" name="capability" type="checkbox" value="{{ option }}"{% if option in filters.capability %} checked{% endif %}>
+              <label class="govuk-label govuk-checkboxes__label" for="capability-{{ loop.index }}">{{ option }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="govuk-fieldset job-role-filters__group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Band</legend>
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          {% for option in bandOptions %}
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="band-{{ loop.index }}" name="band" type="checkbox" value="{{ option }}"{% if option in filters.band %} checked{% endif %}>
+              <label class="govuk-label govuk-checkboxes__label" for="band-{{ loop.index }}">{{ option }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="govuk-fieldset job-role-filters__group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Status</legend>
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          {% for option in statusOptions %}
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="status-{{ loop.index }}" name="status" type="checkbox" value="{{ option.value }}"{% if option.value in filters.status %} checked{% endif %}>
+              <label class="govuk-label govuk-checkboxes__label" for="status-{{ loop.index }}">{{ option.label }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="govuk-fieldset job-role-filters__group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Closing date</legend>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="closing-date-after">From</label>
+          <input class="govuk-input govuk-input--width-10" id="closing-date-after" name="closingDateAfter" type="date" value="{{ filters.closingDateAfter or '' }}">
+        </div>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="closing-date-before">To</label>
+          <input class="govuk-input govuk-input--width-10" id="closing-date-before" name="closingDateBefore" type="date" value="{{ filters.closingDateBefore or '' }}">
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="job-role-filters__actions">
+      <button class="govuk-button" data-module="govuk-button" type="submit">Apply filters</button>
+      {% if isFiltered %}
+        <a class="govuk-link" href="/job-roles">Clear filters</a>
+      {% endif %}
+    </div>
+  </form>
+
+  <div class="job-role-results">
   {% if pageError %}
     <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="job-role-list-error-title">
       <h2 id="job-role-list-error-title" class="govuk-error-summary__title">There is a problem</h2>
@@ -16,7 +91,11 @@
 
   {% if jobRoles.length > 0 %}
     <p class="govuk-body job-role-results-summary">
-      Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
+      {% if isFiltered %}
+        {{ total }} job role{% if total != 1 %}s{% endif %} found
+      {% else %}
+        Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
+      {% endif %}
     </p>
 
     <ul class="govuk-list job-role-list" aria-label="Job role listings">
@@ -110,6 +189,8 @@
       </div>
     </nav>
   {% else %}
-    <p class="govuk-body">No job roles found.</p>
+    <p class="govuk-body">{% if isFiltered %}No job roles match your filters.{% else %}No job roles found.{% endif %}</p>
   {% endif %}
+  </div>
+  </div>
 {% endblock %}

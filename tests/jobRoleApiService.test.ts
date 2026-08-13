@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockedGet } = vi.hoisted(() => ({
 	mockedGet: vi.fn(),
@@ -14,7 +14,13 @@ import {
 	buildPagination,
 	getAllJobRoles,
 } from "../src/services/jobRoleApiService";
-import type { JobRole } from "../src/models/jobRole";
+import type { JobRole, JobRoleFilters } from "../src/models/jobRole";
+
+const emptyFilters: JobRoleFilters = {
+	capability: [],
+	band: [],
+	status: [],
+};
 
 const backendPage = {
 	data: [],
@@ -30,20 +36,96 @@ const backendPage = {
 };
 
 describe("job role API service", () => {
+	beforeEach(() => {
+		mockedGet.mockReset();
+	});
+
 	it("passes pagination parameters and maps the backend envelope", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
 		const result = await getAllJobRoles(10, 10);
 
-		expect(mockedGet).toHaveBeenCalledWith("/job-roles", {
-			params: { limit: 10, offset: 10 },
-		});
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(mockedGet.mock.calls[0][0]).toBe("/job-roles");
+		expect(params.toString()).toBe("limit=10&offset=10");
 		expect(result).toEqual({
 			jobRoles: [],
 			total: 14,
 			limit: 10,
 			offset: 10,
 		});
+	});
+
+	it("sends text and date filters using the backend query names", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, {
+			...emptyFilters,
+			roleName: "Engineer",
+			location: "Gdansk",
+			closingDateAfter: "2026-08-01",
+			closingDateBefore: "2026-08-31",
+		});
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.toString()).toBe(
+			"limit=10&offset=0&roleName=Engineer&location=Gdansk&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
+		);
+	});
+
+	it("serializes checkbox filters as repeated query parameters", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, {
+			...emptyFilters,
+			capability: ["Software Engineering", "Cloud"],
+			band: ["Consultant", "Manager"],
+			status: ["OPEN", "CLOSED"],
+		});
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.getAll("capability")).toEqual([
+			"Software Engineering",
+			"Cloud",
+		]);
+		expect(params.getAll("band")).toEqual(["Consultant", "Manager"]);
+		expect(params.getAll("status")).toEqual(["OPEN", "CLOSED"]);
+	});
+
+	it("paginates an oversized filtered response using the requested offset", async () => {
+		const jobRoles = Array.from({ length: 14 }, (_, index) => ({
+			id: index + 1,
+		})) as JobRole[];
+		mockedGet
+			.mockResolvedValueOnce({
+				data: { ...backendPage, data: jobRoles, offset: 0 },
+			})
+			.mockResolvedValueOnce({
+				data: { ...backendPage, data: jobRoles, offset: 0 },
+			});
+
+		const filters = {
+			...emptyFilters,
+			roleName: "Engineer",
+		};
+		const firstPage = await getAllJobRoles(10, 0, filters);
+		const secondPage = await getAllJobRoles(10, 10, filters);
+
+		expect(firstPage.jobRoles).toHaveLength(10);
+		expect(firstPage.jobRoles.map(({ id }) => id)).toEqual([
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+		]);
+		expect(secondPage.jobRoles.map(({ id }) => id)).toEqual([11, 12, 13, 14]);
+		expect(secondPage).toMatchObject({ total: 14, limit: 10, offset: 10 });
+	});
+
+	it("omits empty filter values", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(10, 0, emptyFilters);
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.toString()).toBe("limit=10&offset=0");
 	});
 
 	it("returns an empty page when the backend returns 404", async () => {
@@ -104,6 +186,28 @@ describe("buildPagination", () => {
 		});
 	});
 
+	it("preserves active filters in pagination links", () => {
+		const pagination = buildPagination(
+			{ total: 24, limit: 10, offset: 0 },
+			{
+				roleName: "Engineer",
+				capability: ["Software Engineering", "Cloud"],
+				band: ["Consultant"],
+				status: ["OPEN"],
+			},
+		);
+
+		const nextUrl = new URL(pagination.nextHref, "http://localhost");
+		expect(nextUrl.searchParams.get("offset")).toBe("10");
+		expect(nextUrl.searchParams.get("roleName")).toBe("Engineer");
+		expect(nextUrl.searchParams.getAll("capability")).toEqual([
+			"Software Engineering",
+			"Cloud",
+		]);
+		expect(nextUrl.searchParams.getAll("band")).toEqual(["Consultant"]);
+		expect(nextUrl.searchParams.getAll("status")).toEqual(["OPEN"]);
+	});
+
 	it("disables forward controls on the last page", () => {
 		expect(buildPagination({ total: 14, limit: 10, offset: 10 })).toMatchObject(
 			{
@@ -116,19 +220,22 @@ describe("buildPagination", () => {
 		);
 	});
 
-	it("bounds numbered links for large result sets", () => {
+	it("shows only the current page and its immediate neighbours", () => {
 		const pagination = buildPagination({
-			total: 1_000_000,
+			total: 50,
 			limit: 10,
-			offset: 500_000,
+			offset: 20,
 		});
 
-		expect(pagination.pageLinks).toHaveLength(5);
-		expect(pagination.pageLinks).toContainEqual({
-			page: pagination.currentPage,
-			href: `/job-roles?limit=10&offset=${pagination.currentPage * 10 - 10}`,
-			isCurrent: true,
-		});
+		expect(pagination.pageLinks.map(({ page }) => page)).toEqual([2, 3, 4]);
+	});
+
+	it("keeps numbered links within the first and last page", () => {
+		const firstPage = buildPagination({ total: 50, limit: 10, offset: 0 });
+		const lastPage = buildPagination({ total: 50, limit: 10, offset: 40 });
+
+		expect(firstPage.pageLinks.map(({ page }) => page)).toEqual([1, 2]);
+		expect(lastPage.pageLinks.map(({ page }) => page)).toEqual([4, 5]);
 	});
 
 	it("uses the returned item count for a non-page-aligned offset", () => {

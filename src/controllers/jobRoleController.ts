@@ -6,22 +6,36 @@ import {
 	formatJobRoleDetailedForView,
 	buildPagination,
 } from "../services/jobRoleApiService";
-import { jobRolePaginationQuerySchema } from "../models/jobRole";
+import {
+	JOB_ROLE_BAND_OPTIONS,
+	JOB_ROLE_CAPABILITY_OPTIONS,
+	JOB_ROLE_STATUS_OPTIONS,
+	jobRoleListQuerySchema,
+} from "../models/jobRole";
 import Logger from "../lib/logger";
 
 export class JobRoleController {
 	async getAll(req: Request, res: Response): Promise<void> {
 		try {
-			const { limit, offset } = jobRolePaginationQuerySchema.parse(req.query);
-			let jobRolePage = await getAllJobRoles(limit, offset);
+			const { limit, offset, filters, isFiltered } =
+				jobRoleListQuerySchema.parse(req.query);
+			const activeFilters = isFiltered ? filters : undefined;
+			const fetchPage = (targetOffset: number) =>
+				activeFilters
+					? getAllJobRoles(limit, targetOffset, activeFilters)
+					: getAllJobRoles(limit, targetOffset);
+			let jobRolePage = await fetchPage(offset);
 			let pageError: string | undefined;
-			let pagination = buildPagination(jobRolePage);
+			let pagination = buildPagination(jobRolePage, activeFilters);
 
-			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
+			if (
+				jobRolePage.total > 0 &&
+				jobRolePage.jobRoles.length === 0
+			) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
-				jobRolePage = await getAllJobRoles(limit, pagination.lastOffset);
-				pagination = buildPagination(jobRolePage);
+				jobRolePage = await fetchPage(pagination.lastOffset);
+				pagination = buildPagination(jobRolePage, activeFilters);
 			}
 
 			const jobRolesForView = jobRolePage.jobRoles.map(formatJobRoleForView);
@@ -30,6 +44,11 @@ export class JobRoleController {
 				total: jobRolePage.total,
 				pagination,
 				pageError,
+				filters,
+				isFiltered,
+				capabilityOptions: JOB_ROLE_CAPABILITY_OPTIONS,
+				bandOptions: JOB_ROLE_BAND_OPTIONS,
+				statusOptions: JOB_ROLE_STATUS_OPTIONS,
 			});
 		} catch (error) {
 			Logger.error("Error fetching job roles", { error });
