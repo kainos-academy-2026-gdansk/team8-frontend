@@ -3,8 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JobRolePage } from "../src/models/jobRole";
 import { buildPagination } from "../src/services/jobRoleApiService";
 
-const { mockedGetAllJobRoles } = vi.hoisted(() => ({
+const { mockedGetAllJobRoles, mockedGetJobById } = vi.hoisted(() => ({
 	mockedGetAllJobRoles: vi.fn(),
+	mockedGetJobById: vi.fn(),
 }));
 
 vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
@@ -13,6 +14,7 @@ vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
 	return {
 		...actual,
 		getAllJobRoles: mockedGetAllJobRoles,
+		getJobById: mockedGetJobById,
 	};
 });
 
@@ -45,6 +47,7 @@ function createPage(offset: number, total = 14): JobRolePage {
 describe("GET /job-roles pagination", () => {
 	beforeEach(() => {
 		mockedGetAllJobRoles.mockReset();
+		mockedGetJobById.mockReset();
 	});
 
 	it("loads the first ten roles and disables backward controls", async () => {
@@ -222,5 +225,68 @@ describe("GET /job-roles pagination", () => {
 
 		expect(response.text).toContain("No job roles match your filters.");
 		expect(response.text).not.toContain('aria-label="Pagination"');
+	});
+
+	it("renders an error page when loading job roles fails", async () => {
+		mockedGetAllJobRoles.mockRejectedValueOnce(new Error("Backend unavailable"));
+
+		const response = await request(app).get("/job-roles");
+
+		expect(response.status).toBe(500);
+		expect(response.text).toContain("Failed to load job roles. Please try again later.");
+	});
+});
+
+describe("GET /job-roles/:id", () => {
+	beforeEach(() => {
+		mockedGetJobById.mockReset();
+	});
+
+	it("renders a formatted job role", async () => {
+		mockedGetJobById.mockResolvedValueOnce({
+			...createJobRole(7),
+			description: "Build reliable services",
+			responsibilities: "Design APIs; Review code",
+			sharepointUrl: "https://example.com/apply",
+			numberOfOpenPositions: 2,
+		});
+
+		const response = await request(app).get("/job-roles/7");
+
+		expect(response.status).toBe(200);
+		expect(mockedGetJobById).toHaveBeenCalledWith(7);
+		expect(response.text).toContain("Role 7");
+		expect(response.text).toContain("Open");
+		expect(response.text).toContain("Design APIs");
+		expect(response.text).toContain("Review code");
+	});
+
+	it("rejects a non-numeric job role ID", async () => {
+		const response = await request(app).get("/job-roles/not-a-number");
+
+		expect(response.status).toBe(400);
+		expect(mockedGetJobById).not.toHaveBeenCalled();
+		expect(response.text).toContain("Invalid job role ID");
+	});
+
+	it("renders not found when the job role does not exist", async () => {
+		mockedGetJobById.mockResolvedValueOnce(null);
+
+		const response = await request(app).get("/job-roles/999");
+
+		expect(response.status).toBe(404);
+		expect(mockedGetJobById).toHaveBeenCalledWith(999);
+		expect(response.text).toContain("Job role not found");
+	});
+
+	it("renders an error page when loading a job role fails", async () => {
+		mockedGetJobById.mockRejectedValueOnce(new Error("Backend unavailable"));
+
+		const response = await request(app).get("/job-roles/7");
+
+		expect(response.status).toBe(500);
+		expect(response.text).toContain(
+			"Failed to load job role details. Please try again later.",
+		);
 	});
 });
