@@ -103,13 +103,16 @@ export interface JobRolePageLink {
 	isCurrent: boolean;
 }
 
-export function buildPagination({
-	total,
-	limit,
-	offset,
-	jobRoles = [],
-}: Pick<JobRolePage, "total" | "limit" | "offset"> &
-	Partial<Pick<JobRolePage, "jobRoles">>, filters?: JobRoleFilters): JobRolePagination {
+export function buildPagination(
+	{
+		total,
+		limit,
+		offset,
+		jobRoles = [],
+	}: Pick<JobRolePage, "total" | "limit" | "offset"> &
+		Partial<Pick<JobRolePage, "jobRoles">>,
+	filters?: JobRoleFilters,
+): JobRolePagination {
 	const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
 	const lastOffset = totalPages > 0 ? (totalPages - 1) * limit : 0;
 	const currentOffset = Math.min(Math.max(offset, 0), Math.max(total - 1, 0));

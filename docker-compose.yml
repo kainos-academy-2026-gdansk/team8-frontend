@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    networks:
+      - internal-network
     ports:
       - "3001:3001"
     environment:
@@ -11,3 +13,7 @@ services:
       PORT: 3001
       API_BASE_URL: http://host.docker.internal:3000/api
     restart: unless-stopped
+
+networks:
+  internal-network:
+    external: true

@@ -28,10 +28,7 @@ export class JobRoleController {
 			let pageError: string | undefined;
 			let pagination = buildPagination(jobRolePage, activeFilters);
 
-			if (
-				jobRolePage.total > 0 &&
-				jobRolePage.jobRoles.length === 0
-			) {
+			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
 				jobRolePage = await fetchPage(pagination.lastOffset);
