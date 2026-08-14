@@ -18,7 +18,9 @@ router.post("/register", (req, res, next) => {
 });
 
 router.get("/login", (req, res) => authController.showLogin(req, res));
-router.post("/login", (req, res, next) => authController.login(req, res).catch(next));
+router.post("/login", (req, res, next) =>
+	authController.login(req, res).catch(next),
+);
 router.get("/logout", requireAuth, (req, res) =>
 	authController.logout(req, res),
 );
