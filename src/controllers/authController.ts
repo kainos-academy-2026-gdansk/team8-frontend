@@ -3,6 +3,7 @@ import {
 	LoginApiError,
 	login as loginWithApi,
 } from "../services/authApiService.js";
+import Logger from "../lib/logger.js";
 
 const LOGIN_VIEW = "pages/login.njk";
 
@@ -49,7 +50,16 @@ export class AuthController {
 	}
 
 	logout(req: Request, res: Response): void {
-		req.session.destroy(() => {
+		req.session.destroy((error) => {
+			if (error) {
+				Logger.error("Session destroy failed during logout", { error });
+				res.status(500).render("pages/error.njk", {
+					status: 500,
+					title: "Logout failed",
+					message: "Unable to sign out. Please try again.",
+				});
+				return;
+			}
 			res.clearCookie("connect.sid");
 			res.redirect("/login");
 		});

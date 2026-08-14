@@ -8,6 +8,7 @@ import jobRoleRouter from "./router/jobRoleRouter";
 import authRouter from "./router/authRouter";
 import session from "express-session";
 import { requireAuth } from "./config/authMiddleware";
+import { noCacheMiddleware } from "./config/noCacheMiddleware";
 
 export const app = express();
 
