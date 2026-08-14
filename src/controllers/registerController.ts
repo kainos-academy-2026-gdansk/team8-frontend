@@ -57,7 +57,11 @@ function renderRegister(
 }
 
 export class RegisterController {
-	get(_req: Request, res: Response): void {
+	get(req: Request, res: Response): void {
+		if (req.session.jwtToken) {
+			res.redirect("/job-roles");
+			return;
+		}
 		renderRegister(res, 200, {
 			values: { ...EMPTY_VALUES },
 			errors: {},
