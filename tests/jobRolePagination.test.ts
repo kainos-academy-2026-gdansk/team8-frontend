@@ -228,12 +228,16 @@ describe("GET /job-roles pagination", () => {
 	});
 
 	it("renders an error page when loading job roles fails", async () => {
-		mockedGetAllJobRoles.mockRejectedValueOnce(new Error("Backend unavailable"));
+		mockedGetAllJobRoles.mockRejectedValueOnce(
+			new Error("Backend unavailable"),
+		);
 
 		const response = await request(app).get("/job-roles");
 
 		expect(response.status).toBe(500);
-		expect(response.text).toContain("Failed to load job roles. Please try again later.");
+		expect(response.text).toContain(
+			"Failed to load job roles. Please try again later.",
+		);
 	});
 });
 
