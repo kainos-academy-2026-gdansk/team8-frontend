@@ -25,13 +25,8 @@
 			{% endif %}
 
 			<form action="/login" method="post" novalidate class="login-form">
-				<div class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
+				<div class="govuk-form-group">
 					<label class="govuk-label govuk-label--m" for="email">Email</label>
-					{% if errorMessage %}
-						<p id="email-error" class="govuk-error-message">
-							<span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
-						</p>
-					{% endif %}
 					<input
 						class="govuk-input govuk-!-width-two-thirds"
 						id="email"
@@ -40,7 +35,6 @@
 						autocomplete="email"
 						spellcheck="false"
 						value="{{ formValues.email | default('', true) }}"
-						{% if errorMessage %}aria-describedby="email-error"{% endif %}
 					/>
 				</div>
 

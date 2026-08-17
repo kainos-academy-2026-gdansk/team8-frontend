@@ -9,11 +9,12 @@
 
 {% set accountButtonHtml %}
   {% if isAuthenticated %}
-    {{ govukButton({
-      text: "Log out",
-      href: "/logout",
-      classes: "kainos-topnav__cta"
-    }) }}
+    <form method="post" action="/logout" class="kainos-topnav__logout-form">
+      {{ govukButton({
+        text: "Log out",
+        classes: "kainos-topnav__cta"
+      }) }}
+    </form>
   {% else %}
     {{ govukButton({
       text: "Login",

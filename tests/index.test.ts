@@ -64,8 +64,8 @@ describe("Vitest smoke", () => {
 		expect(response.text).toContain('href="/job-roles"');
 	});
 
-	it("redirects unauthenticated users from GET /logout", async () => {
-		const response = await request(app).get("/logout");
+	it("redirects unauthenticated users from POST /logout", async () => {
+		const response = await request(app).post("/logout");
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe("/login");
@@ -122,7 +122,8 @@ describe("Vitest smoke", () => {
 			"Find the role where you can make an impact",
 		);
 		expect(protectedResponse.text).toContain("Explore job roles");
-		expect(protectedResponse.text).toContain('href="/logout"');
+		expect(protectedResponse.text).toContain('method="post"');
+		expect(protectedResponse.text).toContain('action="/logout"');
 		expect(protectedResponse.text).toContain("Log out");
 	});
 
