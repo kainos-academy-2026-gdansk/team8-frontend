@@ -2,9 +2,12 @@
 
 {% block title %}Register{% endblock %}
 
+{% block header %}{% endblock %}
+
 {% block content %}
 	<section class="register-page">
 		<div class="register-page__panel">
+			<a href="/login" class="govuk-back-link">Back</a>
 			<h1 class="govuk-heading-l register-page__title">Create your account</h1>
 			<p class="govuk-body register-page__intro">
 				Register with your work email to continue.
@@ -107,6 +110,11 @@
 					Create account
 				</button>
 			</form>
+			<p class="govuk-body register-page__login-message">
+				Already have an account? <a href="/login" class="govuk-link">Login here</a>
+			</p>
 		</div>
 	</section>
 {% endblock %}
+
+{% block footer %}{% endblock %}

@@ -6,6 +6,9 @@ import { notFoundMiddleware } from "./config/notFoundMiddleware";
 import path from "node:path";
 import jobRoleRouter from "./router/jobRoleRouter";
 import authRouter from "./router/authRouter";
+import session from "express-session";
+import { requireAuth } from "./config/authMiddleware";
+import Logger from "./lib/logger";
 
 export const app = express();
 
@@ -82,7 +85,38 @@ app.use(morganMiddleware);
 
 app.use(express.urlencoded({ extended: true }));
 
+// Persist login state across requests so protected routes can read req.session.jwtToken.
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET ?? "dev-session-secret",
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 1000 * 60 * 60,
+		},
+	}),
+);
+
+// Expose auth state to all templates for sign in/sign out navigation.
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	next();
+});
+
+app.get("/health", (_req, res) => {
+	Logger.info("Health check called");
+	res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+app.get("/", (_req, res) => {
+	Logger.info("Index page rendered");
+	res.render("pages/index.njk", { message: "Hello world!" });
+});
+
 app.use(authRouter);
+app.use(requireAuth);
 app.use(jobRoleRouter);
 
 app.use(notFoundMiddleware);

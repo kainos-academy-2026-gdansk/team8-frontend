@@ -13,8 +13,11 @@ vi.mock("../src/config/apiClient", () => ({
 import {
 	buildPagination,
 	getAllJobRoles,
+	getJobById,
 } from "../src/services/jobRoleApiService";
 import type { JobRole, JobRoleFilters } from "../src/models/jobRole";
+
+const jwtToken = "test-jwt-token";
 
 const emptyFilters: JobRoleFilters = {
 	capability: [],
@@ -43,10 +46,13 @@ describe("job role API service", () => {
 	it("passes pagination parameters and maps the backend envelope", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
-		const result = await getAllJobRoles(10, 10);
+		const result = await getAllJobRoles(jwtToken, 10, 10);
 
 		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
 		expect(mockedGet.mock.calls[0][0]).toBe("/job-roles");
+		expect(mockedGet.mock.calls[0][1].headers).toEqual({
+			Authorization: `Bearer ${jwtToken}`,
+		});
 		expect(params.toString()).toBe("limit=10&offset=10");
 		expect(result).toEqual({
 			jobRoles: [],
@@ -59,7 +65,7 @@ describe("job role API service", () => {
 	it("sends text and date filters using the backend query names", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
-		await getAllJobRoles(10, 0, {
+		await getAllJobRoles(jwtToken, 10, 0, {
 			...emptyFilters,
 			roleName: "Engineer",
 			location: "Gdansk",
@@ -76,7 +82,7 @@ describe("job role API service", () => {
 	it("serializes checkbox filters as repeated query parameters", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
-		await getAllJobRoles(10, 0, {
+		await getAllJobRoles(jwtToken, 10, 0, {
 			...emptyFilters,
 			capability: ["Software Engineering", "Cloud"],
 			band: ["Consultant", "Manager"],
@@ -108,8 +114,8 @@ describe("job role API service", () => {
 			...emptyFilters,
 			roleName: "Engineer",
 		};
-		const firstPage = await getAllJobRoles(10, 0, filters);
-		const secondPage = await getAllJobRoles(10, 10, filters);
+		const firstPage = await getAllJobRoles(jwtToken, 10, 0, filters);
+		const secondPage = await getAllJobRoles(jwtToken, 10, 10, filters);
 
 		expect(firstPage.jobRoles).toHaveLength(10);
 		expect(firstPage.jobRoles.map(({ id }) => id)).toEqual([
@@ -122,7 +128,7 @@ describe("job role API service", () => {
 	it("omits empty filter values", async () => {
 		mockedGet.mockResolvedValueOnce({ data: backendPage });
 
-		await getAllJobRoles(10, 0, emptyFilters);
+		await getAllJobRoles(jwtToken, 10, 0, emptyFilters);
 
 		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
 		expect(params.toString()).toBe("limit=10&offset=0");
@@ -135,7 +141,7 @@ describe("job role API service", () => {
 		});
 		mockedGet.mockRejectedValueOnce(error);
 
-		await expect(getAllJobRoles(10, 0)).resolves.toEqual({
+		await expect(getAllJobRoles(jwtToken, 10, 0)).resolves.toEqual({
 			jobRoles: [],
 			total: 0,
 			limit: 10,
@@ -150,7 +156,23 @@ describe("job role API service", () => {
 		});
 		mockedGet.mockRejectedValueOnce(error);
 
-		await expect(getAllJobRoles(10, 0)).rejects.toThrow("Backend server error");
+		await expect(getAllJobRoles(jwtToken, 10, 0)).rejects.toThrow(
+			"Backend server error",
+		);
+	});
+
+	it("converts backend 401 responses into an unauthorized error", async () => {
+		const error = Object.assign(new Error("Unauthorized"), {
+			isAxiosError: true,
+			response: { status: 401 },
+		});
+		mockedGet.mockRejectedValueOnce(error);
+
+		await expect(getAllJobRoles(jwtToken, 10, 0)).rejects.toThrow(
+			"Unauthorized",
+		);
+		mockedGet.mockRejectedValueOnce(error);
+		await expect(getJobById(7, jwtToken)).rejects.toThrow("Unauthorized");
 	});
 });
 

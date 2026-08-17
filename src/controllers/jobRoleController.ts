@@ -15,15 +15,34 @@ import {
 import Logger from "../lib/logger";
 
 export class JobRoleController {
+	private getJwtToken(req: Request): string {
+		return req.session.jwtToken ?? "";
+	}
+
+	private handleUnauthorized(
+		req: Request,
+		res: Response,
+		error: unknown,
+	): boolean {
+		if (error instanceof Error && error.message === "Unauthorized") {
+			req.session.jwtToken = undefined;
+			res.redirect("/login");
+			return true;
+		}
+
+		return false;
+	}
+
 	async getAll(req: Request, res: Response): Promise<void> {
 		try {
 			const { limit, offset, filters, isFiltered } =
 				jobRoleListQuerySchema.parse(req.query);
 			const activeFilters = isFiltered ? filters : undefined;
+			const jwtToken = this.getJwtToken(req);
 			const fetchPage = (targetOffset: number) =>
 				activeFilters
-					? getAllJobRoles(limit, targetOffset, activeFilters)
-					: getAllJobRoles(limit, targetOffset);
+					? getAllJobRoles(jwtToken, limit, targetOffset, activeFilters)
+					: getAllJobRoles(jwtToken, limit, targetOffset);
 			let jobRolePage = await fetchPage(offset);
 			let pageError: string | undefined;
 			let pagination = buildPagination(jobRolePage, activeFilters);
@@ -48,6 +67,10 @@ export class JobRoleController {
 				statusOptions: JOB_ROLE_STATUS_OPTIONS,
 			});
 		} catch (error) {
+			if (this.handleUnauthorized(req, res, error)) {
+				return;
+			}
+
 			Logger.error("Error fetching job roles", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,
@@ -68,7 +91,7 @@ export class JobRoleController {
 				return;
 			}
 
-			const job = await getJobById(id);
+			const job = await getJobById(id, this.getJwtToken(req));
 
 			if (!job) {
 				res.status(404).render("pages/not-found.njk", {
@@ -81,6 +104,10 @@ export class JobRoleController {
 			const jobForView = formatJobRoleDetailedForView(job);
 			res.render("pages/job-role-information.njk", { job: jobForView });
 		} catch (error) {
+			if (this.handleUnauthorized(req, res, error)) {
+				return;
+			}
+
 			Logger.error("Error fetching job role", { error });
 			res.status(500).render("pages/error.njk", {
 				status: 500,

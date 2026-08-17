@@ -73,6 +73,10 @@
 	margin-left: auto;
 }
 
+.govuk-service-navigation.kainos-topnav .kainos-topnav__logout-form {
+	margin: 0;
+}
+
 .govuk-service-navigation.kainos-topnav .kainos-topnav__icon-link {
 	width: 44px;
 	height: 44px;

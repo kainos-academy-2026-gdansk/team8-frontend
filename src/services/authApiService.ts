@@ -11,6 +11,10 @@ type RegisterErrorResponse = {
 	error?: string;
 };
 
+type LoginResponse = {
+	token: string;
+};
+
 export class RegisterApiError extends Error {
 	constructor(
 		public readonly statusCode: number,
@@ -18,6 +22,47 @@ export class RegisterApiError extends Error {
 	) {
 		super(message);
 		this.name = "RegisterApiError";
+	}
+}
+
+export class LoginApiError extends Error {
+	constructor(
+		public readonly statusCode: number,
+		message: string,
+	) {
+		super(message);
+		this.name = "LoginApiError";
+	}
+}
+
+export async function login(email: string, password: string): Promise<string> {
+	try {
+		const response = await apiClient.post<LoginResponse>("/auth/login", {
+			email,
+			password,
+		});
+		return response.data.token;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			const backendMessage = (
+				error.response?.data as RegisterErrorResponse | undefined
+			)?.error;
+
+			if (status === 401) {
+				throw new LoginApiError(
+					status,
+					backendMessage ?? "Invalid email or password",
+				);
+			}
+
+			throw new LoginApiError(
+				typeof status === "number" ? status : 502,
+				"Unable to sign in right now. Please try again later.",
+			);
+		}
+
+		throw error;
 	}
 }
 
