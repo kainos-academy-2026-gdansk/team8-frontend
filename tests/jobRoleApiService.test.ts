@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockedGet } = vi.hoisted(() => ({
+const { mockedGet, mockedPost } = vi.hoisted(() => ({
 	mockedGet: vi.fn(),
+	mockedPost: vi.fn(),
 }));
 
 vi.mock("../src/config/apiClient", () => ({
 	default: {
 		get: mockedGet,
+		post: mockedPost,
 	},
 }));
 
@@ -14,6 +16,8 @@ import {
 	buildPagination,
 	getAllJobRoles,
 	getJobById,
+	getJobRoleCatalogues,
+	createJobRole,
 } from "../src/services/jobRoleApiService";
 import type { JobRole, JobRoleFilters } from "../src/models/jobRole";
 
@@ -41,6 +45,7 @@ const backendPage = {
 describe("job role API service", () => {
 	beforeEach(() => {
 		mockedGet.mockReset();
+		mockedPost.mockReset();
 	});
 
 	it("passes pagination parameters and maps the backend envelope", async () => {
@@ -173,6 +178,43 @@ describe("job role API service", () => {
 		);
 		mockedGet.mockRejectedValueOnce(error);
 		await expect(getJobById(7, jwtToken)).rejects.toThrow("Unauthorized");
+	});
+
+	it("loads bands and capabilities from the backend catalogues", async () => {
+		mockedGet
+			.mockResolvedValueOnce({ data: [{ id: 1, name: "Band A" }] })
+			.mockResolvedValueOnce({ data: [{ id: 2, name: "Cloud" }] });
+
+		await expect(getJobRoleCatalogues(jwtToken)).resolves.toEqual({
+			bands: [{ id: 1, name: "Band A" }],
+			capabilities: [{ id: 2, name: "Cloud" }],
+		});
+		expect(mockedGet.mock.calls.map(([path]) => path)).toEqual([
+			"/bands",
+			"/capabilities",
+		]);
+	});
+
+	it("submits a validated job role to the backend", async () => {
+		const created = { id: 9, roleName: "New Engineer" } as JobRole;
+		mockedPost.mockResolvedValueOnce({ data: created });
+
+		const data = {
+			roleName: "New Engineer",
+			description: "Build APIs",
+			responsibilities: "Design services",
+			sharepointUrl: "https://company.sharepoint.com/new-role",
+			location: "Gdansk",
+			closingDate: "2026-12-31",
+			numberOfOpenPositions: 2,
+			capabilityId: 2,
+			bandId: 1,
+		} as never;
+
+		await expect(createJobRole(jwtToken, data)).resolves.toEqual(created);
+		expect(mockedPost).toHaveBeenCalledWith("/job-roles", data, {
+			headers: { Authorization: `Bearer ${jwtToken}` },
+		});
 	});
 });
 

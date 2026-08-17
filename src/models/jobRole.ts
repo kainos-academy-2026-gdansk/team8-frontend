@@ -180,3 +180,29 @@ export interface JobRoleDetailed extends JobRole {
 	sharepointUrl: string;
 	numberOfOpenPositions: number;
 }
+
+export const createJobRoleSchema = z.object({
+	roleName: z.string().trim().min(1, "Enter a role name"),
+	description: z.string().trim().min(1, "Enter a description"),
+	responsibilities: z.string().trim().min(1, "Enter responsibilities"),
+	sharepointUrl: z.string().trim().url("Enter a valid SharePoint URL"),
+	location: z.string().trim().min(1, "Enter a location"),
+	closingDate: z.string().min(1, "Enter a closing date"),
+	numberOfOpenPositions: z.coerce
+		.number()
+		.int()
+		.nonnegative("Enter zero or more open positions"),
+	capabilityId: z.coerce.number().int().positive("Select a capability"),
+	bandId: z.coerce.number().int().positive("Select a band"),
+});
+
+export type CreateJobRoleInput = z.input<typeof createJobRoleSchema>;
+export type CreateJobRoleData = z.infer<typeof createJobRoleSchema>;
+export type CreateJobRoleErrors = Partial<
+	Record<keyof CreateJobRoleInput, string>
+>;
+
+export interface CatalogueItem {
+	id: number;
+	name: string;
+}
