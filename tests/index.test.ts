@@ -53,22 +53,33 @@ describe("Vitest smoke", () => {
 		expect(1 + 1).toBe(2);
 	});
 
-	it("redirects unauthenticated users from GET /", async () => {
+	it("renders the public home page", async () => {
 		const response = await request(app).get("/");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain(
+			"Find the role where you can make an impact",
+		);
+		expect(response.text).toContain("Explore job roles");
+		expect(response.text).toContain('href="/job-roles"');
+	});
+
+	it("redirects unauthenticated users from GET /logout", async () => {
+		const response = await request(app).get("/logout");
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe("/login");
 	});
 
-	it.each(["/health", "/logout"])(
-		"redirects unauthenticated users from GET %s",
-		async (path) => {
-			const response = await request(app).get(path);
+	it("responds with health status on GET /health", async () => {
+		const response = await request(app).get("/health");
 
-			expect(response.status).toBe(302);
-			expect(response.headers.location).toBe("/login");
-		},
-	);
+		expect(response.status).toBe(200);
+		expect(response.body).toEqual({
+			status: "OK",
+			timestamp: expect.any(String),
+		});
+	});
 
 	it("renders the public login page", async () => {
 		const response = await request(app).get("/login");
