@@ -107,7 +107,10 @@ describe("Vitest smoke", () => {
 			"Verysecure@pass",
 		);
 		expect(protectedResponse.status).toBe(200);
-		expect(protectedResponse.text).toContain("Hello world!");
+		expect(protectedResponse.text).toContain(
+			"Find the role where you can make an impact",
+		);
+		expect(protectedResponse.text).toContain("Explore job roles");
 		expect(protectedResponse.text).toContain('href="/logout"');
 		expect(protectedResponse.text).toContain("Log out");
 	});

@@ -1,5 +1,40 @@
 {% extends "layouts/base.njk" %}
 
+{% block title %}Home{% endblock %}
+
 {% block content %}
-<h1> {{message}} </h1>
+	<section class="home-hero" aria-labelledby="home-title">
+		<div class="home-hero__content">
+			<p class="home-hero__eyebrow">Careers at Kainos</p>
+			<h1 class="govuk-heading-xl home-hero__title" id="home-title">Find the role where you can make an impact</h1>
+			<p class="govuk-body-l home-hero__intro">Explore opportunities to solve real problems, grow your skills and shape a better future.</p>
+			<a class="govuk-button home-hero__action" data-module="govuk-button" href="/job-roles">Explore job roles</a>
+		</div>
+		<div class="home-hero__accent" aria-hidden="true">
+			<span class="home-hero__accent-word">Imagine</span>
+			<span class="home-hero__accent-word">Create</span>
+			<span class="home-hero__accent-word">Grow</span>
+		</div>
+	</section>
+
+	<section class="home-highlights" aria-labelledby="highlights-title">
+		<h2 class="govuk-heading-l home-highlights__title" id="highlights-title">Build your future with us</h2>
+		<div class="home-highlights__grid">
+			<article class="home-highlight">
+				<p class="home-highlight__number" aria-hidden="true">01</p>
+				<h3 class="govuk-heading-m">Meaningful work</h3>
+				<p class="govuk-body">Work on projects that improve services for people and organisations around the world.</p>
+			</article>
+			<article class="home-highlight">
+				<p class="home-highlight__number" aria-hidden="true">02</p>
+				<h3 class="govuk-heading-m">Room to grow</h3>
+				<p class="govuk-body">Develop your expertise with supportive teams, varied challenges and clear opportunities.</p>
+			</article>
+			<article class="home-highlight">
+				<p class="home-highlight__number" aria-hidden="true">03</p>
+				<h3 class="govuk-heading-m">People first</h3>
+				<p class="govuk-body">Bring your perspective to an inclusive workplace built on trust and collaboration.</p>
+			</article>
+		</div>
+	</section>
 {% endblock %}

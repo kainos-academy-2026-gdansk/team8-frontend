@@ -61,7 +61,7 @@ export class AuthController {
 				return;
 			}
 			res.clearCookie("connect.sid");
-			res.redirect("/login");
+			res.redirect("/");
 		});
 	}
 }

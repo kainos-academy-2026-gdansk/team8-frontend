@@ -8,6 +8,7 @@ import jobRoleRouter from "./router/jobRoleRouter";
 import authRouter from "./router/authRouter";
 import session from "express-session";
 import { requireAuth } from "./config/authMiddleware";
+import Logger from "./lib/logger";
 
 export const app = express();
 
@@ -102,6 +103,16 @@ app.use(
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
 	next();
+});
+
+app.get("/health", (_req, res) => {
+	Logger.info("Health check called");
+	res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+app.get("/", (_req, res) => {
+	Logger.info("Index page rendered");
+	res.render("pages/index.njk", { message: "Hello world!" });
 });
 
 app.use(authRouter);
