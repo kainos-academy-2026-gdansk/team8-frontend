@@ -98,6 +98,19 @@ describe("job role API service", () => {
 		expect(params.getAll("status")).toEqual(["OPEN", "CLOSED"]);
 	});
 
+	it("sends sort parameters when sorting is active", async () => {
+		mockedGet.mockResolvedValueOnce({ data: backendPage });
+
+		await getAllJobRoles(jwtToken, 10, 0, emptyFilters, {
+			sortBy: "closingDate",
+			sortOrder: "desc",
+		});
+
+		const params = mockedGet.mock.calls[0][1].params as URLSearchParams;
+		expect(params.get("sortBy")).toBe("closingDate");
+		expect(params.get("sortOrder")).toBe("desc");
+	});
+
 	it("paginates an oversized filtered response using the requested offset", async () => {
 		const jobRoles = Array.from({ length: 14 }, (_, index) => ({
 			id: index + 1,
@@ -228,6 +241,19 @@ describe("buildPagination", () => {
 		]);
 		expect(nextUrl.searchParams.getAll("band")).toEqual(["Consultant"]);
 		expect(nextUrl.searchParams.getAll("status")).toEqual(["OPEN"]);
+	});
+
+	it("preserves active sorting in pagination links", () => {
+		const pagination = buildPagination(
+			{ total: 24, limit: 10, offset: 0 },
+			undefined,
+			{ sortBy: "roleName", sortOrder: "asc" },
+		);
+
+		const nextUrl = new URL(pagination.nextHref, "http://localhost");
+		expect(nextUrl.searchParams.get("offset")).toBe("10");
+		expect(nextUrl.searchParams.get("sortBy")).toBe("roleName");
+		expect(nextUrl.searchParams.get("sortOrder")).toBe("asc");
 	});
 
 	it("disables forward controls on the last page", () => {

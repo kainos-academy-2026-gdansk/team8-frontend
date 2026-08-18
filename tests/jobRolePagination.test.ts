@@ -216,6 +216,89 @@ describe("GET /job-roles pagination", () => {
 		);
 	});
 
+	it("forwards active sort parameters to the API", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+
+		const response = await request(app).get(
+			"/job-roles?sortBy=closingDate&sortOrder=desc",
+		);
+
+		expect(response.status).toBe(200);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			{ sortBy: "closingDate", sortOrder: "desc" },
+		);
+	});
+
+	it("renders 3-state sort links that reset offset to the first page", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+
+		const unsortedResponse = await request(app).get("/job-roles");
+		expect(unsortedResponse.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=roleName&amp;sortOrder=asc"',
+		);
+		expect(unsortedResponse.text).toContain("Role name");
+		expect(unsortedResponse.text).toContain(
+			"job-role-sort-controls__link--none",
+		);
+		expect(unsortedResponse.text).toContain("&#8597;");
+
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+		const ascResponse = await request(app).get(
+			"/job-roles?offset=10&sortBy=roleName&sortOrder=asc",
+		);
+		expect(ascResponse.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=roleName&amp;sortOrder=desc"',
+		);
+		expect(ascResponse.text).toContain("job-role-sort-controls__link--asc");
+		expect(ascResponse.text).toContain("&#8593;");
+
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+		const descResponse = await request(app).get(
+			"/job-roles?offset=10&sortBy=roleName&sortOrder=desc",
+		);
+		expect(descResponse.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0"',
+		);
+		expect(descResponse.text).toContain("job-role-sort-controls__link--desc");
+		expect(descResponse.text).toContain("&#8595;");
+	});
+
+	it("preserves sorting across filter apply, clear filters, and pagination links", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+
+		const response = await request(app).get(
+			"/job-roles?roleName=Engineer&sortBy=status&sortOrder=asc",
+		);
+
+		expect(response.text).toContain(
+			'<input type="hidden" name="sortBy" value="status">',
+		);
+		expect(response.text).toContain(
+			'<input type="hidden" name="sortOrder" value="asc">',
+		);
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=status&amp;sortOrder=asc">Clear filters</a>',
+		);
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=10&amp;roleName=Engineer&amp;sortBy=status&amp;sortOrder=asc" rel="next"',
+		);
+	});
+
+	it("ignores incomplete or invalid sort values", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+
+		await request(app).get("/job-roles?sortBy=roleName");
+		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(jwtToken, 10, 0);
+
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
+		await request(app).get("/job-roles?sortBy=unknown&sortOrder=asc");
+		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(jwtToken, 10, 0);
+	});
+
 	it("ignores invalid filters and keeps unfiltered pagination", async () => {
 		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0));
 
