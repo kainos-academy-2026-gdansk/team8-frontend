@@ -26,11 +26,13 @@
 
 {% set navActionsHtml %}
   <li class="govuk-service-navigation__item kainos-topnav__actions">
-    {{ govukButton({
-      text: "Add job role",
-      href: "/job-roles/new",
-      classes: "kainos-topnav__cta kainos-topnav__add-role"
-    }) }}
+    {% if isAdmin %}
+      {{ govukButton({
+        text: "Add job role",
+        href: "/job-roles/new",
+        classes: "kainos-topnav__cta kainos-topnav__add-role"
+      }) }}
+    {% endif %}
     {{ accountButtonHtml | safe }}
   </li>
 {% endset %}

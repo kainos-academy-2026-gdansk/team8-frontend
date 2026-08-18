@@ -116,6 +116,7 @@ export class JobRoleController {
 	): boolean {
 		if (error instanceof Error && error.message === "Unauthorized") {
 			req.session.jwtToken = undefined;
+			req.session.userRole = undefined;
 			res.redirect("/login");
 			return true;
 		}
