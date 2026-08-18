@@ -9,6 +9,11 @@
   <form class="job-role-filters" action="/job-roles" method="get">
     <h2 class="govuk-heading-m job-role-filters__heading">Filter job roles</h2>
 
+    {% if sort %}
+      <input type="hidden" name="sortBy" value="{{ sort.sortBy }}">
+      <input type="hidden" name="sortOrder" value="{{ sort.sortOrder }}">
+    {% endif %}
+
     <div class="job-role-filters__text-fields">
       <div class="govuk-form-group">
         <label class="govuk-label" for="role-name">Role name</label>
@@ -74,7 +79,7 @@
     <div class="job-role-filters__actions">
       <button class="govuk-button" data-module="govuk-button" type="submit">Apply filters</button>
       {% if isFiltered %}
-        <a class="govuk-link" href="/job-roles">Clear filters</a>
+        <a class="govuk-link" href="{{ clearFiltersHref }}">Clear filters</a>
       {% endif %}
     </div>
   </form>
@@ -97,6 +102,28 @@
         Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
       {% endif %}
     </p>
+
+    <nav class="job-role-sort-controls" aria-label="Sort job roles">
+      <p class="govuk-body-s job-role-sort-controls__label">Sort by</p>
+      <ul class="govuk-list job-role-sort-controls__list">
+        {% for control in sortControls %}
+          <li class="job-role-sort-controls__item">
+            <a class="job-role-sort-controls__link job-role-sort-controls__link--{{ control.state }}" href="{{ control.href }}" aria-label="{{ control.ariaLabel }}">
+              <span class="job-role-sort-controls__text">{{ control.label }}</span>
+              <span class="job-role-sort-controls__state" aria-hidden="true">
+                {% if control.state == 'asc' %}
+                  &#8593;
+                {% elseif control.state == 'desc' %}
+                  &#8595;
+                {% else %}
+                  &#8597;
+                {% endif %}
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
 
     <ul class="govuk-list job-role-list" aria-label="Job role listings">
       {% for jobRole in jobRoles %}
