@@ -19,6 +19,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps
       - run: npm run build
+      - run: npm run test:ui:typecheck
       - run: npm run test:ui
         env:
           PORT: 3001
