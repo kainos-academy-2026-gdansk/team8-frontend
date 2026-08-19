@@ -51,11 +51,12 @@
     {% endif %}
 
     <div class="job-role-detail__actions">
+      {% if canApply %}
       {{ govukButton({
         text: "Apply for this role",
-        href: job.sharepointUrl,
-        disabled: job.status.name != 'OPEN'
+        href: "/job-roles/" + job.id + "/applications/new"
       }) }}
+      {% endif %}
     </div>
   </article>
 {% endblock %}

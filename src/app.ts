@@ -5,6 +5,7 @@ import { errorMiddleware } from "./config/errorMiddleware";
 import { notFoundMiddleware } from "./config/notFoundMiddleware";
 import path from "node:path";
 import jobRoleRouter from "./router/jobRoleRouter";
+import applicationRouter from "./router/applicationRouter";
 import authRouter from "./router/authRouter";
 import session from "express-session";
 import { requireAuth } from "./config/authMiddleware";
@@ -117,6 +118,7 @@ app.get("/", (_req, res) => {
 
 app.use(authRouter);
 app.use(requireAuth);
+app.use(applicationRouter);
 app.use(jobRoleRouter);
 
 app.use(notFoundMiddleware);
