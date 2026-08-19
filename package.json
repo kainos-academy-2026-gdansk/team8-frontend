@@ -9,7 +9,7 @@
 		"test:coverage": "vitest run --coverage",
 		"test:ui": "bddgen && playwright test",
 		"test:ui:bddgen": "bddgen",
-		"test:ui:headed": "playwright test --headed",
+		"test:ui:headed": "bddgen && playwright test --headed",
 		"test:ui:report": "playwright show-report",
 		"test:ui:typecheck": "tsc -p e2e/tsconfig.json",
 		"dev": "tsx watch src/index.ts",
