@@ -67,7 +67,7 @@ export class ApplicationController {
 		}
 
 		const job = await getJobById(roleId, this.getToken(req));
-		if (!job || job.status.name !== "OPEN" || job.numberOfOpenPositions <= 0) {
+		if (job?.status.name !== "OPEN" || job.numberOfOpenPositions <= 0) {
 			renderAccessDenied(res);
 			return false;
 		}

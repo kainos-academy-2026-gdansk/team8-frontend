@@ -7,4 +7,5 @@ logs/
 code_reviews/
 .ai/sessions/
 certs/
+tests/**/*.test.js
 
