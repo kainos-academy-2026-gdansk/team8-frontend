@@ -51,7 +51,6 @@
 		"@types/nunjucks": "^3.2.6",
 		"@types/supertest": "^7.2.1",
 		"@vitest/coverage-v8": "^4.1.10",
-		"playwright-bdd": "^9.2.0",
 		"supertest": "^7.2.2",
 		"tsx": "^4.23.7",
 		"typescript": "^7.0.2",

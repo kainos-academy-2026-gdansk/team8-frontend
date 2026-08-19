@@ -5,7 +5,7 @@ import { defineBddConfig } from "playwright-bdd";
 
 dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true });
 
-defineBddConfig({
+const bddTestDir = defineBddConfig({
 	features: "e2e/features/**/*.feature",
 	steps: ["e2e/bdd/**/*.ts", "e2e/steps/**/*.ts"],
 	outputDir: ".features-gen",
@@ -18,7 +18,7 @@ const baseURL =
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-	testDir: ".",
+	testDir: bddTestDir,
 	testMatch: ["e2e/**/*.spec.ts", ".features-gen/**/*.spec.js"],
 	globalSetup: "./e2e/global-setup.ts",
 	globalTeardown: "./e2e/global-teardown.ts",
