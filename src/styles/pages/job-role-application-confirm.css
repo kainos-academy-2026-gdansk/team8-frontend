@@ -1,0 +1,51 @@
+/* Hire and reject application confirmation page */
+.job-role-application-confirm {
+	max-width: 720px;
+	margin: 0 auto;
+	padding: var(--k-space-5) 0;
+}
+
+.job-role-application-confirm__heading {
+	max-width: 680px;
+	margin-bottom: var(--k-space-4);
+	overflow-wrap: anywhere;
+}
+
+.job-role-application-confirm__description {
+	max-width: 620px;
+	margin-bottom: 0;
+}
+
+.job-role-application-confirm__form {
+	margin-top: var(--k-space-5);
+}
+
+.job-role-application-confirm__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--k-space-4);
+	align-items: center;
+}
+
+.job-role-application-confirm__submit {
+	min-width: 112px;
+	margin: 0;
+}
+
+.job-role-application-confirm__cancel {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
+}
+
+@media (max-width: 40.0525rem) {
+	.job-role-application-confirm {
+		padding-top: var(--k-space-4);
+	}
+
+	.job-role-application-confirm__actions {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: var(--k-space-3);
+	}
+}

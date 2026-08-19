@@ -29,6 +29,9 @@ vi.mock("../src/config/authMiddleware", () => ({
 		req.session.userRole = currentRole;
 		next();
 	},
+	requireAdmin: (_req: Request, _res: Response, next: NextFunction) => {
+		next();
+	},
 }));
 
 import app from "../src/app";

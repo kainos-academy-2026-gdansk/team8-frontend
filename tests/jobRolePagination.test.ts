@@ -26,6 +26,13 @@ vi.mock("../src/config/authMiddleware", () => ({
 		req.session.jwtToken = jwtToken;
 		next();
 	},
+	requireAdmin: (req: Request, res: Response, next: NextFunction) => {
+		if (req.session.userRole === "ADMIN") {
+			next();
+			return;
+		}
+		res.redirect("/job-roles");
+	},
 }));
 
 import app from "../src/app";

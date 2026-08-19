@@ -93,3 +93,109 @@
 .job-role-detail__actions {
 	margin-top: 32px;
 }
+
+.job-role-applications__table {
+	width: 100%;
+	table-layout: fixed;
+}
+
+.job-role-applications__applicant {
+	width: 44%;
+	overflow-wrap: anywhere;
+}
+
+.job-role-applications__status-cell {
+	width: 22%;
+}
+
+.job-role-applications__actions-cell {
+	width: 34%;
+}
+
+.job-role-applications__status {
+	border: 0;
+	border-radius: var(--k-radius-sm);
+	font-size: 0.875rem;
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 1.25;
+	padding: var(--k-space-1) var(--k-space-2);
+	text-transform: none;
+	white-space: normal;
+}
+
+.job-role-applications__status--in-progress {
+	background: color-mix(
+		in srgb,
+		var(--k-color-mid-blue) 18%,
+		var(--k-color-white)
+	);
+	color: var(--k-color-blue);
+}
+
+.job-role-applications__status--hired {
+	background: color-mix(
+		in srgb,
+		var(--k-color-green) 20%,
+		var(--k-color-white)
+	);
+	color: var(--k-color-dark-green);
+}
+
+.job-role-applications__status--rejected {
+	background: color-mix(
+		in srgb,
+		var(--k-color-orange) 18%,
+		var(--k-color-white)
+	);
+	color: var(--k-text-primary);
+}
+
+.job-role-applications__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--k-space-2);
+	align-items: center;
+}
+
+.job-role-applications__action {
+	min-height: 40px;
+	margin: 0;
+	padding: 7px var(--k-space-3);
+	font-size: 1rem;
+	line-height: 1.5;
+}
+
+.job-role-applications__empty {
+	margin-bottom: 0;
+}
+
+@media (max-width: 40.0525rem) {
+	.job-role-applications__table .govuk-table__header,
+	.job-role-applications__table .govuk-table__cell {
+		padding: var(--k-space-2);
+	}
+
+	.job-role-applications__applicant {
+		width: 38%;
+	}
+
+	.job-role-applications__status-cell {
+		width: 25%;
+	}
+
+	.job-role-applications__actions-cell {
+		width: 37%;
+	}
+
+	.job-role-applications__actions {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.job-role-applications__action {
+		width: 100%;
+		box-sizing: border-box;
+		text-align: center;
+	}
+}

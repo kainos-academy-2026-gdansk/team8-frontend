@@ -58,5 +58,46 @@
       }) }}
       {% endif %}
     </div>
+
+    {% if isAdmin %}
+    <section class="job-role-detail__section job-role-applications" aria-labelledby="applications-heading">
+      <h2 class="govuk-heading-m" id="applications-heading">Applications</h2>
+      {% if job.applications.length > 0 %}
+        <table class="govuk-table job-role-applications__table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header job-role-applications__applicant" scope="col">Applicant</th>
+              <th class="govuk-table__header job-role-applications__status-cell" scope="col">Status</th>
+              <th class="govuk-table__header job-role-applications__actions-cell" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for application in job.applications %}
+              <tr class="govuk-table__row job-role-applications__row">
+                <td class="govuk-table__cell job-role-applications__applicant">
+                  <a class="govuk-link" href="{{ application.cv }}">{{ application.applicantEmail }}</a>
+                </td>
+                <td class="govuk-table__cell job-role-applications__status-cell">
+                  <strong class="govuk-tag job-role-applications__status {% if application.status == 'IN_PROGRESS' %}job-role-applications__status--in-progress{% elif application.status == 'HIRED' %}job-role-applications__status--hired{% else %}job-role-applications__status--rejected{% endif %}">
+                    {{ application.statusLabel }}
+                  </strong>
+                </td>
+                <td class="govuk-table__cell job-role-applications__actions-cell">
+                  {% if application.isInProgress %}
+                    <div class="job-role-applications__actions">
+                      <a class="govuk-button job-role-applications__action" href="{{ application.hireHref }}">Hire</a>
+                      <a class="govuk-button govuk-button--warning job-role-applications__action" href="{{ application.rejectHref }}">Reject</a>
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="govuk-body job-role-applications__empty">No applications yet for this role.</p>
+      {% endif %}
+    </section>
+    {% endif %}
   </article>
 {% endblock %}

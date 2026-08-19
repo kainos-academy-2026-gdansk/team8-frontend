@@ -1,0 +1,39 @@
+{% extends "layouts/base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block title %}{{ actionLabel }} applicant{% endblock %}
+
+{% block content %}
+  <a class="govuk-back-link" href="{{ cancelHref }}">Back to job role</a>
+
+  <section class="job-role-application-confirm job-role-application-confirm--{{ action }}">
+    {% if errorMessage %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="application-confirm-error-title">
+        <h2 class="govuk-error-summary__title" id="application-confirm-error-title">There is a problem</h2>
+        <div class="govuk-error-summary__body">
+          <p class="govuk-body">{{ errorMessage }}</p>
+        </div>
+      </div>
+    {% endif %}
+
+    <h1 class="govuk-heading-l job-role-application-confirm__heading">{{ actionLabel }} {{ applicantEmail }}?</h1>
+    <p class="govuk-body job-role-application-confirm__description">
+      {% if action == "hire" %}
+        This will reduce the number of open positions by 1 and set this applicant's status to Hired.
+      {% else %}
+        This will set this applicant's status to Rejected.
+      {% endif %}
+    </p>
+
+    <form class="job-role-application-confirm__form" action="{{ actionHref }}" method="post">
+      <div class="job-role-application-confirm__actions">
+      {{ govukButton({
+        text: actionLabel,
+        classes: "govuk-button--warning job-role-application-confirm__submit" if action == "reject" else "govuk-button--primary job-role-application-confirm__submit"
+      }) }}
+        <a class="govuk-link job-role-application-confirm__cancel" href="{{ cancelHref }}">Cancel</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
