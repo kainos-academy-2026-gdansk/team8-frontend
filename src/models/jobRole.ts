@@ -36,6 +36,17 @@ export const JOB_ROLE_STATUS_OPTIONS = [
 	{ value: "CLOSED", label: "Closed" },
 ] as const;
 
+export const JOB_ROLE_SORT_KEYS = [
+	"roleName",
+	"location",
+	"capability",
+	"band",
+	"closingDate",
+	"status",
+] as const;
+
+export const JOB_ROLE_SORT_ORDERS = ["asc", "desc"] as const;
+
 const requestedLimitSchema = z.coerce
 	.number()
 	.int()
@@ -91,6 +102,14 @@ export const jobRoleFiltersSchema = z.object({
 
 export type JobRoleFilters = z.infer<typeof jobRoleFiltersSchema>;
 
+export type JobRoleSortKey = (typeof JOB_ROLE_SORT_KEYS)[number];
+export type JobRoleSortOrder = (typeof JOB_ROLE_SORT_ORDERS)[number];
+
+export interface JobRoleSort {
+	sortBy: JobRoleSortKey;
+	sortOrder: JobRoleSortOrder;
+}
+
 export function hasJobRoleFilters(filters: JobRoleFilters): boolean {
 	return Object.values(filters).some((value) =>
 		Array.isArray(value) ? value.length > 0 : value !== undefined,
@@ -108,14 +127,35 @@ export const jobRoleListQuerySchema = z
 		status: z.unknown().optional(),
 		closingDateAfter: z.unknown().optional(),
 		closingDateBefore: z.unknown().optional(),
+		sortBy: z.unknown().optional(),
+		sortOrder: z.unknown().optional(),
 	})
-	.transform(({ offset, ...query }) => {
+	.transform(({ offset, sortBy, sortOrder, ...query }) => {
 		const filters = jobRoleFiltersSchema.parse(query);
+		const normalizedSortBy =
+			typeof sortBy === "string" &&
+			JOB_ROLE_SORT_KEYS.includes(sortBy as JobRoleSortKey)
+				? (sortBy as JobRoleSortKey)
+				: undefined;
+		const normalizedSortOrder =
+			typeof sortOrder === "string" &&
+			JOB_ROLE_SORT_ORDERS.includes(sortOrder as JobRoleSortOrder)
+				? (sortOrder as JobRoleSortOrder)
+				: undefined;
+		const sort =
+			normalizedSortBy && normalizedSortOrder
+				? {
+						sortBy: normalizedSortBy,
+						sortOrder: normalizedSortOrder,
+					}
+				: undefined;
+
 		return {
 			limit: JOB_ROLES_PAGE_SIZE,
 			offset,
 			filters,
 			isFiltered: hasJobRoleFilters(filters),
+			sort,
 		};
 	});
 

@@ -6,6 +6,7 @@ import {
 	type JobRoleDetailed,
 	type JobRoleFilters,
 	type JobRolePage,
+	type JobRoleSort,
 	type PaginatedJobRolesResponse,
 	type CatalogueItem,
 	type CreateJobRoleData,
@@ -81,6 +82,32 @@ function appendJobRoleFilters(
 	for (const status of filters.status) params.append("status", status);
 }
 
+function appendJobRoleSort(params: URLSearchParams, sort?: JobRoleSort): void {
+	if (!sort) return;
+	params.set("sortBy", sort.sortBy);
+	params.set("sortOrder", sort.sortOrder);
+}
+
+export function buildJobRolesListHref({
+	limit,
+	offset,
+	filters,
+	sort,
+}: {
+	limit: number;
+	offset: number;
+	filters?: JobRoleFilters;
+	sort?: JobRoleSort;
+}): string {
+	const params = new URLSearchParams({
+		limit: String(limit),
+		offset: String(offset),
+	});
+	appendJobRoleFilters(params, filters);
+	appendJobRoleSort(params, sort);
+	return `/job-roles?${params.toString()}`;
+}
+
 function emptyJobRolePage(limit: number, offset: number): JobRolePage {
 	return {
 		jobRoles: [],
@@ -95,6 +122,7 @@ export async function getAllJobRoles(
 	limit = JOB_ROLES_PAGE_SIZE,
 	offset = 0,
 	filters?: JobRoleFilters,
+	sort?: JobRoleSort,
 ): Promise<JobRolePage> {
 	try {
 		const params = new URLSearchParams({
@@ -102,6 +130,7 @@ export async function getAllJobRoles(
 			offset: String(offset),
 		});
 		appendJobRoleFilters(params, filters);
+		appendJobRoleSort(params, sort);
 		const response = await apiClient.get<PaginatedJobRolesResponse>(
 			"/job-roles",
 			{ params, headers: authHeaders(token) },
@@ -160,6 +189,7 @@ export function buildPagination(
 	}: Pick<JobRolePage, "total" | "limit" | "offset"> &
 		Partial<Pick<JobRolePage, "jobRoles">>,
 	filters?: JobRoleFilters,
+	sort?: JobRoleSort,
 ): JobRolePagination {
 	const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
 	const lastOffset = totalPages > 0 ? (totalPages - 1) * limit : 0;
@@ -178,14 +208,13 @@ export function buildPagination(
 	const returnedItemCount = jobRoles.length || limit;
 	const toItem =
 		total > 0 ? Math.min(currentOffset + returnedItemCount, total) : 0;
-	const hrefForOffset = (targetOffset: number) => {
-		const params = new URLSearchParams({
-			limit: String(limit),
-			offset: String(targetOffset),
+	const hrefForOffset = (targetOffset: number) =>
+		buildJobRolesListHref({
+			limit,
+			offset: targetOffset,
+			filters,
+			sort,
 		});
-		appendJobRoleFilters(params, filters);
-		return `/job-roles?${params.toString()}`;
-	};
 	const firstPage = Math.max(1, currentPage - 1);
 	const lastPage = Math.min(totalPages, currentPage + 1);
 	const pageLinks = Array.from(

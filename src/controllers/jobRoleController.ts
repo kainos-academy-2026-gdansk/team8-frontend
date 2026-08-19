@@ -7,15 +7,100 @@ import {
 	buildPagination,
 	getJobRoleCatalogues,
 	createJobRole,
+	buildJobRolesListHref,
 } from "../services/jobRoleApiService";
 import {
 	JOB_ROLE_BAND_OPTIONS,
 	JOB_ROLE_CAPABILITY_OPTIONS,
+	JOB_ROLE_SORT_KEYS,
 	JOB_ROLE_STATUS_OPTIONS,
+	type JobRoleFilters,
+	type JobRoleSort,
+	type JobRoleSortKey,
 	jobRoleListQuerySchema,
 	createJobRoleSchema,
 } from "../models/jobRole";
 import Logger from "../lib/logger";
+
+interface JobRoleSortControl {
+	key: JobRoleSortKey;
+	label: string;
+	href: string;
+	state: "none" | "asc" | "desc";
+	ariaLabel: string;
+}
+
+const SORT_CONTROL_LABELS: Record<JobRoleSortKey, string> = {
+	roleName: "Role name",
+	location: "Location",
+	capability: "Capability",
+	band: "Band",
+	closingDate: "Closing date",
+	status: "Status",
+};
+
+function buildNextSort(
+	key: JobRoleSortKey,
+	activeSort?: JobRoleSort,
+): JobRoleSort | undefined {
+	if (!activeSort || activeSort.sortBy !== key) {
+		return { sortBy: key, sortOrder: "asc" };
+	}
+
+	if (activeSort.sortOrder === "asc") {
+		return { sortBy: key, sortOrder: "desc" };
+	}
+
+	return undefined;
+}
+
+function buildSortControlAriaLabel(
+	label: string,
+	state: "none" | "asc" | "desc",
+	nextSort?: JobRoleSort,
+): string {
+	if (state === "none") {
+		return `Sort by ${label}, currently unsorted. Activate to sort ascending.`;
+	}
+
+	if (state === "asc") {
+		return `Sort by ${label}, currently ascending. Activate to sort descending.`;
+	}
+
+	if (nextSort) {
+		return `Sort by ${label}, currently descending. Activate to sort ${nextSort.sortOrder}.`;
+	}
+
+	return `Sort by ${label}, currently descending. Activate to clear sorting.`;
+}
+
+function buildSortControls(
+	limit: number,
+	activeFilters: JobRoleFilters | undefined,
+	activeSort?: JobRoleSort,
+): JobRoleSortControl[] {
+	return JOB_ROLE_SORT_KEYS.map((key) => {
+		const nextSort = buildNextSort(key, activeSort);
+		const state = activeSort?.sortBy === key ? activeSort.sortOrder : "none";
+
+		return {
+			key,
+			label: SORT_CONTROL_LABELS[key],
+			href: buildJobRolesListHref({
+				limit,
+				offset: 0,
+				filters: activeFilters,
+				sort: nextSort,
+			}),
+			state,
+			ariaLabel: buildSortControlAriaLabel(
+				SORT_CONTROL_LABELS[key],
+				state,
+				nextSort,
+			),
+		};
+	});
+}
 
 export class JobRoleController {
 	private readonly createTextFields = [
@@ -126,26 +211,51 @@ export class JobRoleController {
 
 	async getAll(req: Request, res: Response): Promise<void> {
 		try {
-			const { limit, offset, filters, isFiltered } =
+			const { limit, offset, filters, isFiltered, sort } =
 				jobRoleListQuerySchema.parse(req.query);
 			const activeFilters = isFiltered ? filters : undefined;
+			const activeSort = sort;
 			const jwtToken = this.getJwtToken(req);
 			const fetchPage = (targetOffset: number) =>
-				activeFilters
-					? getAllJobRoles(jwtToken, limit, targetOffset, activeFilters)
-					: getAllJobRoles(jwtToken, limit, targetOffset);
+				activeFilters && activeSort
+					? getAllJobRoles(
+							jwtToken,
+							limit,
+							targetOffset,
+							activeFilters,
+							activeSort,
+						)
+					: activeFilters
+						? getAllJobRoles(jwtToken, limit, targetOffset, activeFilters)
+						: activeSort
+							? getAllJobRoles(
+									jwtToken,
+									limit,
+									targetOffset,
+									undefined,
+									activeSort,
+								)
+							: getAllJobRoles(jwtToken, limit, targetOffset);
 			let jobRolePage = await fetchPage(offset);
 			let pageError: string | undefined;
-			let pagination = buildPagination(jobRolePage, activeFilters);
+			let pagination = buildPagination(jobRolePage, activeFilters, activeSort);
 
 			if (jobRolePage.total > 0 && jobRolePage.jobRoles.length === 0) {
 				pageError =
 					"The page you requested does not exist. Showing the nearest available results.";
 				jobRolePage = await fetchPage(pagination.lastOffset);
-				pagination = buildPagination(jobRolePage, activeFilters);
+				pagination = buildPagination(jobRolePage, activeFilters, activeSort);
 			}
 
 			const jobRolesForView = jobRolePage.jobRoles.map(formatJobRoleForView);
+			const sortControls = buildSortControls(limit, activeFilters, activeSort);
+			const clearFiltersHref = activeSort
+				? buildJobRolesListHref({
+						limit,
+						offset: 0,
+						sort: activeSort,
+					})
+				: "/job-roles";
 			res.render("pages/job-role-list.njk", {
 				jobRoles: jobRolesForView,
 				total: jobRolePage.total,
@@ -153,6 +263,9 @@ export class JobRoleController {
 				pageError,
 				filters,
 				isFiltered,
+				sort: activeSort,
+				sortControls,
+				clearFiltersHref,
 				capabilityOptions: JOB_ROLE_CAPABILITY_OPTIONS,
 				bandOptions: JOB_ROLE_BAND_OPTIONS,
 				statusOptions: JOB_ROLE_STATUS_OPTIONS,
