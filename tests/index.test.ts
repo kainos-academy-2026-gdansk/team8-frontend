@@ -103,7 +103,8 @@ describe("Vitest smoke", () => {
 
 	it("stores the token and grants access after login", async () => {
 		const agent = request.agent(app);
-		mockedLogin.mockResolvedValueOnce("jwt-token");
+		const adminToken = `header.${Buffer.from(JSON.stringify({ role: "ADMIN" })).toString("base64url")}.signature`;
+		mockedLogin.mockResolvedValueOnce({ token: adminToken, role: "ADMIN" });
 
 		const loginResponse = await agent.post("/login").type("form").send({
 			email: "person@example.com",
@@ -125,6 +126,26 @@ describe("Vitest smoke", () => {
 		expect(protectedResponse.text).toContain('method="post"');
 		expect(protectedResponse.text).toContain('action="/logout"');
 		expect(protectedResponse.text).toContain("Log out");
+		expect(protectedResponse.text).toContain("Add job role");
+	});
+
+	it("does not show Add job role to regular users", async () => {
+		const agent = request.agent(app);
+		mockedLogin.mockResolvedValueOnce({
+			token: "user-jwt-token",
+			role: "USER",
+		});
+
+		await agent.post("/login").type("form").send({
+			email: "person@example.com",
+			password: "Verysecure@pass",
+		});
+
+		const response = await agent.get("/");
+
+		expect(response.status).toBe(200);
+		expect(response.text).not.toContain("Add job role");
+		expect(response.text).toContain("Log out");
 	});
 
 	it("renders invalid credential errors and preserves the email", async () => {

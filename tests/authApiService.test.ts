@@ -13,15 +13,17 @@ vi.mock("../src/config/apiClient", () => ({
 import { type LoginApiError, login } from "../src/services/authApiService";
 
 describe("auth API service login", () => {
+	const adminToken = `header.${Buffer.from(JSON.stringify({ role: "ADMIN" })).toString("base64url")}.signature`;
+
 	beforeEach(() => {
 		mockedPost.mockReset();
 	});
 
-	it("posts credentials and returns the JWT", async () => {
-		mockedPost.mockResolvedValueOnce({ data: { token: "jwt-token" } });
+	it("posts credentials and returns the JWT with its role", async () => {
+		mockedPost.mockResolvedValueOnce({ data: { token: adminToken } });
 
-		await expect(login("person@example.com", "Verysecure@pass")).resolves.toBe(
-			"jwt-token",
+		await expect(login("person@example.com", "Verysecure@pass")).resolves.toEqual(
+			{ token: adminToken, role: "ADMIN" },
 		);
 		expect(mockedPost).toHaveBeenCalledWith("/auth/login", {
 			email: "person@example.com",

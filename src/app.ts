@@ -103,6 +103,8 @@ app.use(
 // Expose auth state to all templates for sign in/sign out navigation.
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = Boolean(req.session.jwtToken);
+	res.locals.userRole = req.session.userRole;
+	res.locals.isAdmin = req.session.userRole === "ADMIN";
 	next();
 });
 

@@ -8,10 +8,52 @@ import {
 	type JobRolePage,
 	type JobRoleSort,
 	type PaginatedJobRolesResponse,
+	type CatalogueItem,
+	type CreateJobRoleData,
 } from "../models/jobRole";
 
 function authHeaders(token: string): { Authorization: string } {
 	return { Authorization: `Bearer ${token}` };
+}
+
+export async function getJobRoleCatalogues(
+	token: string,
+): Promise<{ bands: CatalogueItem[]; capabilities: CatalogueItem[] }> {
+	try {
+		const [bands, capabilities] = await Promise.all([
+			apiClient.get<CatalogueItem[]>("/bands", { headers: authHeaders(token) }),
+			apiClient.get<CatalogueItem[]>("/capabilities", {
+				headers: authHeaders(token),
+			}),
+		]);
+		return { bands: bands.data, capabilities: capabilities.data };
+	} catch (error) {
+		if (axios.isAxiosError(error) && error.response?.status === 401) {
+			throw new Error("Unauthorized");
+		}
+		throw new Error("Backend server error");
+	}
+}
+
+export async function createJobRole(
+	token: string,
+	data: CreateJobRoleData,
+): Promise<JobRoleDetailed> {
+	try {
+		const response = await apiClient.post<JobRoleDetailed>("/job-roles", data, {
+			headers: authHeaders(token),
+		});
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			if (status === 401) throw new Error("Unauthorized");
+			if (status === 400 || status === 404) {
+				throw new Error(error.response?.data?.error ?? "Invalid job role data");
+			}
+		}
+		throw new Error("Backend server error");
+	}
 }
 
 const closingDateFormatter = new Intl.DateTimeFormat("en-GB", {

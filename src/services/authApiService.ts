@@ -15,6 +15,13 @@ type LoginResponse = {
 	token: string;
 };
 
+export type UserRole = "ADMIN" | "USER";
+
+export type LoginResult = {
+	token: string;
+	role: UserRole;
+};
+
 export class RegisterApiError extends Error {
 	constructor(
 		public readonly statusCode: number,
@@ -35,13 +42,40 @@ export class LoginApiError extends Error {
 	}
 }
 
-export async function login(email: string, password: string): Promise<string> {
+function readRoleFromToken(token: string): UserRole {
+	try {
+		const payloadPart = token.split(".")[1];
+		if (!payloadPart) throw new Error("Missing token payload");
+		const payload = JSON.parse(
+			Buffer.from(payloadPart, "base64url").toString("utf8"),
+		) as { role?: unknown };
+
+		if (payload.role === "ADMIN" || payload.role === "USER") {
+			return payload.role;
+		}
+	} catch {
+		// Fall through to the safe login error below.
+	}
+
+	throw new LoginApiError(
+		502,
+		"Unable to sign in right now. Please try again later.",
+	);
+}
+
+export async function login(
+	email: string,
+	password: string,
+): Promise<LoginResult> {
 	try {
 		const response = await apiClient.post<LoginResponse>("/auth/login", {
 			email,
 			password,
 		});
-		return response.data.token;
+		return {
+			token: response.data.token,
+			role: readRoleFromToken(response.data.token),
+		};
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
