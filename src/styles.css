@@ -10,6 +10,7 @@
 @import url("./styles/pages/register.css");
 @import url("./styles/pages/login.css");
 @import url("./styles/pages/job-role-information.css");
+@import url("./styles/pages/job-application.css");
 @import url("./styles/pages/error-pages.css");
 
 :root {

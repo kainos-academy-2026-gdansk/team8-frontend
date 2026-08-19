@@ -306,7 +306,14 @@ export class JobRoleController {
 			}
 
 			const jobForView = formatJobRoleDetailedForView(job);
-			res.render("pages/job-role-information.njk", { job: jobForView });
+			const canApply =
+				req.session.userRole === "USER" &&
+				job.status.name === "OPEN" &&
+				job.numberOfOpenPositions > 0;
+			res.render("pages/job-role-information.njk", {
+				job: jobForView,
+				canApply,
+			});
 		} catch (error) {
 			if (this.handleUnauthorized(req, res, error)) {
 				return;
