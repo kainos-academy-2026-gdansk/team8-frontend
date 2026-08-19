@@ -1,4 +1,4 @@
-import { VALID_EMAIL, VALID_PASSWORD } from "./registerData";
+import { VALID_EMAIL, VALID_PASSWORD, uniqueEmail } from "./registerData";
 
 export type LoginCredentials = {
 	email: string;
@@ -23,3 +23,11 @@ export const emptyLogin: LoginCredentials = {
 export const loginErrors = {
 	bothRequired: "Enter both email and password",
 } as const;
+
+export function createLoginCredentials(): LoginCredentials {
+	return {
+		email: uniqueEmail("login"),
+		password: VALID_PASSWORD,
+		// confirmPassword: VALID_PASSWORD,
+	};
+}

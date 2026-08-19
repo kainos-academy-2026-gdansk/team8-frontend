@@ -27,6 +27,7 @@ npm run test:ui              # all browsers
 npm run test:ui -- --project=chromium
 npm run test:ui:headed
 npm run test:ui:report       # open the last HTML report
+npm run test:bdd             # generate and run executable Gherkin in Chromium
 ```
 
 The config starts the app automatically via `webServer` and reuses an already
@@ -44,6 +45,14 @@ and can be overridden with `E2E_BASE_URL`.
 - Use `expect` web-first assertions; never add manual waits or `waitForTimeout`.
 - Import test data from `data/`; use `uniqueEmail()` when a test creates real records.
 - Add a fixture instead of repeating step-level construction logic.
+
+## BDD scenarios
+
+Executable Gherkin lives in `features/` and its bindings live in `steps/`.
+`npm run test:bdd` generates native Playwright tests into the ignored
+`.features-gen/` directory and runs them with the dedicated Chromium config.
+Scenarios may use existing API-client fixtures for real setup, but must not
+commit credentials or replace backend behavior with browser mocks.
 
 ## Adding a new page
 

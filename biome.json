@@ -12,6 +12,16 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
+	"files": {
+		"includes": [
+			"**",
+			"!dist",
+			"!.features-gen",
+			"!playwright-report",
+			"!test-results",
+			"!blob-report"
+		]
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {

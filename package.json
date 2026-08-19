@@ -11,6 +11,7 @@
 		"test:ui:headed": "playwright test --headed",
 		"test:ui:report": "playwright show-report",
 		"test:ui:typecheck": "tsc -p e2e/tsconfig.json",
+		"test:bdd": "bddgen -c playwright.bdd.config.ts && playwright test -c playwright.bdd.config.ts",
 		"dev": "tsx watch src/index.ts",
 		"build": "tsc -p tsconfig.json",
 		"start": "node ./dist/index.js",
