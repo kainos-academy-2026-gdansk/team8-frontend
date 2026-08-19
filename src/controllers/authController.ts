@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import {
 	LoginApiError,
 	login as loginWithApi,
+	UserRole,
 } from "../services/authApiService.js";
 import Logger from "../lib/logger.js";
 
@@ -55,9 +56,9 @@ export class AuthController {
 		}
 
 		try {
-			const loginResult = await loginWithApi(email, password);
-			req.session.jwtToken = loginResult.token;
-			req.session.userRole = loginResult.role;
+			const jwtToken = await loginWithApi(email, password);
+			req.session.jwtToken = jwtToken.token;
+			req.session.userRole = jwtToken.role;
 			res.redirect("/job-roles");
 		} catch (error) {
 			const message =
