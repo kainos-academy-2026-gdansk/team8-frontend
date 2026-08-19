@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import {
 	LoginApiError,
 	login as loginWithApi,
-	UserRole,
 } from "../services/authApiService.js";
 import Logger from "../lib/logger.js";
 
