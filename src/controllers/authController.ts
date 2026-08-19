@@ -55,9 +55,9 @@ export class AuthController {
 		}
 
 		try {
-			const jwtToken = await loginWithApi(email, password);
-			req.session.jwtToken = jwtToken.token;
-			req.session.userRole = jwtToken.role;
+			const loginResult = await loginWithApi(email, password);
+			req.session.jwtToken = loginResult.token;
+			req.session.userRole = loginResult.role;
 			res.redirect("/job-roles");
 		} catch (error) {
 			const message =

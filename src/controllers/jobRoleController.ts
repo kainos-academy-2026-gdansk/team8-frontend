@@ -181,10 +181,7 @@ export class JobRoleController {
 				return;
 			}
 
-			const created = await createJobRole(
-				this.getJwtToken(req),
-				validation.data,
-			);
+			const created = await createJobRole(this.getJwtToken(req), validation.data);
 			res.redirect(303, `/job-roles/${created.id}`);
 		} catch (error) {
 			if (this.handleUnauthorized(req, res, error)) return;
