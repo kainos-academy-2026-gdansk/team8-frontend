@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator, Page, Response } from "@playwright/test";
 
 export abstract class BasePage {
 	protected constructor(
@@ -6,8 +6,9 @@ export abstract class BasePage {
 		private readonly path: string,
 	) {}
 
-	async goto(): Promise<void> {
-		await this.page.goto(this.path);
+	// Returns the navigation response so steps can assert on its status.
+	async goto(): Promise<Response | null> {
+		return this.page.goto(this.path);
 	}
 
 	get errorSummary(): Locator {

@@ -37,11 +37,12 @@ curl 'http://localhost:3001/login' \
 
 ## Automated coverage
 
-Playwright integration tests: [login.spec.ts](../../e2e/tests/integration/login.spec.ts)
-(data in [loginData.ts](../../e2e/data/loginData.ts), page object in
+BDD scenarios: [login.feature](../../e2e/features/login.feature)
+(step definitions in [login.steps.ts](../../e2e/steps/login.steps.ts), data in
+[loginData.ts](../../e2e/data/loginData.ts), page object in
 [loginPage.ts](../../e2e/pages/loginPage.ts)).
 
-Each scenario drives the real login form and, in the same test, captures the
+Each scenario drives the real login form and, in the same step, captures the
 underlying `POST /login` response via `page.waitForResponse` — asserting the
 UI validation message and the API status code together rather than testing
 each layer in isolation. Scenarios are restricted to frontend-only validation
@@ -63,5 +64,5 @@ a backend service is available in the pipeline.
 Run with:
 
 ```bash
-npm run test:ui -- e2e/tests/integration/login.spec.ts
+npm run test:ui -- --grep "User sign in"
 ```
