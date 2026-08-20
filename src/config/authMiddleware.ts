@@ -9,6 +9,8 @@ export function requireAuth(
 		res.redirect("/login");
 		return;
 	}
+	res.locals.userRole = req.session.userRole;
+	res.locals.isAdmin = req.session.userRole === "ADMIN";
 	next();
 }
 

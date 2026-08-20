@@ -23,10 +23,12 @@ vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
 });
 
 vi.mock("../src/config/authMiddleware", () => ({
-	requireAuth: (req: Request, _res: Response, next: NextFunction) => {
+	requireAuth: (req: Request, res: Response, next: NextFunction) => {
 		req.session.jwtToken = jwtToken;
 		req.session.userRole =
 			req.get("x-test-user-role") === "USER" ? "USER" : "ADMIN";
+		res.locals.userRole = req.session.userRole;
+		res.locals.isAdmin = req.session.userRole === "ADMIN";
 		next();
 	},
 	requireAdmin: (req: Request, res: Response, next: NextFunction) => {
