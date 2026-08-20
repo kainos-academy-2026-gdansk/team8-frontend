@@ -2,11 +2,11 @@ name: E2E
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   schedule:
-    - cron: "0 20 * * *"
+    - cron: "0 20 * * *"  
 
 permissions:
   contents: read

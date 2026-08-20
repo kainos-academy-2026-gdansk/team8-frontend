@@ -2,7 +2,10 @@ import type { APIResponse, Response } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import { test as base } from "playwright-bdd";
 import { RegisterApiClient } from "../api/registerApiClient";
-import { createLoginCredentials, type LoginCredentials } from "../data/loginData";
+import {
+	createLoginCredentials,
+	type LoginCredentials,
+} from "../data/loginData";
 import { JobRoleListPage } from "../pages/jobRoleListPage";
 import { LoginPage } from "../pages/loginPage";
 import { RegisterPage } from "../pages/registerPage";
@@ -35,11 +38,11 @@ export const test = base.extend<Fixtures>({
 	jobRoleListPage: async ({ page }, use) => {
 		await use(new JobRoleListPage(page));
 	},
-	loginCredentials: async ({ page: _page }, use) => {
-		await use(createLoginCredentials());
-	},
 	registerApiClient: async ({ request }, use) => {
 		await use(new RegisterApiClient(request));
+	},
+	loginCredentials: async ({ request: _request }, use) => {
+		await use(createLoginCredentials());
 	},
 });
 

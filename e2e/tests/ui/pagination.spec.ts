@@ -8,8 +8,10 @@ test("pagination renders the next page", async ({
 	jobRoleListPage,
 	page,
 }) => {
-	const registrationResponse =
-		await registerApiClient.submitRegistration(loginCredentials);
+	const registrationResponse = await registerApiClient.submitRegistration({
+		...loginCredentials,
+		confirmPassword: loginCredentials.password,
+	});
 
 	expect(registrationResponse.status()).toBe(201);
 
@@ -36,7 +38,10 @@ test("pagination renders the next page", async ({
 
 	await jobRoleListPage.nextPage.click();
 
-	await expect(page).toHaveURL(/\/job-roles\?limit=10&offset=10$/);
+	await expect(page).toHaveURL(/\/job-roles\?/);
+	const url = new URL(page.url());
+	expect(url.searchParams.get("limit")).toBe("10");
+	expect(url.searchParams.get("offset")).toBe("10");
 	await expect(page.locator(".job-role-results-summary")).toContainText(
 		"Showing 11 to 20",
 	);

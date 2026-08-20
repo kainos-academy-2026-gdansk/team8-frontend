@@ -12,8 +12,10 @@ Given(
 		loginCredentials,
 		jobRoleListPage,
 	}) => {
-		const registrationResponse =
-			await registerApiClient.submitRegistration(loginCredentials);
+		const registrationResponse = await registerApiClient.submitRegistration({
+			...loginCredentials,
+			confirmPassword: loginCredentials.password,
+		});
 
 		expect(registrationResponse.status()).toBe(201);
 
@@ -64,7 +66,10 @@ When("I click the next page control", async ({ jobRoleListPage }) => {
 });
 
 Then("the second job roles page is displayed", async ({ page }) => {
-	await expect(page).toHaveURL(/\/job-roles\?limit=10&offset=10$/);
+	await expect(page).toHaveURL(/\/job-roles\?/);
+	const url = new URL(page.url());
+	expect(url.searchParams.get("limit")).toBe("10");
+	expect(url.searchParams.get("offset")).toBe("10");
 });
 
 Then("the second page contains job roles", async ({ page }) => {

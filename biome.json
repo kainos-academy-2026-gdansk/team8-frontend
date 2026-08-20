@@ -6,13 +6,6 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!.features-gen", "!dist"]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"files": {
 		"includes": [
 			"**",
 			"!dist",
@@ -21,6 +14,10 @@
 			"!test-results",
 			"!blob-report"
 		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
 	},
 	"linter": {
 		"enabled": true,
