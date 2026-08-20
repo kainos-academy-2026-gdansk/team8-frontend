@@ -11,4 +11,4 @@ export const test = base.extend<Fixtures>({
 	},
 });
 
-export const { Given, Then } = createBdd(test);
+export const { Given, Then, When } = createBdd(test);
