@@ -32,7 +32,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_READ_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # Postgres must be reachable before the backend starts, so it's started
       # and waited on separately rather than as a parallel "services:" entry.
