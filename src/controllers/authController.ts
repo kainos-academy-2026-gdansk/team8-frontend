@@ -7,29 +7,6 @@ import Logger from "../lib/logger.js";
 
 const LOGIN_VIEW = "pages/login.njk";
 
-function getRoleFromJwt(jwtToken: string): string | undefined {
-	try {
-		const payloadSegment = jwtToken.split(".")[1];
-		if (!payloadSegment) return undefined;
-
-		const payload: unknown = JSON.parse(
-			Buffer.from(payloadSegment, "base64url").toString("utf8"),
-		);
-		if (
-			typeof payload === "object" &&
-			payload !== null &&
-			"role" in payload &&
-			typeof payload.role === "string"
-		) {
-			return payload.role;
-		}
-	} catch {
-		return undefined;
-	}
-
-	return undefined;
-}
-
 export class AuthController {
 	showLogin(req: Request, res: Response): void {
 		if (req.session.jwtToken) {
