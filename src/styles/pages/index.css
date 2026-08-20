@@ -41,13 +41,15 @@
 .home-hero__action {
 	align-self: flex-start;
 	margin-bottom: 0;
-	background: var(--k-color-bright-green);
-	color: var(--k-text-primary);
+	background: var(--k-color-white);
+	border: 2px solid var(--k-color-white);
+	color: var(--k-color-blue);
 }
 
 .home-hero__action:hover {
-	background: var(--k-color-green);
-	color: var(--k-text-primary);
+	background: var(--k-color-blue);
+	border-color: var(--k-color-white);
+	color: var(--k-color-white);
 }
 
 .home-hero__accent {

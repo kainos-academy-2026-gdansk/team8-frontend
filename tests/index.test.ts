@@ -126,7 +126,7 @@ describe("Vitest smoke", () => {
 		expect(protectedResponse.text).toContain('method="post"');
 		expect(protectedResponse.text).toContain('action="/logout"');
 		expect(protectedResponse.text).toContain("Log out");
-		expect(protectedResponse.text).toContain("Add job role");
+		expect(protectedResponse.text).not.toContain("Add job role");
 	});
 
 	it("does not show Add job role to regular users", async () => {
@@ -159,7 +159,8 @@ describe("Vitest smoke", () => {
 		});
 
 		expect(response.status).toBe(401);
-		expect(response.text).toContain("Invalid email or password");
+		expect(response.text).toContain("Wrong email or password");
+		expect(response.text).not.toContain('href="#email"');
 		expect(response.text).toContain('value="person@example.com"');
 	});
 

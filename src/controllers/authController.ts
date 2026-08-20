@@ -7,29 +7,6 @@ import Logger from "../lib/logger.js";
 
 const LOGIN_VIEW = "pages/login.njk";
 
-function getRoleFromJwt(jwtToken: string): string | undefined {
-	try {
-		const payloadSegment = jwtToken.split(".")[1];
-		if (!payloadSegment) return undefined;
-
-		const payload: unknown = JSON.parse(
-			Buffer.from(payloadSegment, "base64url").toString("utf8"),
-		);
-		if (
-			typeof payload === "object" &&
-			payload !== null &&
-			"role" in payload &&
-			typeof payload.role === "string"
-		) {
-			return payload.role;
-		}
-	} catch {
-		return undefined;
-	}
-
-	return undefined;
-}
-
 export class AuthController {
 	showLogin(req: Request, res: Response): void {
 		if (req.session.jwtToken) {
@@ -60,9 +37,13 @@ export class AuthController {
 			req.session.userRole = loginResult.role;
 			res.redirect("/job-roles");
 		} catch (error) {
+			const isInvalidCredentials =
+				error instanceof LoginApiError && error.statusCode === 401;
 			const message =
-				error instanceof LoginApiError
-					? error.message
+				isInvalidCredentials
+					? "Wrong email or password"
+					: error instanceof LoginApiError
+						? error.message
 					: "Unable to sign in right now. Please try again later.";
 			const status =
 				error instanceof LoginApiError && error.statusCode === 401 ? 401 : 502;

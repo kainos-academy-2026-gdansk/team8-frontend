@@ -287,6 +287,10 @@ export function formatJobRoleDetailedForView(job: JobRoleDetailed) {
 		responsibilities: job.responsibilities
 			.split(";")
 			.map((responsibility) => responsibility.trim())
+			.map(
+				(responsibility) =>
+					responsibility.charAt(0).toUpperCase() + responsibility.slice(1),
+			)
 			.filter(Boolean),
 		applications: (job.applications ?? []).map((application) => ({
 			...application,

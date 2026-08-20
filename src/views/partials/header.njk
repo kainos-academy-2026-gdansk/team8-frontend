@@ -3,7 +3,7 @@
 
 {% set brandHtml %}
   <a href="/" class="kainos-topnav__brand-link" aria-label="Kainos home">
-    <img src="/assets/logos/kainos-logo-primary-transparent.png" alt="Kainos" class="kainos-topnav__brand-logo" />
+    <img src="/assets/logos/kainos-logo-primary-transparent.png" alt="Kainos logo" width="800" height="250" class="kainos-topnav__brand-logo" />
   </a>
 {% endset %}
 
@@ -26,13 +26,7 @@
 
 {% set navActionsHtml %}
   <li class="govuk-service-navigation__item kainos-topnav__actions">
-    {% if isAdmin %}
-      {{ govukButton({
-        text: "Add job role",
-        href: "/job-roles/new",
-        classes: "kainos-topnav__cta kainos-topnav__add-role"
-      }) }}
-    {% endif %}
+
     {{ accountButtonHtml | safe }}
   </li>
 {% endset %}
