@@ -65,6 +65,9 @@
 
       <fieldset class="govuk-fieldset job-role-filters__group">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Closing date</legend>
+        <p class="govuk-error-message job-role-filters__date-error" id="closing-date-error" role="alert" hidden>
+          The From date must be on or before the To date.
+        </p>
         <div class="govuk-form-group">
           <label class="govuk-label" for="closing-date-after">From</label>
           <input class="govuk-input govuk-input--width-10" id="closing-date-after" name="closingDateAfter" type="date" value="{{ filters.closingDateAfter or '' }}">
@@ -84,6 +87,32 @@
     </div>
   </form>
 
+  <script>
+    (() => {
+      const fromInput = document.getElementById("closing-date-after");
+      const toInput = document.getElementById("closing-date-before");
+      const dateError = document.getElementById("closing-date-error");
+
+      if (!(fromInput instanceof HTMLInputElement) || !(toInput instanceof HTMLInputElement) || !(dateError instanceof HTMLElement)) {
+        return;
+      }
+
+      const updateDateLimits = () => {
+        toInput.min = fromInput.value;
+        fromInput.max = toInput.value;
+
+        const hasInvalidRange = Boolean(fromInput.value && toInput.value && fromInput.value > toInput.value);
+        dateError.hidden = !hasInvalidRange;
+        fromInput.setAttribute("aria-invalid", String(hasInvalidRange));
+        toInput.setAttribute("aria-invalid", String(hasInvalidRange));
+      };
+
+      fromInput.addEventListener("input", updateDateLimits);
+      toInput.addEventListener("input", updateDateLimits);
+      updateDateLimits();
+    })();
+  </script>
+
   <div class="job-role-results">
   {% if pageError %}
     <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="job-role-list-error-title">
@@ -95,13 +124,18 @@
   {% endif %}
 
   {% if jobRoles.length > 0 %}
-    <p class="govuk-body job-role-results-summary">
-      {% if isFiltered %}
-        {{ total }} job role{% if total != 1 %}s{% endif %} found
-      {% else %}
-        Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
+    <div class="job-role-results-header">
+      <p class="govuk-body job-role-results-summary">
+        {% if isFiltered %}
+          {{ total }} job role{% if total != 1 %}s{% endif %} found
+        {% else %}
+          Showing {{ pagination.fromItem }} to {{ pagination.toItem }} of {{ total }} job roles
+        {% endif %}
+      </p>
+      {% if isAdmin %}
+        <a class="govuk-button job-role-results-header__add-button" data-module="govuk-button" href="/job-roles/new">Add new job role</a>
       {% endif %}
-    </p>
+    </div>
 
     <nav class="job-role-sort-controls" aria-label="Sort job roles">
       <p class="govuk-body-s job-role-sort-controls__label">Sort by</p>
@@ -216,7 +250,12 @@
       </div>
     </nav>
   {% else %}
-    <p class="govuk-body">{% if isFiltered %}No job roles match your filters.{% else %}No job roles found.{% endif %}</p>
+    <div class="job-role-empty-state">
+      <p class="govuk-body">{% if isFiltered %}No job roles match your filters.{% else %}No job roles found.{% endif %}</p>
+      {% if isAdmin %}
+        <a class="govuk-button job-role-empty-state__add-button" data-module="govuk-button" href="/job-roles/new">Add new job role</a>
+      {% endif %}
+    </div>
   {% endif %}
   </div>
   </div>

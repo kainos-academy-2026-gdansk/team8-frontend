@@ -39,6 +39,11 @@ const SORT_CONTROL_LABELS: Record<JobRoleSortKey, string> = {
 	status: "Status",
 };
 
+const DEFAULT_JOB_ROLE_SORT: JobRoleSort = {
+	sortBy: "status",
+	sortOrder: "desc",
+};
+
 function buildNextSort(
 	key: JobRoleSortKey,
 	activeSort?: JobRoleSort,
@@ -217,7 +222,7 @@ export class JobRoleController {
 			const { limit, offset, filters, isFiltered, sort } =
 				jobRoleListQuerySchema.parse(req.query);
 			const activeFilters = isFiltered ? filters : undefined;
-			const activeSort = sort;
+			const activeSort = sort ?? DEFAULT_JOB_ROLE_SORT;
 			const jwtToken = this.getJwtToken(req);
 			const fetchPage = (targetOffset: number) =>
 				activeFilters && activeSort
