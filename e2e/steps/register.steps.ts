@@ -1,26 +1,25 @@
 import { expect } from "@playwright/test";
 import { Given, Then } from "../bdd/fixtures";
+import {
+	VALID_PASSWORD,
+	uniqueEmail,
+} from "../data/registerData";
 
 Given("I am on the registration page", async ({ world }) => {
 	await world.registerPage.goto();
 });
 
-Then("I can see the registration form", async ({ world }) => {
-	await expect(world.registerPage.heading).toBeVisible();
-	await expect(world.registerPage.emailInput).toBeVisible();
+Then("I register using valid details", async ({ world }) => {
+	const password = VALID_PASSWORD;
+	const credentials = {
+		email: uniqueEmail(),
+		password,
+		confirmPassword: password,
+	};
+
+	await world.registerPage.register(credentials);
 });
 
-Then("the password fields are hidden", async ({ world }) => {
-	await expect(world.registerPage.passwordInput).toHaveAttribute(
-		"type",
-		"password",
-	);
-	await expect(world.registerPage.confirmPasswordInput).toHaveAttribute(
-		"type",
-		"password",
-	);
-});
-
-Then("the create account button is enabled", async ({ world }) => {
-	await expect(world.registerPage.submitButton).toBeEnabled();
+Then("an account is successfully created", async ({ world }) => {
+	await expect(world.registerPage.successMessage).toBeVisible();
 });
