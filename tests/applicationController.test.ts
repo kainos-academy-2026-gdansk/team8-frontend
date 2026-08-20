@@ -50,7 +50,9 @@ vi.mock("../src/config/authMiddleware", () => ({
 import app from "../src/app";
 import { ApplicationApiError } from "../src/services/applicationApiService";
 
-function createJobWithApplication(status: "IN_PROGRESS" | "HIRED" | "REJECTED") {
+function createJobWithApplication(
+	status: "IN_PROGRESS" | "HIRED" | "REJECTED",
+) {
 	return {
 		id: 1,
 		applications: [
@@ -117,9 +119,7 @@ describe("application hire/reject routes", () => {
 	});
 
 	it("redirects a non-admin away from the hire confirmation page", async () => {
-		const response = await request(app).get(
-			"/job-roles/1/applications/5/hire",
-		);
+		const response = await request(app).get("/job-roles/1/applications/5/hire");
 
 		expect(response.status).toBe(302);
 		expect(response.headers.location).toBe("/job-roles");

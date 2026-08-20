@@ -20,7 +20,11 @@ import {
 	createJobRole,
 	formatJobRoleDetailedForView,
 } from "../src/services/jobRoleApiService";
-import type { JobRole, JobRoleDetailed, JobRoleFilters } from "../src/models/jobRole";
+import type {
+	JobRole,
+	JobRoleDetailed,
+	JobRoleFilters,
+} from "../src/models/jobRole";
 
 const jwtToken = "test-jwt-token";
 

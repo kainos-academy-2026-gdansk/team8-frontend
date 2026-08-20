@@ -122,7 +122,6 @@ app.use(authRouter);
 app.use(requireAuth);
 app.use(applicationRouter);
 app.use(jobRoleRouter);
-app.use(applicationRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

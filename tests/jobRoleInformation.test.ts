@@ -85,9 +85,7 @@ describe("job role information page applications section", () => {
 		expect(response.text).toContain(
 			"job-role-applications__status--in-progress",
 		);
-		expect(response.text).toContain(
-			'href="/job-roles/1/applications/5/hire"',
-		);
+		expect(response.text).toContain('href="/job-roles/1/applications/5/hire"');
 		expect(response.text).toContain(
 			'href="/job-roles/1/applications/5/reject"',
 		);
@@ -138,7 +136,10 @@ describe("job role information page applications section", () => {
 	});
 
 	it("shows an empty state when there are no applications", async () => {
-		mockedGetJobById.mockResolvedValueOnce({ ...createJob(), applications: [] });
+		mockedGetJobById.mockResolvedValueOnce({
+			...createJob(),
+			applications: [],
+		});
 		const agent = await loginAs("ADMIN");
 
 		const response = await agent.get("/job-roles/1");
