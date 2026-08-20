@@ -4,7 +4,7 @@ import { BasePage } from "./basePage";
 export class JobRoleListPage extends BasePage {
     readonly heading: Locator;
     readonly pagination: Locator;
-    readonly previousPageControl: Locator;
+    readonly previousPage: Locator;
     readonly currentPage: Locator;
     readonly nextPage: Locator;
     readonly resultsSummary: Locator;
@@ -22,7 +22,7 @@ export class JobRoleListPage extends BasePage {
             name: "Pagination",
         });
 
-        this.previousPageControl = this.pagination.locator(
+        this.previousPage = this.pagination.locator(
             ".govuk-pagination__prev [aria-disabled='true']",
         );
 

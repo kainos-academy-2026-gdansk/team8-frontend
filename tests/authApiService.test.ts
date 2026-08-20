@@ -43,7 +43,7 @@ describe("auth API service login", () => {
 		);
 
 		await expect(login("person@example.com", "WrongPassword!")).rejects.toEqual(
-			expect.objectContaining<LoginApiError>({
+			expect.objectContaining<Pick<LoginApiError, "statusCode" | "message">>({
 				statusCode: 401,
 				message: "Invalid email or password",
 			}),
@@ -61,7 +61,7 @@ describe("auth API service login", () => {
 		await expect(
 			login("person@example.com", "Verysecure@pass"),
 		).rejects.toEqual(
-			expect.objectContaining<LoginApiError>({
+			expect.objectContaining<Pick<LoginApiError, "statusCode" | "message">>({
 				statusCode: 500,
 				message: "Unable to sign in right now. Please try again later.",
 			}),

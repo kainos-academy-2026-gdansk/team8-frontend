@@ -44,7 +44,7 @@ Then("I scroll to the bottom of the page", async ({ jobRoleListPage }) => {
 Then(
     "the previous page control is disabled",
     async ({ jobRoleListPage }) => {
-        await expect(jobRoleListPage.previousPageControl).toHaveAttribute(
+        await expect(jobRoleListPage.previousPage).toHaveAttribute(
             "aria-disabled",
             "true",
         );

@@ -2,7 +2,7 @@ Feature: Pagination
 
   Scenario: Pagination successfully renders pages
     Given I am an authenticated user on the first job roles page
-    Then the job roles page is visible
+    And the job roles page is visible
     And I scroll to the bottom of the page
     And the previous page control is disabled
     And page 1 is selected
