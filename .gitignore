@@ -16,4 +16,3 @@ tests/**/*.test.js
 /playwright/.cache/
 /playwright/.auth/
 /.playwright-mcp/
-/.features-gen/

@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   playwright:
@@ -25,11 +26,65 @@ jobs:
       - run: npx playwright install --with-deps
       - run: npm run build
       - run: npm run test:ui:typecheck
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_READ_TOKEN }}
+
+      # Postgres must be reachable before the backend starts, so it's started
+      # and waited on separately rather than as a parallel "services:" entry.
+      - name: Start backend database
+        run: |
+          docker network create e2e-net
+          docker run -d --name backend-db --network e2e-net \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=team8_backend \
+            postgres:16-alpine
+          for i in $(seq 1 30); do
+            docker exec backend-db pg_isready -U postgres -d team8_backend && break
+            sleep 2
+          done
+
+      - name: Start backend
+        run: |
+          docker run -d --name backend --network e2e-net \
+            --restart on-failure:5 \
+            -e NODE_ENV=production \
+            -e PORT=3000 \
+            -e DATABASE_URL=postgresql://postgres:postgres@backend-db:5432/team8_backend \
+            -p 3000:3000 \
+            ghcr.io/kainos-academy-2026-gdansk/team8-backend:latest
+          # migrate deploy + db seed run before the server starts, so give it more headroom
+          for i in $(seq 1 45); do
+            curl -fsS http://localhost:3000/ && break
+            if [ "$i" = 45 ]; then
+              echo "Backend never became ready" >&2
+              docker logs backend
+              exit 1
+            fi
+            sleep 2
+          done
+
       - run: npm run test:ui
         env:
           PORT: 3001
           SESSION_SECRET: ci-secret
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          API_BASE_URL: http://localhost:3000/api
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker logs backend
+
+      - name: Stop backend containers
+        if: always()
+        run: |
+          docker rm -f backend backend-db || true
+          docker network rm e2e-net || true
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

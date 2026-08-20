@@ -1,8 +1,8 @@
 import type { APIResponse, Response } from "@playwright/test";
 import { createBdd } from "playwright-bdd";
 import { test as base } from "playwright-bdd";
-// import { RegisterApiClient } from "../api/registerApiClient";
-// import { createLoginCredentials, type LoginCredentials } from "../data/loginData";
+import { RegisterApiClient } from "../api/registerApiClient";
+import { createLoginCredentials, type LoginCredentials } from "../data/loginData";
 import { JobRoleListPage } from "../pages/jobRoleListPage";
 import { LoginPage } from "../pages/loginPage";
 import { RegisterPage } from "../pages/registerPage";
@@ -16,9 +16,9 @@ type Fixtures = {
 	registerPage: RegisterPage;
 	loginPage: LoginPage;
 	lastResponse: LastResponse;
-	// registerApiClient: RegisterApiClient;
+	registerApiClient: RegisterApiClient;
 	jobRoleListPage: JobRoleListPage;
-	// loginCredentials: LoginCredentials;
+	loginCredentials: LoginCredentials;
 };
 
 export const test = base.extend<Fixtures>({
@@ -35,9 +35,12 @@ export const test = base.extend<Fixtures>({
 	jobRoleListPage: async ({ page }, use) => {
 		await use(new JobRoleListPage(page));
 	},
-	// loginCredentials: async ({ request: _request }, use) => {
-	// 	await use(createLoginCredentials());
-	// },
+	loginCredentials: async ({ page: _page }, use) => {
+		await use(createLoginCredentials());
+	},
+	registerApiClient: async ({ request }, use) => {
+		await use(new RegisterApiClient(request));
+	},
 });
 
 export const { Given, When, Then } = createBdd(test);
