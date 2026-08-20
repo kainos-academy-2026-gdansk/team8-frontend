@@ -58,3 +58,49 @@ export async function submitApplication(
 		);
 	}
 }
+async function patchApplication(
+	token: string,
+	jobRoleId: number,
+	applicationId: number,
+	action: "hire" | "reject",
+): Promise<void> {
+	try {
+		await apiClient.patch(
+			`/job-roles/${jobRoleId}/applications/${applicationId}/${action}`,
+			undefined,
+			{ headers: authHeaders(token) },
+		);
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			const status = error.response?.status;
+			const backendMessage = (
+				error.response?.data as { error?: string } | undefined
+			)?.error;
+
+			if (status === 401) throw new Error("Unauthorized");
+			if (typeof status === "number" && status < 500) {
+				throw new ApplicationApiError(
+					status,
+					backendMessage ?? `Unable to ${action} this applicant.`,
+				);
+			}
+		}
+		throw new ApplicationApiError(502, `Unable to ${action} this applicant.`);
+	}
+}
+
+export function hireApplication(
+	token: string,
+	jobRoleId: number,
+	applicationId: number,
+): Promise<void> {
+	return patchApplication(token, jobRoleId, applicationId, "hire");
+}
+
+export function rejectApplication(
+	token: string,
+	jobRoleId: number,
+	applicationId: number,
+): Promise<void> {
+	return patchApplication(token, jobRoleId, applicationId, "reject");
+}

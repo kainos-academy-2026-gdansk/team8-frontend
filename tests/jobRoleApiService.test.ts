@@ -18,8 +18,13 @@ import {
 	getJobById,
 	getJobRoleCatalogues,
 	createJobRole,
+	formatJobRoleDetailedForView,
 } from "../src/services/jobRoleApiService";
-import type { JobRole, JobRoleFilters } from "../src/models/jobRole";
+import type {
+	JobRole,
+	JobRoleDetailed,
+	JobRoleFilters,
+} from "../src/models/jobRole";
 
 const jwtToken = "test-jwt-token";
 
@@ -354,5 +359,70 @@ describe("buildPagination", () => {
 			fromItem: 0,
 			toItem: 0,
 		});
+	});
+});
+
+describe("formatJobRoleDetailedForView", () => {
+	const baseJob = {
+		id: 1,
+		roleName: "Engineer",
+		location: "Remote",
+		capability: { id: 1, name: "Engineering" },
+		band: { id: 1, name: "Consultant" },
+		closingDate: new Date("2026-08-28T22:00:00.000Z"),
+		status: { id: 1, name: "OPEN" as const },
+		description: "Build things",
+		responsibilities: "Design; Build",
+		sharepointUrl: "https://example.com",
+		numberOfOpenPositions: 2,
+	};
+
+	it("maps applications with status labels and action hrefs", () => {
+		const job: JobRoleDetailed = {
+			...baseJob,
+			applications: [
+				{
+					id: 5,
+					jobRoleId: 1,
+					applicantEmail: "applicant@example.com",
+					cv: "cv-content",
+					status: "IN_PROGRESS",
+					createdAt: new Date("2026-08-17T00:00:00.000Z"),
+				},
+				{
+					id: 6,
+					jobRoleId: 1,
+					applicantEmail: "hired@example.com",
+					cv: "cv-content-2",
+					status: "HIRED",
+					createdAt: new Date("2026-08-17T00:00:00.000Z"),
+				},
+			],
+		};
+
+		const result = formatJobRoleDetailedForView(job);
+
+		expect(result.applications).toEqual([
+			expect.objectContaining({
+				applicantEmail: "applicant@example.com",
+				statusLabel: "In progress",
+				isInProgress: true,
+				hireHref: "/job-roles/1/applications/5/hire",
+				rejectHref: "/job-roles/1/applications/5/reject",
+			}),
+			expect.objectContaining({
+				applicantEmail: "hired@example.com",
+				statusLabel: "Hired",
+				isInProgress: false,
+			}),
+		]);
+	});
+
+	it("defaults to an empty applications list when none are returned", () => {
+		const job = { ...baseJob } as JobRoleDetailed;
+
+		const result = formatJobRoleDetailedForView(job);
+
+		expect(result.applications).toEqual([]);
 	});
 });

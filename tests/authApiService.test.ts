@@ -22,9 +22,9 @@ describe("auth API service login", () => {
 	it("posts credentials and returns the JWT with its role", async () => {
 		mockedPost.mockResolvedValueOnce({ data: { token: adminToken } });
 
-		await expect(login("person@example.com", "Verysecure@pass")).resolves.toEqual(
-			{ token: adminToken, role: "ADMIN" },
-		);
+		await expect(
+			login("person@example.com", "Verysecure@pass"),
+		).resolves.toEqual({ token: adminToken, role: "ADMIN" });
 		expect(mockedPost).toHaveBeenCalledWith("/auth/login", {
 			email: "person@example.com",
 			password: "Verysecure@pass",

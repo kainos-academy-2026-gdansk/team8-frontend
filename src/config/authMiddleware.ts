@@ -11,3 +11,15 @@ export function requireAuth(
 	}
 	next();
 }
+
+export function requireAdmin(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): void {
+	if (req.session.userRole !== "ADMIN") {
+		res.redirect("/job-roles");
+		return;
+	}
+	next();
+}
