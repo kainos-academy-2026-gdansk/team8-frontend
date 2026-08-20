@@ -5,25 +5,20 @@ export type LoginCredentials = {
 	password: string;
 };
 
-export const missingPasswordLogin: LoginCredentials = {
-	email: VALID_EMAIL,
-	password: "",
-};
-
 export const missingEmailLogin: LoginCredentials = {
 	email: "",
 	password: VALID_PASSWORD,
 };
 
-// Never registered, so the backend always reports it as invalid.
-export const unknownEmailLogin: LoginCredentials = {
-	email: "no.such.user.e2e@kainos.com",
-	password: VALID_PASSWORD,
+export const missingPasswordLogin: LoginCredentials = {
+	email: VALID_EMAIL,
+	password: "",
 };
 
-export function wrongPasswordLogin(email: string): LoginCredentials {
-	return { email, password: "WrongPassword1!" };
-}
+export const emptyLogin: LoginCredentials = {
+	email: "",
+	password: "",
+};
 
 export const loginErrors = {
 	bothRequired: "Enter both email and password",

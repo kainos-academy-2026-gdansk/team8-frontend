@@ -37,21 +37,31 @@ curl 'http://localhost:3001/login' \
 
 ## Automated coverage
 
-Playwright API tests: [login.api.spec.ts](../../e2e/tests/api/login.api.spec.ts)
-(data in [loginData.ts](../../e2e/data/loginData.ts), client in
-[loginApiClient.ts](../../e2e/api/loginApiClient.ts)).
+Playwright integration tests: [login.spec.ts](../../e2e/tests/integration/login.spec.ts)
+(data in [loginData.ts](../../e2e/data/loginData.ts), page object in
+[loginPage.ts](../../e2e/pages/loginPage.ts)).
 
-| Variation | Input |
-| --- | --- |
-| Page load | `GET /login` returns `200` |
-| Valid login | Registers a unique account, then logs in with it; expects the redirect to land on `/job-roles` |
-| Wrong password | Registered email, incorrect password → `401` |
-| Unknown email | Never-registered email → `401` |
-| Missing password | Empty password → `400`, frontend validation message |
-| Missing email | Empty email → `400`, frontend validation message |
+Each scenario drives the real login form and, in the same test, captures the
+underlying `POST /login` response via `page.waitForResponse` — asserting the
+UI validation message and the API status code together rather than testing
+each layer in isolation. Scenarios are restricted to frontend-only validation
+(missing email/password) so they don't depend on a live backend being
+reachable in CI:
+
+| Variation | Input | UI assertion | API assertion |
+| --- | --- | --- | --- |
+| Page load | - | Form renders | - |
+| Missing email | Empty email, valid password | "Enter both email and password" shown | `400` |
+| Missing password | Valid email, empty password | "Enter both email and password" shown | `400` |
+| Empty form | Empty email and password | "Enter both email and password" shown | `400` |
+
+Scenarios that need a real backend round trip (valid login, wrong password,
+unknown email) are intentionally not covered here — this repo doesn't run a
+seeded backend instance in CI. Add them back as backend-integration tests once
+a backend service is available in the pipeline.
 
 Run with:
 
 ```bash
-npm run test:ui -- e2e/tests/api/login.api.spec.ts
+npm run test:ui -- e2e/tests/integration/login.spec.ts
 ```

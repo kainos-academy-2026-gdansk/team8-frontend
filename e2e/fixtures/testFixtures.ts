@@ -1,12 +1,12 @@
 import { test as base } from "@playwright/test";
-import { LoginApiClient } from "../api/loginApiClient";
 import { RegisterApiClient } from "../api/registerApiClient";
+import { LoginPage } from "../pages/loginPage";
 import { RegisterPage } from "../pages/registerPage";
 
 type Fixtures = {
 	registerPage: RegisterPage;
 	registerApiClient: RegisterApiClient;
-	loginApiClient: LoginApiClient;
+	loginPage: LoginPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -16,8 +16,8 @@ export const test = base.extend<Fixtures>({
 	registerApiClient: async ({ request }, use) => {
 		await use(new RegisterApiClient(request));
 	},
-	loginApiClient: async ({ request }, use) => {
-		await use(new LoginApiClient(request));
+	loginPage: async ({ page }, use) => {
+		await use(new LoginPage(page));
 	},
 });
 

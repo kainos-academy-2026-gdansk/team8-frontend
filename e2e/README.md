@@ -10,8 +10,9 @@ Playwright + TypeScript framework for the Team8 frontend.
 | `fixtures/` | Custom Playwright fixtures that inject page objects and API clients into tests. |
 | `data/` | Test data and expected messages. No literals in specs. |
 | `api/` | API clients for setup, teardown and contract checks. |
-| `tests/ui/` | Browser tests. |
+| `tests/ui/` | Browser tests — rendering and interaction only, no network assertions. |
 | `tests/api/` | HTTP-level tests that need no browser. |
+| `tests/integration/` | Browser-driven tests that also assert on the underlying network response, proving the UI and API agree. |
 | `global-setup.ts` | Fails fast if the app under test is not reachable. |
 | `global-teardown.ts` | Hook for cleaning up data created during a run. |
 
