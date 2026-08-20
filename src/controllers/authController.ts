@@ -39,11 +39,10 @@ export class AuthController {
 		} catch (error) {
 			const isInvalidCredentials =
 				error instanceof LoginApiError && error.statusCode === 401;
-			const message =
-				isInvalidCredentials
-					? "Wrong email or password"
-					: error instanceof LoginApiError
-						? error.message
+			const message = isInvalidCredentials
+				? "Wrong email or password"
+				: error instanceof LoginApiError
+					? error.message
 					: "Unable to sign in right now. Please try again later.";
 			const status =
 				error instanceof LoginApiError && error.statusCode === 401 ? 401 : 502;

@@ -9,9 +9,12 @@ import {
 import { emptyRegistration } from "../data/registerData";
 import { Given, Then, When } from "../fixtures/testFixtures";
 
-Given("I am on the registration page", async ({ registerPage, lastResponse }) => {
-	lastResponse.current = await registerPage.goto();
-});
+Given(
+	"I am on the registration page",
+	async ({ registerPage, lastResponse }) => {
+		lastResponse.current = await registerPage.goto();
+	},
+);
 
 Then(
 	"the registration page should respond with status {int}",
@@ -31,9 +34,12 @@ Then("I should see the registration form", async ({ registerPage }) => {
 	await expect(registerPage.submitButton).toBeEnabled();
 });
 
-When("I submit the registration form with no details", async ({ registerPage }) => {
-	await registerPage.register(emptyRegistration);
-});
+When(
+	"I submit the registration form with no details",
+	async ({ registerPage }) => {
+		await registerPage.register(emptyRegistration);
+	},
+);
 
 Then(
 	"I should see validation errors for email, password and confirm password",
@@ -106,9 +112,7 @@ Then(
 Then(
 	"the email field should keep my submitted value",
 	async ({ registerPage }) => {
-		await expect(registerPage.emailInput).toHaveValue(
-			validRegistration.email,
-		);
+		await expect(registerPage.emailInput).toHaveValue(validRegistration.email);
 	},
 );
 

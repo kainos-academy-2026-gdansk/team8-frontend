@@ -255,17 +255,21 @@ describe("GET /job-roles pagination", () => {
 			"/job-roles?offset=10&roleName=Engineer&location=Gdansk&capability=Software%20Engineering&capability=Cloud&band=Consultant&status=OPEN&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
 		);
 
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 10, {
-			roleName: "Engineer",
-			location: "Gdansk",
-			capability: ["Software Engineering", "Cloud"],
-			band: ["Consultant"],
-			status: ["OPEN"],
-			closingDateAfter: "2026-08-01",
-			closingDateBefore: "2026-08-31",
-		},
-		defaultSort,
-	);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			10,
+			{
+				roleName: "Engineer",
+				location: "Gdansk",
+				capability: ["Software Engineering", "Cloud"],
+				band: ["Consultant"],
+				status: ["OPEN"],
+				closingDateAfter: "2026-08-01",
+				closingDateBefore: "2026-08-31",
+			},
+			defaultSort,
+		);
 		expect(response.text).toContain('value="Engineer"');
 		expect(response.text).toContain('value="Software Engineering" checked');
 		expect(response.text).toContain('value="OPEN" checked');
