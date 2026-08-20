@@ -29,19 +29,19 @@
     {% for field in textFields %}
       <div class="govuk-form-group{% if errors[field.name] %} govuk-form-group--error{% endif %}">
         <label class="govuk-label" for="{{ field.name }}">{{ field.label }}</label>
-        {% if errors[field.name] %}<p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors[field.name] }}</p>{% endif %}
+        {% if errors[field.name] %}<p id="{{ field.name }}-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors[field.name] }}</p>{% endif %}
         {% if field.textarea %}
-          <textarea class="govuk-textarea" id="{{ field.name }}" name="{{ field.name }}" rows="4">{{ values[field.name] or '' }}</textarea>
+          <textarea class="govuk-textarea" id="{{ field.name }}" name="{{ field.name }}" rows="4"{% if errors[field.name] %} aria-invalid="true" aria-describedby="{{ field.name }}-error"{% endif %}>{{ values[field.name] or '' }}</textarea>
         {% else %}
-          <input class="govuk-input" id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type or 'text' }}" value="{{ values[field.name] or '' }}">
+          <input class="govuk-input" id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type or 'text' }}" value="{{ values[field.name] or '' }}"{% if errors[field.name] %} aria-invalid="true" aria-describedby="{{ field.name }}-error"{% endif %}>
         {% endif %}
       </div>
     {% endfor %}
 
     <div class="govuk-form-group{% if errors.capabilityId %} govuk-form-group--error{% endif %}">
       <label class="govuk-label" for="capabilityId">Capability</label>
-      {% if errors.capabilityId %}<p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.capabilityId }}</p>{% endif %}
-      <select class="govuk-select" id="capabilityId" name="capabilityId">
+      {% if errors.capabilityId %}<p id="capabilityId-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.capabilityId }}</p>{% endif %}
+      <select class="govuk-select" id="capabilityId" name="capabilityId"{% if errors.capabilityId %} aria-invalid="true" aria-describedby="capabilityId-error"{% endif %}>
         <option value="">Select a capability</option>
         {% for option in capabilities %}<option value="{{ option.id }}"{% if values.capabilityId == option.id %} selected{% endif %}>{{ option.name }}</option>{% endfor %}
       </select>
@@ -49,8 +49,8 @@
 
     <div class="govuk-form-group{% if errors.bandId %} govuk-form-group--error{% endif %}">
       <label class="govuk-label" for="bandId">Band</label>
-      {% if errors.bandId %}<p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.bandId }}</p>{% endif %}
-      <select class="govuk-select" id="bandId" name="bandId">
+      {% if errors.bandId %}<p id="bandId-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.bandId }}</p>{% endif %}
+      <select class="govuk-select" id="bandId" name="bandId"{% if errors.bandId %} aria-invalid="true" aria-describedby="bandId-error"{% endif %}>
         <option value="">Select a band</option>
         {% for option in bands %}<option value="{{ option.id }}"{% if values.bandId == option.id %} selected{% endif %}>{{ option.name }}</option>{% endfor %}
       </select>
@@ -58,14 +58,14 @@
 
     <div class="govuk-form-group{% if errors.closingDate %} govuk-form-group--error{% endif %}">
       <label class="govuk-label" for="closingDate">Closing date</label>
-      {% if errors.closingDate %}<p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.closingDate }}</p>{% endif %}
-      <input class="govuk-input govuk-input--width-10" id="closingDate" name="closingDate" type="date" value="{{ values.closingDate or '' }}">
+      {% if errors.closingDate %}<p id="closingDate-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.closingDate }}</p>{% endif %}
+      <input class="govuk-input govuk-input--width-10" id="closingDate" name="closingDate" type="date" value="{{ values.closingDate or '' }}"{% if errors.closingDate %} aria-invalid="true" aria-describedby="closingDate-error"{% endif %}>
     </div>
 
     <div class="govuk-form-group{% if errors.numberOfOpenPositions %} govuk-form-group--error{% endif %}">
       <label class="govuk-label" for="numberOfOpenPositions">Number of open positions</label>
-      {% if errors.numberOfOpenPositions %}<p class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.numberOfOpenPositions }}</p>{% endif %}
-      <input class="govuk-input govuk-input--width-5" id="numberOfOpenPositions" name="numberOfOpenPositions" type="number" min="0" value="{{ values.numberOfOpenPositions or '' }}">
+      {% if errors.numberOfOpenPositions %}<p id="numberOfOpenPositions-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors.numberOfOpenPositions }}</p>{% endif %}
+      <input class="govuk-input govuk-input--width-5" id="numberOfOpenPositions" name="numberOfOpenPositions" type="number" min="0" value="{{ values.numberOfOpenPositions or '' }}"{% if errors.numberOfOpenPositions %} aria-invalid="true" aria-describedby="numberOfOpenPositions-error"{% endif %}>
     </div>
 
     <button class="govuk-button" type="submit">Create job role</button>

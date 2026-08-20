@@ -81,6 +81,7 @@
 .job-role-card--clickable:focus-within {
 	outline: 3px solid var(--k-focus-ring);
 	outline-offset: 2px;
+	box-shadow: 0 0 0 1px var(--k-focus-contrast), var(--k-shadow-2);
 }
 
 .job-role-card__link {
@@ -131,7 +132,7 @@
 
 .job-role-card__status.job-role-card__status--open {
 	background: #d9f1e8;
-	color: #1f7a57;
+	color: var(--k-color-dark-green);
 }
 
 .job-role-card__status.job-role-card__status--closed {

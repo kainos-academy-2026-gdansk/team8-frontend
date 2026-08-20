@@ -105,6 +105,14 @@
         dateError.hidden = !hasInvalidRange;
         fromInput.setAttribute("aria-invalid", String(hasInvalidRange));
         toInput.setAttribute("aria-invalid", String(hasInvalidRange));
+
+        if (hasInvalidRange) {
+          fromInput.setAttribute("aria-describedby", "closing-date-error");
+          toInput.setAttribute("aria-describedby", "closing-date-error");
+        } else {
+          fromInput.removeAttribute("aria-describedby");
+          toInput.removeAttribute("aria-describedby");
+        }
       };
 
       fromInput.addEventListener("input", updateDateLimits);
