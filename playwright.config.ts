@@ -1,7 +1,6 @@
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
-import { defineBddConfig } from "playwright-bdd";
 
 dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true });
 
