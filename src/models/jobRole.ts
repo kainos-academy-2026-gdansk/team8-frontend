@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ApplicationSummaryDto } from "./application";
 
 export const JOB_ROLES_PAGE_SIZE = 10;
 
@@ -219,6 +220,7 @@ export interface JobRoleDetailed extends JobRole {
 	responsibilities: string;
 	sharepointUrl: string;
 	numberOfOpenPositions: number;
+	applications?: ApplicationSummaryDto[];
 }
 
 export const createJobRoleSchema = z.object({

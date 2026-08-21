@@ -37,8 +37,11 @@ export class AuthController {
 			req.session.userRole = loginResult.role;
 			res.redirect("/job-roles");
 		} catch (error) {
-			const message =
-				error instanceof LoginApiError
+			const isInvalidCredentials =
+				error instanceof LoginApiError && error.statusCode === 401;
+			const message = isInvalidCredentials
+				? "Wrong email or password"
+				: error instanceof LoginApiError
 					? error.message
 					: "Unable to sign in right now. Please try again later.";
 			const status =

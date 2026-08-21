@@ -3,9 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Explore Kainos job roles, review opportunities and apply for positions that match your skills." />
     <title>{% block title %}JobRoles{% endblock %} - Kainos</title>
     <link rel="stylesheet" href="/govuk-frontend.min.css" />
     <link rel="stylesheet" href="/styles.css" />
+    {% block pageStyles %}{% endblock %}
   </head>
   <body class="govuk-template__body app-page__body">
     <script>
@@ -26,9 +28,11 @@
       {% include "partials/footer.njk" %}
     {% endblock %}
 
-    <script type="module">
-      import { initAll } from "/govuk-frontend.min.js";
-      initAll();
-    </script>
+    {% block scripts %}
+      <script type="module">
+        import { initAll } from "/govuk-frontend.min.js";
+        initAll();
+      </script>
+    {% endblock %}
   </body>
 </html>

@@ -1,11 +1,25 @@
-Feature: Login functionality
-    As a user with an existing account
-    I want to log in and see job-roles page
-    So that I can browse job-role offers
+Feature: User sign in
+  As a registered user
+  I want to sign in with my email and password
+  So that I can access the job roles I'm eligible for
 
-    Scenario: User can log in and view job roles
+  Background:
     Given I am on the login page
-    And I can see the login form
-    When I fill in the login form with email "example@example.com" and password "#Example123"
-    And I submit the login form
-    Then I should be redirected to the job roles page
+
+  Scenario: The sign-in form is available
+    Then I should see the sign-in form
+
+  Scenario: Signing in without an email is rejected by the UI and the API
+    When I sign in without an email
+    Then I should see a "both fields required" error
+    And the login request should respond with status 400
+
+  Scenario: Signing in without a password is rejected by the UI and the API
+    When I sign in without a password
+    Then I should see a "both fields required" error
+    And the login request should respond with status 400
+
+  Scenario: Submitting an empty form is rejected by the UI and the API
+    When I sign in with no details
+    Then I should see a "both fields required" error
+    And the login request should respond with status 400

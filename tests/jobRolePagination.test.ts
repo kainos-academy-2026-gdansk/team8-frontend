@@ -5,6 +5,7 @@ import type { JobRolePage } from "../src/models/jobRole";
 import { buildPagination } from "../src/services/jobRoleApiService";
 
 const jwtToken = "test-jwt-token";
+const defaultSort = { sortBy: "status", sortOrder: "desc" } as const;
 
 const { mockedGetAllJobRoles, mockedGetJobById } = vi.hoisted(() => ({
 	mockedGetAllJobRoles: vi.fn(),
@@ -22,9 +23,20 @@ vi.mock("../src/services/jobRoleApiService", async (importOriginal) => {
 });
 
 vi.mock("../src/config/authMiddleware", () => ({
-	requireAuth: (req: Request, _res: Response, next: NextFunction) => {
+	requireAuth: (req: Request, res: Response, next: NextFunction) => {
 		req.session.jwtToken = jwtToken;
+		req.session.userRole =
+			req.get("x-test-user-role") === "USER" ? "USER" : "ADMIN";
+		res.locals.userRole = req.session.userRole;
+		res.locals.isAdmin = req.session.userRole === "ADMIN";
 		next();
+	},
+	requireAdmin: (req: Request, res: Response, next: NextFunction) => {
+		if (req.session.userRole === "ADMIN") {
+			next();
+			return;
+		}
+		res.redirect("/job-roles");
 	},
 }));
 
@@ -66,7 +78,13 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			defaultSort,
+		);
 		expect(response.text).toContain("Showing 1 to 10 of 14 job roles");
 		expect(response.text).toContain(
 			'job-role-pagination__button--disabled" aria-disabled="true">First',
@@ -75,10 +93,10 @@ describe("GET /job-roles pagination", () => {
 			'job-role-pagination__direction-link--disabled" aria-disabled="true"',
 		);
 		expect(response.text).toContain(
-			'href="/job-roles?limit=10&amp;offset=10" rel="next"',
+			'href="/job-roles?limit=10&amp;offset=10&amp;sortBy=status&amp;sortOrder=desc" rel="next"',
 		);
 		expect(response.text).toContain(
-			'href="/job-roles?limit=10&amp;offset=10" rel="last"',
+			'href="/job-roles?limit=10&amp;offset=10&amp;sortBy=status&amp;sortOrder=desc" rel="last"',
 		);
 		expect(response.text).toContain(
 			'aria-label="Page 1" aria-current="page">1',
@@ -92,13 +110,19 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=10");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 10);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			10,
+			undefined,
+			defaultSort,
+		);
 		expect(response.text).toContain("Showing 11 to 14 of 14 job roles");
 		expect(response.text).toContain(
-			'href="/job-roles?limit=10&amp;offset=0" rel="first">First',
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=status&amp;sortOrder=desc" rel="first">First',
 		);
 		expect(response.text).toContain(
-			'href="/job-roles?limit=10&amp;offset=0" rel="prev"',
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=status&amp;sortOrder=desc" rel="prev"',
 		);
 		expect(response.text).toContain(
 			'job-role-pagination__direction-link--disabled" aria-disabled="true"',
@@ -117,7 +141,13 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=13");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 13);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			13,
+			undefined,
+			defaultSort,
+		);
 		expect(response.text).toContain("Showing 14 to 14 of 14 job roles");
 	});
 
@@ -145,8 +175,14 @@ describe("GET /job-roles pagination", () => {
 		const response = await request(app).get("/job-roles?limit=10&offset=20");
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(1, jwtToken, 10, 20);
-		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(2, jwtToken, 10, 10);
+		expect(mockedGetAllJobRoles).toHaveBeenNthCalledWith(
+			2,
+			jwtToken,
+			10,
+			10,
+			undefined,
+			defaultSort,
+		);
 		expect(response.text).toContain("There is a problem");
 		expect(response.text).toContain(
 			"The page you requested does not exist. Showing the nearest available results.",
@@ -162,7 +198,13 @@ describe("GET /job-roles pagination", () => {
 		);
 
 		expect(response.status).toBe(200);
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			defaultSort,
+		);
 	});
 
 	it("does not render pagination for an empty result set", async () => {
@@ -172,7 +214,24 @@ describe("GET /job-roles pagination", () => {
 
 		expect(response.status).toBe(200);
 		expect(response.text).toContain("No job roles found.");
+		expect(response.text).toContain(
+			'href="/job-roles/new">Add new job role</a>',
+		);
 		expect(response.text).not.toContain('aria-label="Pagination"');
+	});
+
+	it("does not show the create action to regular users in an empty result set", async () => {
+		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 0));
+
+		const response = await request(app)
+			.get("/job-roles")
+			.set("x-test-user-role", "USER");
+
+		expect(response.status).toBe(200);
+		expect(response.text).toContain("No job roles found.");
+		expect(response.text).not.toContain(
+			'href="/job-roles/new">Add new job role</a>',
+		);
 	});
 
 	it("renders filter controls with the approved static options", async () => {
@@ -196,20 +255,28 @@ describe("GET /job-roles pagination", () => {
 			"/job-roles?offset=10&roleName=Engineer&location=Gdansk&capability=Software%20Engineering&capability=Cloud&band=Consultant&status=OPEN&closingDateAfter=2026-08-01&closingDateBefore=2026-08-31",
 		);
 
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 10, {
-			roleName: "Engineer",
-			location: "Gdansk",
-			capability: ["Software Engineering", "Cloud"],
-			band: ["Consultant"],
-			status: ["OPEN"],
-			closingDateAfter: "2026-08-01",
-			closingDateBefore: "2026-08-31",
-		});
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			10,
+			{
+				roleName: "Engineer",
+				location: "Gdansk",
+				capability: ["Software Engineering", "Cloud"],
+				band: ["Consultant"],
+				status: ["OPEN"],
+				closingDateAfter: "2026-08-01",
+				closingDateBefore: "2026-08-31",
+			},
+			defaultSort,
+		);
 		expect(response.text).toContain('value="Engineer"');
 		expect(response.text).toContain('value="Software Engineering" checked');
 		expect(response.text).toContain('value="OPEN" checked');
 		expect(response.text).toContain("14 job roles found");
-		expect(response.text).toContain('href="/job-roles">Clear filters</a>');
+		expect(response.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=status&amp;sortOrder=desc">Clear filters</a>',
+		);
 		expect(response.text).toContain('aria-label="Pagination"');
 		expect(response.text).toContain(
 			'href="/job-roles?limit=10&amp;offset=0&amp;roleName=Engineer',
@@ -237,6 +304,12 @@ describe("GET /job-roles pagination", () => {
 		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
 
 		const unsortedResponse = await request(app).get("/job-roles");
+		expect(unsortedResponse.text).toContain(
+			'href="/job-roles?limit=10&amp;offset=0"',
+		);
+		expect(unsortedResponse.text).toContain(
+			"job-role-sort-controls__link--desc",
+		);
 		expect(unsortedResponse.text).toContain(
 			'href="/job-roles?limit=10&amp;offset=0&amp;sortBy=roleName&amp;sortOrder=asc"',
 		);
@@ -292,11 +365,23 @@ describe("GET /job-roles pagination", () => {
 		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
 
 		await request(app).get("/job-roles?sortBy=roleName");
-		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(jwtToken, 10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			defaultSort,
+		);
 
 		mockedGetAllJobRoles.mockResolvedValueOnce(createPage(0, 14));
 		await request(app).get("/job-roles?sortBy=unknown&sortOrder=asc");
-		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(jwtToken, 10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenLastCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			defaultSort,
+		);
 	});
 
 	it("ignores invalid filters and keeps unfiltered pagination", async () => {
@@ -306,7 +391,13 @@ describe("GET /job-roles pagination", () => {
 			"/job-roles?status=UNKNOWN&closingDateAfter=not-a-date",
 		);
 
-		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(jwtToken, 10, 0);
+		expect(mockedGetAllJobRoles).toHaveBeenCalledWith(
+			jwtToken,
+			10,
+			0,
+			undefined,
+			defaultSort,
+		);
 		expect(response.text).toContain('aria-label="Pagination"');
 		expect(response.text).not.toContain("Clear filters");
 	});

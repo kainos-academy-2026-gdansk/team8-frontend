@@ -33,6 +33,10 @@
 	overflow-wrap: anywhere;
 }
 
+.job-role-filters__date-error[hidden] {
+	display: none;
+}
+
 .job-role-filters__actions {
 	display: flex;
 	align-items: center;
@@ -167,10 +171,40 @@
 	background: #fcfcff;
 }
 
-.job-role-results-summary {
+.job-role-results-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--k-space-4);
 	margin-bottom: var(--k-space-5);
+}
+
+.job-role-results-summary {
+	margin: 0;
 	color: var(--k-text-secondary);
 	font-weight: 700;
+}
+
+.job-role-results-header__add-button {
+	flex-shrink: 0;
+	margin-bottom: 0;
+	background: var(--k-bg-surface);
+	border: 1px solid rgb(40 53 131 / 0.3);
+	color: var(--k-color-blue);
+	font-size: 0.95rem;
+	font-weight: 600;
+	padding: 8px 16px;
+}
+
+.job-role-results-header__add-button:hover {
+	background: rgb(40 53 131 / 0.08);
+	border-color: var(--k-color-blue);
+	color: var(--k-color-blue);
+	transform: none;
+}
+
+.job-role-empty-state__add-button {
+	margin-bottom: 0;
 }
 
 .job-role-sort-controls {
@@ -413,6 +447,16 @@
 	.job-role-filters__actions {
 		align-items: flex-start;
 		flex-direction: column;
+	}
+
+	.job-role-results-header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.job-role-results-header__add-button,
+	.job-role-results-summary {
+		margin-bottom: 0;
 	}
 
 	.job-role-pagination {

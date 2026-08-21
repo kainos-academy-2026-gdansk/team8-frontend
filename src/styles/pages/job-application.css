@@ -1,0 +1,7 @@
+.job-application-form {
+	max-width: 780px;
+}
+
+.job-application-form .govuk-textarea {
+	max-width: 100%;
+}

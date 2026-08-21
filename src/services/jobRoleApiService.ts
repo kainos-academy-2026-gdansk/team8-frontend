@@ -11,6 +11,7 @@ import {
 	type CatalogueItem,
 	type CreateJobRoleData,
 } from "../models/jobRole";
+import { APPLICATION_STATUS_LABELS } from "../models/application";
 
 function authHeaders(token: string): { Authorization: string } {
 	return { Authorization: `Bearer ${token}` };
@@ -286,6 +287,17 @@ export function formatJobRoleDetailedForView(job: JobRoleDetailed) {
 		responsibilities: job.responsibilities
 			.split(";")
 			.map((responsibility) => responsibility.trim())
+			.map(
+				(responsibility) =>
+					responsibility.charAt(0).toUpperCase() + responsibility.slice(1),
+			)
 			.filter(Boolean),
+		applications: (job.applications ?? []).map((application) => ({
+			...application,
+			statusLabel: APPLICATION_STATUS_LABELS[application.status],
+			isInProgress: application.status === "IN_PROGRESS",
+			hireHref: `/job-roles/${job.id}/applications/${application.id}/hire`,
+			rejectHref: `/job-roles/${job.id}/applications/${application.id}/reject`,
+		})),
 	};
 }
