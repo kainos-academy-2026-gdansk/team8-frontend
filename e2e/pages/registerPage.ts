@@ -9,6 +9,7 @@ export class RegisterPage extends BasePage {
 	readonly confirmPasswordInput: Locator;
 	readonly submitButton: Locator;
 	readonly loginLink: Locator;
+	readonly successMessage: Locator;
 
 	constructor(page: Page) {
 		super(page, "/register");
@@ -21,6 +22,9 @@ export class RegisterPage extends BasePage {
 		this.confirmPasswordInput = page.getByLabel("Confirm password");
 		this.submitButton = page.getByRole("button", { name: "Create account" });
 		this.loginLink = page.getByRole("link", { name: "Login here" });
+		this.successMessage = page.getByText(
+			"Your account has been created. You can now sign in.",
+		);
 	}
 
 	get emailError(): Locator {
