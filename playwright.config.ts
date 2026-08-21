@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true });
 
 const bddTestDir = defineBddConfig({
 	features: "e2e/features/**/*.feature",
-	steps: ["e2e/bdd/**/*.ts", "e2e/steps/**/*.ts"],
+	steps: ["e2e/steps/**/*.ts", "e2e/fixtures/testFixtures.ts"],
 	outputDir: ".features-gen",
 });
 
