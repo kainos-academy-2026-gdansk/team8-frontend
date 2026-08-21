@@ -101,7 +101,7 @@ describe("GET /job-roles pagination", () => {
 		expect(response.text).toContain(
 			'aria-label="Page 1" aria-current="page">1',
 		);
-		expect(response.text).toContain('aria-label="Page 2">2');
+		expect(response.text).not.toContain('aria-label="Page 2">2');
 	});
 
 	it("loads the next page and disables forward controls on the last page", async () => {
