@@ -1,8 +1,15 @@
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
+import { defineBddConfig } from "playwright-bdd";
 
 dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true });
+
+const bddTestDir = defineBddConfig({
+	features: "e2e/features/**/*.feature",
+	steps: ["e2e/bdd/**/*.ts", "e2e/steps/**/*.ts"],
+	outputDir: ".features-gen",
+});
 
 const baseURL =
 	process.env.E2E_BASE_URL ?? `http://localhost:${process.env.PORT ?? 3001}`;
@@ -11,7 +18,8 @@ const baseURL =
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-	testDir: "./e2e",
+	testDir: bddTestDir,
+	testMatch: ["e2e/**/*.spec.ts", ".features-gen/**/*.spec.js"],
 	globalSetup: "./e2e/global-setup.ts",
 	globalTeardown: "./e2e/global-teardown.ts",
 	/* Run tests in files in parallel */
