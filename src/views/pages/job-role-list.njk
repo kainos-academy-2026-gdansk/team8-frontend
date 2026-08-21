@@ -180,7 +180,7 @@
               </strong>
             </header>
 
-            <p class="govuk-body-l job-role-card__location">{{ jobRole.location }}</p>
+            <p class="govuk-body job-role-card__location">{{ jobRole.location }}</p>
 
             <p class="govuk-body job-role-card__meta">
               <span class="job-role-card__meta-item">{{ jobRole.capability.name }}</span>
@@ -225,9 +225,11 @@
 
       <ul class="govuk-pagination__list job-role-pagination__list">
         {% for pageLink in pagination.pageLinks %}
-          <li class="govuk-pagination__item {% if pageLink.isCurrent %}govuk-pagination__item--current{% endif %}">
-            <a class="govuk-link govuk-pagination__link" href="{{ pageLink.href }}" aria-label="Page {{ pageLink.page }}"{% if pageLink.isCurrent %} aria-current="page"{% endif %}>{{ pageLink.page }}</a>
-          </li>
+          {% if pageLink.page != pagination.currentPage + 1 %}
+            <li class="govuk-pagination__item {% if pageLink.isCurrent %}govuk-pagination__item--current{% endif %}">
+              <a class="govuk-link govuk-pagination__link" href="{{ pageLink.href }}" aria-label="Page {{ pageLink.page }}"{% if pageLink.isCurrent %} aria-current="page"{% endif %}>{{ pageLink.page }}</a>
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
 
