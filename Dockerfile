@@ -1,31 +1,34 @@
-# Stage 1: build TypeScript
-FROM node:20-alpine AS build
+# --- Stage 1: install all dependencies (incl. devDependencies) needed to build ---
+FROM node:22-alpine AS deps
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY . .
-RUN npm run build
-
-# Stage 2: production runtime
-FROM node:20-alpine AS runtime
+# --- Stage 2: compile TypeScript into dist/, reusing deps from stage 1 ---
+FROM node:22-alpine AS builder
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV PORT=3001
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json tsconfig.json ./
+COPY src ./src
+RUN npm run build
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+# --- Stage 3: minimal runtime image ---
+FROM node:22-alpine AS runtime
+ENV NODE_ENV=development
+WORKDIR /app
 
-# Compiled server code
-COPY --from=build /app/dist ./dist
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Runtime files used via process.cwd() in app.ts
-COPY --from=build /app/src/views ./src/views
-COPY --from=build /app/src/assets ./src/assets
-COPY --from=build /app/src/styles ./src/styles
-COPY --from=build /app/src/styles.css ./src/styles.css
+# app reads views/assets/styles from src/ (via process.cwd()) at runtime, not just dist/
+COPY --from=builder /app/dist ./dist
+COPY src/views ./src/views
+COPY src/assets ./src/assets
+COPY src/styles ./src/styles
+COPY src/styles.css ./src/styles.css
 
 EXPOSE 3001
-CMD ["npm", "start"]
+USER node
+CMD ["node", "dist/index.js"]
