@@ -6,17 +6,46 @@ on:
       - '**'
 
 jobs:
-  build:
-    name: Steve Jobs
+  test:
+    name: Test and quality checks
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo "Hello I am Steve Jobs"
 
-      - name: Szymon sets up Docker Buildx
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test
+
+
+  build-image:
+    name: Build Docker image
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Szymon builds Docker image
+      - name: Build Docker image
         run: |
           IMAGE_TAG="${GITHUB_SHA::12}"
-          docker build -t team8-frontend:${IMAGE_TAG} . 
+          docker build -t team8-frontend:${IMAGE_TAG} .
+
+      - name: Job name? Steve jobs
+        run: echo "Hello I am Steve Jobs"
