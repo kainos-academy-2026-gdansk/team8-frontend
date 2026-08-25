@@ -16,4 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Display hello world message
-        run: echo "Hello, World!"    
+        run: echo "\nHello, World!"    
+
+      - name: Build dockerfile
+        run: docker build -t hello-world-image:${{ github.sha }} .
