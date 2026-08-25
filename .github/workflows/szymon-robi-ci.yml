@@ -12,3 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: echo "Hello I am Steve Jobs"
+
+      - name: Szymon sets up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Szymon builds Docker image
+        run: |
+          IMAGE_TAG="${GITHUB_SHA::12}"
+          docker build -t team8-frontend:${IMAGE_TAG} . 
