@@ -2,9 +2,9 @@ name : CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, platforms-01-rafal]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, platforms-01-rafal]
 
 jobs:
   build:
@@ -33,4 +33,9 @@ jobs:
 
       - name: Finish message
         run: echo "CI pipeline completed successfully!"
-        
+
+      - name: Build Docker image
+        run: docker build -t test-image .
+
+      - name: Build container from image
+        run: docker run --rm --name test-container test-image
