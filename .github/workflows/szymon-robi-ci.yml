@@ -1,0 +1,16 @@
+name: szymon-robi-github-actions
+
+on:
+  push:
+    branches: [main]
+  pull_requests:
+    branches: [main]
+
+jobs:
+  build:
+    name: Steve Jobs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Hello I am Steve Jobs"
+  
