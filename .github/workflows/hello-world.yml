@@ -1,0 +1,16 @@
+runner:
+  name: ubuntu-latest
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+      branches:
+        - main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display hello world message
+        run: echo "Hello, World!"    

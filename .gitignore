@@ -17,3 +17,12 @@ tests/**/*.test.js
 /playwright/.auth/
 /.playwright-mcp/
 /.features-gen/
+
+# Terraform
+my_infrastructure/.terraform/
+my_infrastructure/.terraform.lock.hcl
+my_infrastructure/*.tfstate
+my_infrastructure/*.tfstate.*
+my_infrastructure/*.tfvars
+my_infrastructure/crash.log
+
