@@ -18,9 +18,6 @@ jobs:
       - name: Display hello world message
         run: echo "\nHello, World!"    
 
-      - name: Build dockerfile
-        run: docker build -t hello-world-image:${{ github.sha }} .
-
   test:
     runs-on: ubuntu-latest
     steps:
@@ -40,3 +37,14 @@ jobs:
 
       - name: Run tests
         run: npm run test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build dockerfile
+        run: docker build -t hello-world-image:${{ github.sha }} .
+
