@@ -48,6 +48,7 @@ jobs:
           tags: team8-frontend:ci
 
   hello:
+    needs: container
     runs-on: ubuntu-latest
 
     steps:
