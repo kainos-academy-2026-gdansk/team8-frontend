@@ -1,5 +1,39 @@
+# Dependencies (installed fresh inside the image)
 node_modules/
-.ai
-.github
+
+# Version control
+.git/
+.github/
+
+# Env files (secrets must never be baked into an image)
+.env
+.env.example
+.env.*
+
+# Docs
+README.md
+docs/
+AGENTS.md
+code_reviews/
+
+# Build artifacts (produced inside the image, not needed from host)
 dist/
 logs/
+coverage/
+.features-gen/
+
+# Tests and e2e
+tests/
+e2e/
+playwright-report/
+test-results/
+playwright.config.ts
+playwright.bdd.config.ts
+vitest.config.mts
+
+# Editor/IDE and misc project tooling
+.vscode/
+.ai/
+certs/
+todo.txt
+
