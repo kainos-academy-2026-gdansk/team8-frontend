@@ -25,3 +25,14 @@ variable "environment" {
     error_message = "Environment must be one of: dev, test, or prod."
   }
 }
+
+variable "state_storage_account_name" {
+  description = "Globally unique Azure Storage Account name for Terraform state."
+  type        = string
+  default     = "stteam8rafaltf2026"
+
+  validation {
+    condition     = can(regex("^[a-z0-9]{3,24}$", var.state_storage_account_name))
+    error_message = "The storage account name must be 3-24 lowercase letters and numbers with no hyphens."
+  }
+}
