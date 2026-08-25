@@ -37,5 +37,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t test-image .
 
-      - name: Build container from image
-        run: docker run --rm --name test-container test-image
+      - name: Start container
+        run: docker run -d --name test-container -p 3001:3001 test-image
+
+      - name: Check container health
+        run: curl --fail --retry 10 --retry-delay 1 --retry-connrefused http://localhost:3001/health
+
+      - name: Stop container
+        if: always()
+        run: docker rm -f test-container
