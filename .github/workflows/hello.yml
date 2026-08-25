@@ -5,8 +5,8 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  
-  jobs:
+
+jobs:
   test:
     runs-on: ubuntu-latest
 
@@ -55,4 +55,4 @@ on:
         uses: actions/checkout@v4
 
       - name: Display message
-        run: echo "GitHub Actions działa poprawnie"
+        run: echo "GitHub Actions works correctly"
