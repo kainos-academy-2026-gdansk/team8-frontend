@@ -6,27 +6,29 @@ terraform {
     }
   }
 
-    backend "azurerm" {
+  backend "azurerm" {
     storage_account_name = "stteam8rafaltf2026"
     container_name       = "tfstate"
     key                  = "team8.terraform.tfstate"
-    }
-
+  }
 }
 
 provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "team8" {
-  name     = "${var.resource_group_name}-${lower(var.environment)}"
-  location = var.location
+module "resource_group" {
+  source = "./modules/resource-group"
+
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  environment         = var.environment
 }
 
 resource "azurerm_storage_account" "terraform_state" {
   name                     = var.state_storage_account_name
-  resource_group_name      = azurerm_resource_group.team8.name
-  location                 = azurerm_resource_group.team8.location
+  resource_group_name      = module.resource_group.name
+  location                 = module.resource_group.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
