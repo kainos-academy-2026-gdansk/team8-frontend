@@ -9,6 +9,11 @@ code_reviews/
 certs/
 tests/**/*.test.js
 
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+
 # Playwright
 /test-results/
 /playwright-report/
