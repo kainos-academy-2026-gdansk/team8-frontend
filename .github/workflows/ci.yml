@@ -11,11 +11,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  verify-and-containerize:
+  lint:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
 
     steps:
       - name: Checkout
@@ -33,12 +32,60 @@ jobs:
       - name: Lint app
         run: npm run lint
 
-      - name: Build app
-        run: npm run build
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Test app
         run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+  containerize:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -71,6 +118,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   terraform-plan:
+    needs: containerize
     runs-on: ubuntu-latest
     permissions:
       contents: read
