@@ -72,7 +72,7 @@ When("I sign in with no details", async ({ page, loginPage, lastResponse }) => {
 });
 
 Then('I should see a "both fields required" error', async ({ loginPage }) => {
-	await expect(loginPage.summaryLink(loginErrors.bothRequired)).toBeVisible();
+	await expect(loginPage.errorSummary).toContainText(loginErrors.bothRequired);
 });
 
 Then(
