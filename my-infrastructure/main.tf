@@ -6,13 +6,18 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    storage_account_name = "stteam8rafaltf2026"
-    container_name       = "tfstate"
-    key                  = "team8.terraform.tfstate"
-  }
+  # Left empty on purpose: Terraform does not allow variables here, so the
+  # real values are supplied at `terraform init` time with -backend-config,
+  # pointing at one of the files under environments/ (dev today, prod later).
+  # This lets the same code target either environment's remote state without
+  # any changes in this file.
+  backend "azurerm" {}
 }
 
+# No credentials here: the azurerm provider automatically authenticates
+# using the ARM_CLIENT_ID / ARM_CLIENT_SECRET / ARM_TENANT_ID /
+# ARM_SUBSCRIPTION_ID environment variables when they are set (this is how
+# the service principal auth in CI works, see .github/workflows/terraform.yml).
 provider "azurerm" {
   features {}
 }

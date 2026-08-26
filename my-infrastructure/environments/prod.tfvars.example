@@ -1,0 +1,8 @@
+# Template for the future "prod" environment.
+# When you're ready: copy this file to prod.tfvars (drop .example) and wire
+# it into a "prod" job/workflow alongside prod.backend.hcl. No changes to
+# main.tf, variables.tf, or the resource-group module are needed.
+environment                = "prod"
+resource_group_name        = "rg-team8-rafal"
+location                   = "West Europe"
+state_storage_account_name = "stteam8rafaltf2026prod" # must be globally unique

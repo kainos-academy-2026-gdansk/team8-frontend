@@ -1,0 +1,10 @@
+# Template for the future "prod" environment.
+# When you're ready: copy this file to prod.backend.hcl (drop .example),
+# create the storage account/container it points to, then run:
+#   terraform init -reconfigure -backend-config=environments/prod.backend.hcl
+# No changes to main.tf are needed - only this file and prod.tfvars.
+resource_group_name  = "rg-team8-rafal-prod"
+storage_account_name = "stteam8rafaltf2026prod" # must be globally unique
+container_name       = "tfstate"
+key                  = "team8-prod.terraform.tfstate"
+use_azuread_auth     = true
