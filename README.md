@@ -68,6 +68,23 @@ npm run lint
 npm run lint:fix
 ```
 
+## Publish the Docker image to ACR
+
+The CI workflow publishes images after a push to the `main` or `platforms-01-rafal` branch. Pull requests and pushes to other branches still build the Docker image but do not log in to Azure or push anything.
+
+Add these repository secrets in GitHub under **Settings > Secrets and variables > Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `AZURE_CLIENT_ID_RAFAL` | The service principal application (client) ID |
+| `AZURE_CLIENT_SECRET_RAFAL` | A valid client secret for that service principal |
+| `AZURE_TENANT_ID` | The Microsoft Entra tenant ID containing the subscription |
+| `AZURE_SUBSCRIPTION_ID` | The Azure subscription ID containing `acraiacademy26` |
+
+The service principal must have access to the subscription so `azure/login` can select it, and must have the `AcrPush` role on the `acraiacademy26` registry. Do not commit these values to the repository. The workflow publishes both an immutable commit-SHA tag and a branch-specific tag to the `team8-frontend` repository in ACR.
+
+GitHub OIDC is recommended for production because it removes the long-lived client secret.
+
 ## Logger Usage
 
 This app uses a centralized Winston logger and HTTP request logging via Morgan.

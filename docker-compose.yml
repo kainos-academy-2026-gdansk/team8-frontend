@@ -1,19 +1,18 @@
+# Define the services that make up the local application.
 services:
   frontend:
-    container_name: team8-frontend
+    # Build this service using the Dockerfile in the current folder.
     build:
       context: .
       dockerfile: Dockerfile
-    networks:
-      - internal-network
+
+    # Map the host port 3001 to the container port 3001.
     ports:
       - "3001:3001"
+
+    # Pass configuration into the running container.
     environment:
       NODE_ENV: production
       PORT: 3001
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env or your shell}
       API_BASE_URL: http://host.docker.internal:3000/api
-    restart: unless-stopped
-
-networks:
-  internal-network:
-    external: true
