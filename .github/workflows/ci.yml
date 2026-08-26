@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ACR_NAME: acraiacademy26.azurecr.io
+      ACR_NAME: acraiacademy26
+      ACR_RESOURCE_GROUP: rg-ai-academy-26
 
     steps:
       - uses: actions/checkout@v7
@@ -58,13 +59,13 @@ jobs:
 
       - name: Log in to Azure Container Registry Docker registry
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/platforms-01-rafal')
-        run: az acr login --name "$ACR_NAME"
+        run: az acr login --name "$ACR_NAME" --resource-group "$ACR_RESOURCE_GROUP"
 
       - name: Push image to Azure Container Registry
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/platforms-01-rafal')
         run: |
           IMAGE_TAG="${GITHUB_SHA::12}"
-          ACR_LOGIN_SERVER="$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)"
+          ACR_LOGIN_SERVER="$(az acr show --name "$ACR_NAME" --resource-group "$ACR_RESOURCE_GROUP" --query loginServer --output tsv)"
           IMAGE_NAME="${ACR_LOGIN_SERVER}/team8-frontend"
 
           docker tag "team8-frontend:${IMAGE_TAG}" "${IMAGE_NAME}:${IMAGE_TAG}"
