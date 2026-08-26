@@ -68,6 +68,22 @@ npm run lint
 npm run lint:fix
 ```
 
+## Publish the Docker image to ACR
+
+The CI workflow publishes images after a push to the `main` or `platforms-01-rafal` branch. Pull requests and pushes to other branches still build the Docker image but do not log in to Azure or push anything.
+
+Add these repository secrets in GitHub under **Settings > Secrets and variables > Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `ACR_LOGIN_SERVER` | The registry login server, for example `myregistry.azurecr.io` |
+| `ACR_USERNAME` | The Azure Container Registry username |
+| `ACR_PASSWORD` | The Azure Container Registry password |
+
+For this exercise, the username and password can come from the ACR admin credentials. Do not put them in this repository. The workflow publishes both an immutable commit-SHA tag and `latest` to the `team8-frontend` repository in ACR.
+
+For production, replace these long-lived credentials with GitHub OIDC and an Azure service principal that has only the `AcrPush` role on this registry.
+
 ## Logger Usage
 
 This app uses a centralized Winston logger and HTTP request logging via Morgan.

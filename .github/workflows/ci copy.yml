@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ACR_NAME: acraiacademy26
+      ACR_NAME: acrteam8rafal2026
 
     steps:
       - uses: actions/checkout@v4
