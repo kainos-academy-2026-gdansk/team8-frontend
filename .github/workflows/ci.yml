@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ACR_NAME: /subscriptions/ca3b1116-a974-4549-88c2-8b56da5130d0/resourceGroups/rg-ai-academy-26/providers/Microsoft.ContainerRegistry/registries/acraiacademy26
+      ACR_NAME: acraiacademy26.azurecr.io
 
     steps:
       - uses: actions/checkout@v7
