@@ -25,6 +25,8 @@ tests/**/*.test.js
 *.tfplan
 *.tfvars
 *.tfvars.json
+# Environment tfvars files here hold only naming values, no secrets - track them.
+!my-infrastructure/environments/*.tfvars
 crash.log
 crash.*.log
 override.tf
