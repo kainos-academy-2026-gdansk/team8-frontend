@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ${{ vars.ACR_LOGIN_SERVER }}
-  IMAGE_NAME: team8-frontend
+  IMAGE_NAME: team8-terraform-w5
 
 jobs:
   verify-and-containerize:
