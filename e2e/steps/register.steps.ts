@@ -128,3 +128,4 @@ When("I follow the link to sign in", async ({ registerPage }) => {
 Then("I should be on the login page", async ({ page }) => {
 	await expect(page).toHaveURL(/\/login$/);
 });
+
