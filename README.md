@@ -76,13 +76,14 @@ Add these repository secrets in GitHub under **Settings > Secrets and variables 
 
 | Secret | Value |
 | --- | --- |
-| `ACR_LOGIN_SERVER` | The registry login server, for example `myregistry.azurecr.io` |
-| `ACR_USERNAME` | The Azure Container Registry username |
-| `ACR_PASSWORD` | The Azure Container Registry password |
+| `AZURE_CLIENT_ID_RAFAL` | The service principal application (client) ID |
+| `AZURE_CLIENT_SECRET_RAFAL` | A valid client secret for that service principal |
+| `AZURE_TENANT_ID` | The Microsoft Entra tenant ID containing the subscription |
+| `AZURE_SUBSCRIPTION_ID` | The Azure subscription ID containing `acraiacademy26` |
 
-For this exercise, the username and password can come from the ACR admin credentials. Do not put them in this repository. The workflow publishes both an immutable commit-SHA tag and `latest` to the `team8-frontend` repository in ACR.
+The service principal must have access to the subscription so `azure/login` can select it, and must have the `AcrPush` role on the `acraiacademy26` registry. Do not commit these values to the repository. The workflow publishes both an immutable commit-SHA tag and a branch-specific tag to the `team8-frontend` repository in ACR.
 
-For production, replace these long-lived credentials with GitHub OIDC and an Azure service principal that has only the `AcrPush` role on this registry.
+GitHub OIDC is recommended for production because it removes the long-lived client secret.
 
 ## Logger Usage
 

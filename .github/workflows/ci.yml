@@ -13,10 +13,10 @@ jobs:
       ACR_NAME: acraiacademy26
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
@@ -46,7 +46,7 @@ jobs:
 
       - name: Log in to Azure Container Registry
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/platforms-01-rafal')
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           creds: |
             {
