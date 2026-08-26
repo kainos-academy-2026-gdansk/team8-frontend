@@ -2,9 +2,9 @@ name: E2E
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
   schedule:
     - cron: "0 20 * * *"  
 
@@ -14,7 +14,6 @@ permissions:
 
 jobs:
   playwright:
-    if: ${{ false }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -93,3 +92,4 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+

@@ -1,12 +1,17 @@
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
+import { defineBddConfig } from "playwright-bdd";
 
 dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true });
 
 const bddTestDir = defineBddConfig({
 	features: "e2e/features/**/*.feature",
-	steps: ["e2e/bdd/**/*.ts", "e2e/steps/**/*.ts"],
+	steps: [
+		"e2e/bdd/**/*.ts",
+		"e2e/fixtures/testFixtures.ts",
+		"e2e/steps/**/*.ts",
+	],
 	outputDir: ".features-gen",
 });
 
@@ -88,3 +93,4 @@ export default defineConfig({
 		timeout: 120 * 1000,
 	},
 });
+

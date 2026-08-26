@@ -80,3 +80,4 @@ Then("the second page contains job roles", async ({ page }) => {
 		page.getByRole("list", { name: "Job role listings" }),
 	).toBeVisible();
 });
+
