@@ -13,7 +13,7 @@ variable "location" {
 variable "environment" {
   description = "Deployment environment (dev, test, or prod)"
   type        = string
-  default     = "test"
+  default     = "dev"
 
   validation {
     condition     = contains(["dev", "test", "prod"], var.environment)
