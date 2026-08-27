@@ -126,5 +126,5 @@ jobs:
           az containerapp update \
             --name "${{ needs.terraform-apply.outputs.container_app }}" \
             --resource-group "${{ needs.terraform-apply.outputs.resource_group }}" \
-            --image "${{ vars.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/team8-frontend:latest"
+            --image "${{ vars.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/team8-frontend:main-${{ github.event.workflow_run.head_sha }}"
             
