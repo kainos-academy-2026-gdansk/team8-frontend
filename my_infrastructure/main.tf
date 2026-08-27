@@ -232,9 +232,10 @@ resource "azurerm_container_app" "frontend" {
       cpu    = 0.25
       memory = "0.5Gi"
 
+      # Ingress rejects plain HTTP with a 301, which would turn API POSTs into GETs.
       env {
         name  = "API_BASE_URL"
-        value = "http://${azurerm_container_app.backend.ingress[0].fqdn}/api"
+        value = "https://${azurerm_container_app.backend.ingress[0].fqdn}/api"
       }
 
       env {

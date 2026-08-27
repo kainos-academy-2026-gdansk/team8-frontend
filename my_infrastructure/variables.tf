@@ -88,6 +88,13 @@ variable "feature_flag_enabled" {
   default     = false
 }
 
+# Temporary troubleshooting switch only; the backend must stay private by default.
+variable "backend_public_ingress" {
+  description = "Expose the backend Container App to the internet"
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Common tags applied to all resources"
   type        = map(string)

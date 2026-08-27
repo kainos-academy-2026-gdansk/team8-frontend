@@ -87,17 +87,21 @@ app.use(morganMiddleware);
 app.use(express.urlencoded({ extended: true }));
 
 // Persist login state across requests so protected routes can read req.session.jwtToken.
+app.set("trust proxy", 1);
+
 app.use(
-	session({
-		secret: process.env.SESSION_SECRET ?? "dev-session-secret",
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			maxAge: 1000 * 60 * 60,
-		},
-	}),
+  session({
+    secret: process.env.SESSION_SECRET ?? "dev-session-secret",
+    resave: false,
+    saveUninitialized: false,
+    proxy: true,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60,
+    },
+  }),
 );
 
 // Expose auth state to all templates for sign in/sign out navigation.

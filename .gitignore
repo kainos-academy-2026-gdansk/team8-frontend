@@ -13,6 +13,8 @@ tests/**/*.test.js
 **/.terraform/
 *.tfstate
 *.tfstate.*
+*.tfplan
+*.tfplan.json
 
 # Playwright
 /test-results/
