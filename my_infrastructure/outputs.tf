@@ -43,6 +43,11 @@ output "frontend_container_app_url" {
   value       = "https://${azurerm_container_app.frontend.ingress[0].fqdn}"
 }
 
+output "frontend_container_app_name" {
+  description = "Name of the frontend Container App"
+  value       = azurerm_container_app.frontend.name
+}
+
 output "backend_container_app_fqdn" {
   description = "Internal FQDN of the backend Container App"
   value       = azurerm_container_app.backend.ingress[0].fqdn
