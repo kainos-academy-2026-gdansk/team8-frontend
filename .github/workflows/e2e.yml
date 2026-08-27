@@ -31,6 +31,8 @@ jobs:
       - run: npx playwright install --with-deps
       - run: npm run build
       - run: npm run test:ui:typecheck
+      - name: Build frontend image for E2E
+        run: docker build --tag team8-frontend:e2e .
 
       - name: Log in to Azure
         uses: azure/login@v2
@@ -78,20 +80,38 @@ jobs:
             sleep 2
           done
 
+      - name: Start frontend
+        run: |
+          docker run -d --name frontend --network host \
+            -e NODE_ENV=production \
+            -e PORT=3001 \
+            -e SESSION_SECRET=ci-secret \
+            -e API_BASE_URL=http://localhost:3000/api \
+            team8-frontend:e2e
+          for i in $(seq 1 45); do
+            curl -fsS http://localhost:3001/ && break
+            if [ "$i" = 45 ]; then
+              echo "Frontend never became ready" >&2
+              docker logs frontend
+              exit 1
+            fi
+            sleep 2
+          done
+
       - run: npm run test:ui
         env:
-          PORT: 3001
-          SESSION_SECRET: ci-secret
-          API_BASE_URL: http://localhost:3000/api
+          E2E_BASE_URL: http://localhost:3001
 
       - name: Dump backend logs on failure
         if: failure()
-        run: docker logs backend
+        run: |
+          docker logs backend
+          docker logs frontend || true
 
       - name: Stop backend containers
         if: always()
         run: |
-          docker rm -f backend backend-db || true
+          docker rm -f frontend backend backend-db || true
           docker network rm e2e-net || true
 
       - uses: actions/upload-artifact@v4
