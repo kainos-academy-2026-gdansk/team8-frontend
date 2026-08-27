@@ -22,12 +22,42 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {}
+
 module "resource_group" {
   source = "./modules/resource-group"
 
   resource_group_name = var.resource_group_name
   location            = var.location
   environment         = var.environment
+}
+
+resource "azurerm_key_vault" "this" {
+  name                          = "${var.key_vault_base_name}-${lower(var.environment)}"
+  location                      = module.resource_group.location
+  resource_group_name           = module.resource_group.name
+  tenant_id                     = data.azurerm_client_config.current.tenant_id
+  sku_name                      = "standard"
+  rbac_authorization_enabled    = true
+  soft_delete_retention_days    = 7
+  purge_protection_enabled      = false
+  public_network_access_enabled = true
+
+  tags = {
+    environment = lower(var.environment)
+    managed-by  = "terraform"
+  }
+}
+
+resource "azurerm_user_assigned_identity" "container_apps" {
+  name                = "${var.managed_identity_base_name}-${lower(var.environment)}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+
+  tags = {
+    environment = lower(var.environment)
+    managed-by  = "terraform"
+  }
 }
 
 resource "azurerm_storage_account" "terraform_state" {

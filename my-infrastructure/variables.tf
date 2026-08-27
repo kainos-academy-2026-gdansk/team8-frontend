@@ -26,6 +26,23 @@ variable "environment" {
   }
 }
 
+variable "key_vault_base_name" {
+  description = "Base name for the environment Key Vault."
+  type        = string
+  default     = "kv-team8-rafal"
+
+  validation {
+    condition     = length(var.key_vault_base_name) >= 3 && length(var.key_vault_base_name) <= 19 && can(regex("^[a-z0-9][a-z0-9-]*[a-z0-9]$", var.key_vault_base_name))
+    error_message = "The Key Vault base name must be 3-19 characters, use lowercase letters, numbers, and hyphens, and start and end with a letter or number."
+  }
+}
+
+variable "managed_identity_base_name" {
+  description = "Base name for the Container Apps managed identity."
+  type        = string
+  default     = "id-team8-rafal"
+}
+
 variable "state_storage_account_name" {
   description = "Globally unique Azure Storage Account name for Terraform state."
   type        = string

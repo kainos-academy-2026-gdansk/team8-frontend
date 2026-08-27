@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main, master, platforms-01-rafal]
 
+# Prevents two runs on the same branch from applying Terraform at the same
+# time and fighting over the remote state lock in Azure Storage.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,3 +84,48 @@ jobs:
             docker tag "team8-frontend:${IMAGE_TAG}" "${IMAGE_NAME}:platforms-01-rafal"
             docker push "${IMAGE_NAME}:platforms-01-rafal"
           fi
+
+  terraform:
+    # Runs as the next stage of the pipeline, after the image build/push
+    # job finishes (and only if it succeeded - this job never starts if
+    # lint/test/build/push failed).
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-infrastructure
+    env:
+      # Service principal credentials: the azurerm provider (and the
+      # azurerm backend, via use_azuread_auth) read these automatically.
+      # No `az login` or provider credentials block needed.
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_RAFAL }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_RAFAL }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform format check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init (dev backend)
+        run: terraform init -input=false -lock-timeout=300s -backend-config=environments/dev.backend.hcl
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan (dev)
+        run: terraform plan -input=false -lock-timeout=300s -var-file=environments/dev.tfvars -out=tfplan
+
+      # Only apply on a push to main. Every other trigger (pull requests,
+      # feature branches) stops after the plan above so changes can be
+      # reviewed before they touch real infrastructure.
+      - name: Terraform apply (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -input=false -lock-timeout=300s -auto-approve tfplan
