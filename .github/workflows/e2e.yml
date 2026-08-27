@@ -83,7 +83,7 @@ jobs:
       - name: Start frontend
         run: |
           docker run -d --name frontend --network host \
-            -e NODE_ENV=production \
+            -e NODE_ENV=development \
             -e PORT=3001 \
             -e SESSION_SECRET=ci-secret \
             -e API_BASE_URL=http://localhost:3000/api \
