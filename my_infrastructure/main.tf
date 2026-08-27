@@ -55,6 +55,10 @@ resource "azurerm_postgresql_flexible_server" "this" {
   backup_retention_days         = 7
   public_network_access_enabled = true
   tags                          = merge(var.tags, { environment = var.environment })
+
+  lifecycle {
+    ignore_changes = [zone]
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "azure_services" {
@@ -140,6 +144,18 @@ resource "azurerm_container_app" "backend" {
     identity            = azurerm_user_assigned_identity.container_apps.id
   }
 
+  secret {
+    name                = "database-url-ref"
+    key_vault_secret_id = "${azurerm_key_vault.this.vault_uri}secrets/DatabaseUrl"
+    identity            = azurerm_user_assigned_identity.container_apps.id
+  }
+
+  secret {
+    name                = "jwt-secret-ref"
+    key_vault_secret_id = "${azurerm_key_vault.this.vault_uri}secrets/JWT-SECRET"
+    identity            = azurerm_user_assigned_identity.container_apps.id
+  }
+
   template {
     min_replicas = 1
     max_replicas = 1
@@ -153,6 +169,16 @@ resource "azurerm_container_app" "backend" {
       env {
         name        = "SESSION_SECRET"
         secret_name = "session-secret-ref"
+      }
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "database-url-ref"
+      }
+
+      env {
+        name        = "JWT_SECRET"
+        secret_name = "jwt-secret-ref"
       }
 
       env {

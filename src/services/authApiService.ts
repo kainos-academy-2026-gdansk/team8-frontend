@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiClient from "../config/apiClient";
+import Logger from "../lib/logger";
 
 type RegisterAccountPayload = {
 	email: string;
@@ -7,9 +8,16 @@ type RegisterAccountPayload = {
 	confirmPassword: string;
 };
 
+// The API returns `error` for handled failures and `message` for auth rejections.
 type RegisterErrorResponse = {
 	error?: string;
+	message?: string;
 };
+
+function readBackendMessage(data: unknown): string | undefined {
+	const body = data as RegisterErrorResponse | undefined;
+	return body?.error ?? body?.message;
+}
 
 type LoginResponse = {
 	token: string;
@@ -79,9 +87,11 @@ export async function login(
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
-			const backendMessage = (
-				error.response?.data as RegisterErrorResponse | undefined
-			)?.error;
+			const backendMessage = readBackendMessage(error.response?.data);
+
+			Logger.error(
+				`Login request to API failed: status=${status ?? "none"} message=${backendMessage ?? "none"}`,
+			);
 
 			if (status === 401) {
 				throw new LoginApiError(
@@ -108,9 +118,11 @@ export async function registerAccount(
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const status = error.response?.status;
-			const backendMessage = (
-				error.response?.data as RegisterErrorResponse | undefined
-			)?.error;
+			const backendMessage = readBackendMessage(error.response?.data);
+
+			Logger.error(
+				`Registration request to API failed: status=${status ?? "none"} message=${backendMessage ?? "none"}`,
+			);
 
 			if (typeof status === "number" && status >= 500) {
 				const message =
