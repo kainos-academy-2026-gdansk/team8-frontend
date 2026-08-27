@@ -43,6 +43,18 @@ variable "managed_identity_base_name" {
   default     = "id-team8-rafal"
 }
 
+variable "container_app_environment_base_name" {
+  description = "Base name for the Container Apps environment."
+  type        = string
+  default     = "cae-team8-rafal"
+}
+
+variable "log_analytics_workspace_base_name" {
+  description = "Base name for the Log Analytics workspace used by Container Apps."
+  type        = string
+  default     = "law-team8-rafal"
+}
+
 variable "state_storage_account_name" {
   description = "Globally unique Azure Storage Account name for Terraform state."
   type        = string

@@ -60,6 +60,32 @@ resource "azurerm_user_assigned_identity" "container_apps" {
   }
 }
 
+resource "azurerm_log_analytics_workspace" "container_apps" {
+  name                = "${var.log_analytics_workspace_base_name}-${lower(var.environment)}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+
+  tags = {
+    environment = lower(var.environment)
+    managed-by  = "terraform"
+  }
+}
+
+resource "azurerm_container_app_environment" "container_apps" {
+  name                       = "${var.container_app_environment_base_name}-${lower(var.environment)}"
+  location                   = module.resource_group.location
+  resource_group_name        = module.resource_group.name
+  logs_destination           = "log-analytics"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.container_apps.id
+
+  tags = {
+    environment = lower(var.environment)
+    managed-by  = "terraform"
+  }
+}
+
 resource "azurerm_storage_account" "terraform_state" {
   name                     = var.state_storage_account_name
   resource_group_name      = module.resource_group.name

@@ -37,3 +37,23 @@ output "managed_identity_principal_id" {
   description = "Principal ID used for Azure role assignments."
   value       = azurerm_user_assigned_identity.container_apps.principal_id
 }
+
+output "log_analytics_workspace_id" {
+  description = "Resource ID of the Container Apps Log Analytics workspace."
+  value       = azurerm_log_analytics_workspace.container_apps.id
+}
+
+output "container_app_environment_id" {
+  description = "Resource ID of the Container Apps environment."
+  value       = azurerm_container_app_environment.container_apps.id
+}
+
+output "container_app_environment_name" {
+  description = "Name of the Container Apps environment."
+  value       = azurerm_container_app_environment.container_apps.name
+}
+
+output "container_app_environment_default_domain" {
+  description = "Default domain of the Container Apps environment."
+  value       = azurerm_container_app_environment.container_apps.default_domain
+}
