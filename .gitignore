@@ -8,6 +8,25 @@ code_reviews/
 .ai/sessions/
 certs/
 tests/**/*.test.js
+.DS_Store
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.json
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.example.tfvars
+*.tfvars.backup
+crash.log
+crash.*.log
+*_override.tf
+*_override.tf.json
+override.tf
+override.tf.json
 
 # Playwright
 /test-results/

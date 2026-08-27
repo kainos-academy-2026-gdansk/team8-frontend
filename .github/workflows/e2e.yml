@@ -10,7 +10,12 @@ on:
 
 permissions:
   contents: read
-  packages: read
+  id-token: write
+
+env:
+  REGISTRY: ${{ vars.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
+  ACR_NAME: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+  BACKEND_IMAGE: team8-backend:latest
 
 jobs:
   playwright:
@@ -26,13 +31,18 @@ jobs:
       - run: npx playwright install --with-deps
       - run: npm run build
       - run: npm run test:ui:typecheck
+      - name: Build frontend image for E2E
+        run: docker build --tag team8-frontend:e2e .
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Azure Container Registry
+        run: az acr login --name "$ACR_NAME"
 
       # Postgres must be reachable before the backend starts, so it's started
       # and waited on separately rather than as a parallel "services:" entry.
@@ -58,7 +68,7 @@ jobs:
             -e DATABASE_URL=postgresql://postgres:postgres@backend-db:5432/team8_backend \
             -e JWT_SECRET=ci-jwt-secret \
             -p 3000:3000 \
-            ghcr.io/kainos-academy-2026-gdansk/team8-backend:latest
+            "$REGISTRY/$BACKEND_IMAGE"
           # migrate deploy + db seed run before the server starts, so give it more headroom
           for i in $(seq 1 45); do
             curl -fsS http://localhost:3000/ && break
@@ -70,20 +80,38 @@ jobs:
             sleep 2
           done
 
+      - name: Start frontend
+        run: |
+          docker run -d --name frontend --network host \
+            -e NODE_ENV=development \
+            -e PORT=3001 \
+            -e SESSION_SECRET=ci-secret \
+            -e API_BASE_URL=http://localhost:3000/api \
+            team8-frontend:e2e
+          for i in $(seq 1 45); do
+            curl -fsS http://localhost:3001/ && break
+            if [ "$i" = 45 ]; then
+              echo "Frontend never became ready" >&2
+              docker logs frontend
+              exit 1
+            fi
+            sleep 2
+          done
+
       - run: npm run test:ui
         env:
-          PORT: 3001
-          SESSION_SECRET: ci-secret
-          API_BASE_URL: http://localhost:3000/api
+          E2E_BASE_URL: http://localhost:3001
 
       - name: Dump backend logs on failure
         if: failure()
-        run: docker logs backend
+        run: |
+          docker logs backend
+          docker logs frontend || true
 
       - name: Stop backend containers
         if: always()
         run: |
-          docker rm -f backend backend-db || true
+          docker rm -f frontend backend backend-db || true
           docker network rm e2e-net || true
 
       - uses: actions/upload-artifact@v4
